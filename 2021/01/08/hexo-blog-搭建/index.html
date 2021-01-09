@@ -22,16 +22,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="风雨兼程 红花绿柳">
+  <meta name="description" content="Hexo Blog 搭建">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hexo blog 搭建">
 <meta property="og:url" content="http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="风雨兼程 红花绿柳">
+<meta property="og:description" content="Hexo Blog 搭建">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-01-07T16:40:47.000Z">
-<meta property="article:modified_time" content="2021-01-07T16:40:47.584Z">
+<meta property="article:modified_time" content="2021-01-09T05:00:30.940Z">
 <meta property="article:author" content="fiking">
+<meta property="article:tag" content="hexo">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/">
@@ -127,12 +128,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">0</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">1</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -199,6 +200,22 @@
 
               <time title="创建时间：2021-01-08 00:40:47" itemprop="dateCreated datePublished" datetime="2021-01-08T00:40:47+08:00">2021-01-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-09 13:00:30" itemprop="dateModified" datetime="2021-01-09T13:00:30+08:00">2021-01-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web-%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">web 应用</span></a>
+                </span>
+            </span>
 
           
             <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
@@ -213,7 +230,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>264</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -232,7 +249,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="Hexo-Blog-搭建"><a href="#Hexo-Blog-搭建" class="headerlink" title="Hexo Blog 搭建"></a>Hexo Blog 搭建</h2> <a id="more"></a> 
+
+<h3 id="Github-blog-创建"><a href="#Github-blog-创建" class="headerlink" title="Github blog 创建"></a>Github blog 创建</h3><p>  免费的个人blog网站。</p>
+<h3 id="hexo-搭建"><a href="#hexo-搭建" class="headerlink" title="hexo 搭建"></a>hexo 搭建</h3><p>  用于生成静态网页。</p>
+<h3 id="hexo-关联-github"><a href="#hexo-关联-github" class="headerlink" title="hexo 关联 github"></a>hexo 关联 github</h3><p>  通过hexo命令自动将网页数据发布到GitHub的个人blog上。</p>
+<h3 id="备份原始数据"><a href="#备份原始数据" class="headerlink" title="备份原始数据"></a>备份原始数据</h3><p>  hexo 生成的配置文件和自己编写的数据文件需要通过原始git仓库保存。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b hexo</span><br><span class="line">git push origin hexo</span><br></pre></td></tr></table></figure>
+<h3 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h3><h3 id="新建文章"><a href="#新建文章" class="headerlink" title="新建文章"></a>新建文章</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://yafine-blog.cn/posts/7de0.html">yml文件的一些修改</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35668237">主要搭建参考</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/nightmare_dimple/article/details/86661502">主题配置</a></p>
+<p><a target="_blank" rel="noopener" href="https://jiazhibo.top/2020/10/12/%E5%9C%A8%E8%BF%99%E9%87%8C/">hexo 文章编写</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/xiazeyu/live2d-widget-models">live2d models</a></p>
+<p><a href="%5Bhttps://blog.csdn.net/wang_123_zy/article/details/87181892">2d模型预览</a></p>
+
     </div>
 
     
@@ -257,6 +290,10 @@
 
 
       <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/hexo/" rel="tag"><i class="fa fa-tag"></i> hexo</a>
+          </div>
 
         
 
@@ -326,6 +363,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo-Blog-%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">Hexo Blog 搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Github-blog-%E5%88%9B%E5%BB%BA"><span class="nav-number">1.1.</span> <span class="nav-text">Github blog 创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E6%90%AD%E5%BB%BA"><span class="nav-number">1.2.</span> <span class="nav-text">hexo 搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E5%85%B3%E8%81%94-github"><span class="nav-number">1.3.</span> <span class="nav-text">hexo 关联 github</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">1.4.</span> <span class="nav-text">备份原始数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">更换主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0"><span class="nav-number">1.6.</span> <span class="nav-text">新建文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.7.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -342,6 +380,14 @@
           <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
@@ -380,7 +426,7 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">0k</span>
+    <span title="总字数">1k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
