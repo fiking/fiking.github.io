@@ -1,38 +1,28 @@
 ---
-title: Hello World
+title: 初现世间
+date: 2021-01-07 00:40:47
+tags: 
+  - 纪要
+categories:
+  - 杂记
+description: 
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
 
-## Quick Start
+  千里之行，始于足下。
 
-### Create a new post
+ <!-- more -->
 
-``` bash
-$ hexo new "My New Post"
-```
+  一直想搭个个人博客来着，因为各种各样的原因（主要是懒），一直拖延着。github 和 CSDN 账号也是15年就有了，一直都没怎么动过。思绪有点飘了。已经发生的事就是历史之必然，无法改变，所以有平行世界，轮回时空的想象。在山海之间看日出日落，取山石海螺于尘埃，又是新的一年。
 
-More info: [Writing](https://hexo.io/docs/writing.html)
+  裹着被子，趁夜开始搭建。
 
-### Run server
+  创建需要的材料主要是服务器和网页程序。服务器用 [Github Pages](https://pages.github.com/)，域名也直接用github的，因而都是免费的... 。而网页程序是通过hexo 创建和管理的，代码备份在github上。整个过程还是比较简单和一键式。主要的问题是找到的页面布局的相关资料都比较少且旧，web前端的东西用得也比较少了，基本是依样画葫芦。折腾了快十几个小时了，勉强能看。后面改进一波。
 
-``` bash
-$ hexo server
-```
+  之后的事就是坚持写写MarkDown文档。学习Hexo和web，更新下页面布局。
 
-More info: [Server](https://hexo.io/docs/server.html)
+  搭建的过程中看到挺多有意思的博客文章~
 
-### Generate static files
+   作为一篇 Hello World ，简单写下搭建想法和过程。
 
-``` bash
-$ hexo generate
-```
 
-More info: [Generating](https://hexo.io/docs/generating.html)
 
-### Deploy to remote sites
-
-``` bash
-$ hexo deploy
-```
-
-More info: [Deployment](https://hexo.io/docs/one-command-deployment.html)

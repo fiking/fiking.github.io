@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
+title: fiking
+subtitle: long long ago
+description: 风雨兼程 红花绿柳
 keywords:
-author: John Doe
-language: en
-timezone: ''
+author: 
+language: zh-CN
+timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://example.com/child' and root as '/child/'
@@ -47,7 +47,7 @@ future: true
 highlight:
   enable: true
   line_number: true
-  auto_detect: false
+  auto_detect: true
   tab_replace: ''
   wrap: true
   hljs: false
@@ -95,10 +95,39 @@ include:
 exclude:
 ignore:
 
+symbols_count_time:
+  symbols: true
+  time: true
+  total_symbols: true
+  total_time: true
+  exclude_codeblock: false
+  awl: 4
+  wpm: 275
+  suffix: "mins."
+
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
-## Themes: https://hexo.io/themes/
 theme: next
+
+live2d:
+  enable: true
+  scriptFrom: local
+  pluginRootPath: live2dw/
+  pluginJsPath: lib/
+  pluginModelPath: assets/
+  model:
+    use: live2d-widget-model-hijiki
+  display:
+    position: left
+    width: 150
+    height: 300
+  mobile:
+    show: true
+
+auto_excerpt:
+  enable: true
+  length: 150
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
