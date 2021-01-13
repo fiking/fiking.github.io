@@ -7,8 +7,7 @@ categories:
 description: 
 date: 2021-01-08 08:40:47
 ---
-
- <!-- more -->
+  所有命令均在blog所在的根目录下执行。
 
 1. 创建md文件
 
@@ -18,11 +17,21 @@ date: 2021-01-08 08:40:47
 
 2.  编写文件内容
 
-3. 
+ <!-- more -->
 
-1. 
+3. 生成js等网页渲染文件，上传到github
 
-```shell
+   ```shell
+   hexo clean; hexo g; hexo d
+   ```
 
-```
+4. 保存原始文件到github
+
+   ```
+   git add .; git commit; git push origin hexo
+   ```
+
+   
+
+
 

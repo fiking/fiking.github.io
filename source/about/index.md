@@ -10,7 +10,7 @@ Cmpiler、OS driver、Web*
 Linux、Android
 
 ### 现状
-编译器学习中
+编译器渣渣
 
 ### 未来
 天气很好，熬夜不好！

@@ -60,6 +60,12 @@ hexo d
 
 [评论功能](https://asdfv1929.github.io/)
 
+[图片引用](https://blog.csdn.net/lichenliang666/article/details/88218551)
+
+[图标说明](https://fontawesome.dashgame.com/)
+
+
+
 
 
 
