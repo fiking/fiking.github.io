@@ -22,20 +22,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="BFS开始做BFS的题目， 题目链接： https:&#x2F;&#x2F;leetcode-cn.com&#x2F;problems&#x2F;find-bottom-left-tree-value&#x2F;">
+  <meta name="description" content="从前为了考试，把规定的名著都看了一遍，至少梗概是看完的。记忆中的四大名著都是上下两册的，除了《西游记》，前一册都是风清云秀，油烹烈火的，后一册，各种人没，变成悲剧。导致只喜欢看前一册，后一册看得少。《红楼梦》，石头记，像茶一样，多喝几次会上瘾，需要细品，个中滋味。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode-513">
-<meta property="og:url" content="http://example.com/2021/01/08/leetcode-513/index.html">
+<meta property="og:title" content="几卷书">
+<meta property="og:url" content="http://example.com/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="BFS开始做BFS的题目， 题目链接： https:&#x2F;&#x2F;leetcode-cn.com&#x2F;problems&#x2F;find-bottom-left-tree-value&#x2F;">
+<meta property="og:description" content="从前为了考试，把规定的名著都看了一遍，至少梗概是看完的。记忆中的四大名著都是上下两册的，除了《西游记》，前一册都是风清云秀，油烹烈火的，后一册，各种人没，变成悲剧。导致只喜欢看前一册，后一册看得少。《红楼梦》，石头记，像茶一样，多喝几次会上瘾，需要细品，个中滋味。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-01-08T00:40:47.000Z">
-<meta property="article:modified_time" content="2021-01-09T13:32:18.445Z">
-<meta property="article:tag" content="leetcode">
-<meta property="article:tag" content="算法">
+<meta property="article:published_time" content="2021-01-26T15:17:07.000Z">
+<meta property="article:modified_time" content="2021-01-26T17:48:21.106Z">
+<meta property="article:tag" content="故事">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2021/01/08/leetcode-513/">
+<link rel="canonical" href="http://example.com/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/">
 
 
 <script id="page-configurations">
@@ -48,7 +47,7 @@
   };
 </script>
 
-  <title>leetcode-513 | fiking</title>
+  <title>几卷书 | fiking</title>
   
 
 
@@ -175,7 +174,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/leetcode-513/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -188,7 +187,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          leetcode-513
+          几卷书
         </h1>
 
         <div class="post-meta">
@@ -198,14 +197,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-01-08 08:40:47" itemprop="dateCreated datePublished" datetime="2021-01-08T08:40:47+08:00">2021-01-08</time>
+              <time title="创建时间：2021-01-26 23:17:07" itemprop="dateCreated datePublished" datetime="2021-01-26T23:17:07+08:00">2021-01-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-09 21:32:18" itemprop="dateModified" datetime="2021-01-09T21:32:18+08:00">2021-01-09</time>
+                <time title="修改时间：2021-01-27 01:48:21" itemprop="dateModified" datetime="2021-01-27T01:48:21+08:00">2021-01-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -213,11 +212,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AE%97%E6%B3%95/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                  <a href="/categories/%E7%81%AF%E7%BA%A2%E9%85%92%E7%BB%BF/" itemprop="url" rel="index"><span itemprop="name">灯红酒绿</span></a>
                 </span>
             </span>
 
@@ -234,7 +229,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>864</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -253,11 +248,28 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="BFS"><a href="#BFS" class="headerlink" title="BFS"></a>BFS</h3><p>开始做BFS的题目， 题目链接： <a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-bottom-left-tree-value/">https://leetcode-cn.com/problems/find-bottom-left-tree-value/</a></p>
+        <p> 从前为了考试，把规定的名著都看了一遍，至少梗概是看完的。记忆中的四大名著都是上下两册的，除了《西游记》，前一册都是风清云秀，油烹烈火的，后一册，各种人没，变成悲剧。导致只喜欢看前一册，后一册看得少。《红楼梦》，石头记，像茶一样，多喝几次会上瘾，需要细品，个中滋味。</p>
  <a id="more"></a>
 
-<h4 id="1-想到的是标记层数，记录最新一层的的第一个，最后一次记录即为需要的。"><a href="#1-想到的是标记层数，记录最新一层的的第一个，最后一次记录即为需要的。" class="headerlink" title="1. 想到的是标记层数，记录最新一层的的第一个，最后一次记录即为需要的。"></a>1. 想到的是标记层数，记录最新一层的的第一个，最后一次记录即为需要的。</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(NULL), right(NULL) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findBottomLeftValue</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        <span class="built_in">queue</span>&lt;TreeNode*&gt; work;</span><br><span class="line">        work.push(root);</span><br><span class="line">        <span class="built_in">map</span>&lt;TreeNode*, <span class="keyword">int</span>&gt; dis;</span><br><span class="line">        dis[root] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> cur = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> ans = root-&gt;val;</span><br><span class="line">        <span class="keyword">while</span> (!work.empty()) &#123;</span><br><span class="line">            TreeNode* tmp = work.front();</span><br><span class="line">            work.pop();</span><br><span class="line">            <span class="keyword">if</span> (dis[tmp] != cur) &#123;</span><br><span class="line">                ans = tmp-&gt;val;</span><br><span class="line">                cur = dis[tmp];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (tmp-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                work.push(tmp-&gt;left);</span><br><span class="line">                dis[tmp-&gt;left] = dis[tmp] + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (tmp-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                work.push(tmp-&gt;right);</span><br><span class="line">                dis[tmp-&gt;right] = dis[tmp] + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="2-参考评论代码，从右往左遍历，最后一个即为需要的。"><a href="#2-参考评论代码，从右往左遍历，最后一个即为需要的。" class="headerlink" title="2. 参考评论代码，从右往左遍历，最后一个即为需要的。"></a>2. 参考评论代码，从右往左遍历，最后一个即为需要的。</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(NULL), right(NULL) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findBottomLeftValue</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        <span class="built_in">queue</span>&lt;TreeNode*&gt; work;</span><br><span class="line">        work.push(root);</span><br><span class="line"></span><br><span class="line">        TreeNode* ans = root;</span><br><span class="line">        <span class="keyword">while</span> (!work.empty()) &#123;</span><br><span class="line">            ans = work.front();</span><br><span class="line">            work.pop();</span><br><span class="line">            <span class="keyword">if</span> (ans-&gt;right != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                work.push(ans-&gt;right);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (ans-&gt;left != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">                work.push(ans-&gt;left);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans-&gt;val;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p> 后面看书，养成了不好的习惯，总喜欢快速看完，导致会跳着看，只记得故事情节，特别是翻译的书，人名基本没记住过。</p>
+<p>《傲慢与偏见》：高考的英语阅读题出处，因为在考前听过，看了下，考试的时候就看出来了。所有的东西都是有的，只是因为时间未到，没有发生罢了。后来就一直记住了，但是一直都没有看完过。</p>
+<p> 电视剧看太多，有段时间找了一些武侠小说来看。金庸的，看了</p>
+<p>《倚天屠龙记》。</p>
+<p>《射雕英雄传》。</p>
+<p>《连城诀》：这个第一本因为看了小说，然后去看的电视剧。</p>
+<p>《明朝的那些事》，读起来很流畅，而且和历史有关，之前无聊就会看一下。有些情节来来回回看了有两三遍了。整套书都有看完来着，不过最后一册还是看不下去，所谓悲凉。</p>
+<p> 《三体》：基本把第一部看完了，前面有太多的情节跳转，感觉比较生硬，一度看不下去，后来重新捡起看完。</p>
+<p> 《平凡的世界》：前面热热闹闹，后面归于平淡。纵使有命运，依然尽力活着。是一本会去看第二次的书。</p>
+<p> 《第一炉香》：本来想看下半生缘的，找了个张爱玲的小说，看了一半吧，只记得第一炉香了。</p>
+<p> 《台北人》：因为有个一把青的台剧，找到了这个小说，繁华过后的拾遗。</p>
+<p> 《诛仙》：也看了挺多遍的，但人名都不记得了，情节还能回忆个三三两两。</p>
+<p> 《解忧杂货店》：当我们询问别人该不该的时候，已经把决定都做好了，询问只是为了坚定自己的想法。第一本完全看完的东野圭吾的书。</p>
+<p> 《白夜行》：光与暗对立共生。看了一大半，直接看了结局，印象中如此。</p>
+<p> 《嫌疑人X的献身》：好像是因为这个书的电影开始看东野圭吾的书。记得应该有去看过这个小说。</p>
+<p>  《那些回不去的年少时光》：好早之前，有段时间涉猎了一些言情小说，因为是第一本的原因吧，印象最深的只剩这本了。也是个打怪升级的套路。</p>
+<p>  《挪威的森林》</p>
+<p>  《悖论13秒》：读档重来。</p>
+<p>  《圣女的救济》：勉强看完。</p>
 
     </div>
 
@@ -273,7 +285,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://example.com/2021/01/08/leetcode-513/" title="leetcode-513">http://example.com/2021/01/08/leetcode-513/</a>
+    <a href="http://example.com/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/" title="几卷书">http://example.com/2021/01/26/几卷书/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -285,8 +297,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/leetcode/" rel="tag"><i class="fa fa-tag"></i> leetcode</a>
-              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+              <a href="/tags/%E6%95%85%E4%BA%8B/" rel="tag"><i class="fa fa-tag"></i> 故事</a>
           </div>
 
         
@@ -295,13 +306,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/08/%E8%AE%B0%E4%BA%8C%E6%AC%A1%E5%85%83/" rel="prev" title="记二次元">
-      <i class="fa fa-chevron-left"></i> 记二次元
+    <a href="/2021/01/24/%E6%97%A5%E5%89%A7%E5%B0%8F%E8%AE%B0%E5%BD%95/" rel="prev" title="日剧小记录">
+      <i class="fa fa-chevron-left"></i> 日剧小记录
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/08/hexo-blog%E7%BC%96%E5%86%99%E9%9C%80%E8%A6%81%E7%9A%84%E5%91%BD%E4%BB%A4/" rel="next" title="hexo blog编写需要的命令">
-      hexo blog编写需要的命令 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -361,7 +369,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS"><span class="nav-number">1.</span> <span class="nav-text">BFS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%83%B3%E5%88%B0%E7%9A%84%E6%98%AF%E6%A0%87%E8%AE%B0%E5%B1%82%E6%95%B0%EF%BC%8C%E8%AE%B0%E5%BD%95%E6%9C%80%E6%96%B0%E4%B8%80%E5%B1%82%E7%9A%84%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%EF%BC%8C%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E8%AE%B0%E5%BD%95%E5%8D%B3%E4%B8%BA%E9%9C%80%E8%A6%81%E7%9A%84%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">1. 想到的是标记层数，记录最新一层的的第一个，最后一次记录即为需要的。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%8F%82%E8%80%83%E8%AF%84%E8%AE%BA%E4%BB%A3%E7%A0%81%EF%BC%8C%E4%BB%8E%E5%8F%B3%E5%BE%80%E5%B7%A6%E9%81%8D%E5%8E%86%EF%BC%8C%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%B3%E4%B8%BA%E9%9C%80%E8%A6%81%E7%9A%84%E3%80%82"><span class="nav-number">1.2.</span> <span class="nav-text">2. 参考评论代码，从右往左遍历，最后一个即为需要的。</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -534,7 +541,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'fiking.github.io',
       owner       : 'fiking',
       admin       : ['fiking'],
-      id          : '135f9d6901ee87e54f7b1f9e57bd01b9',
+      id          : 'bcf6ebc4b9c613d97924f364a0e6ec64',
         language: '',
       distractionFreeMode: true
     });
