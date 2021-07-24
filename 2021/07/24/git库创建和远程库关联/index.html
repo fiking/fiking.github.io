@@ -22,20 +22,25 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="用了12个小时大致整理下之前的资料，搬迁到当前Blog中，用于装点门面。">
+  <meta name="description" content="背景  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。 主要过程和命令创建本地库 创建库目录 1mkdir the_c++_Programming_language 进入到上述目录，进行初始化git库 1git init 实际执行的效果如下：                创建github库 点击new按钮进入创建页面        配置项目，然后点击creat">
 <meta property="og:type" content="article">
-<meta property="og:title" content="分割线之2021">
-<meta property="og:url" content="http://example.com/2021/01/09/%E5%88%86%E5%89%B2%E7%BA%BF%E4%B9%8B2021/index.html">
+<meta property="og:title" content="git库创建和远程库关联">
+<meta property="og:url" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="用了12个小时大致整理下之前的资料，搬迁到当前Blog中，用于装点门面。">
+<meta property="og:description" content="背景  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。 主要过程和命令创建本地库 创建库目录 1mkdir the_c++_Programming_language 进入到上述目录，进行初始化git库 1git init 实际执行的效果如下：                创建github库 点击new按钮进入创建页面        配置项目，然后点击creat">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-01-09T13:52:53.000Z">
-<meta property="article:modified_time" content="2021-07-24T15:38:40.627Z">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/new_repository.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/create_repo.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/error_refused.png">
+<meta property="article:published_time" content="2021-07-24T15:42:47.000Z">
+<meta property="article:modified_time" content="2021-07-24T18:30:31.052Z">
 <meta property="article:author" content="fiking">
-<meta property="article:tag" content="活与生">
+<meta property="article:tag" content="hexo">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png">
 
-<link rel="canonical" href="http://example.com/2021/01/09/%E5%88%86%E5%89%B2%E7%BA%BF%E4%B9%8B2021/">
+<link rel="canonical" href="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/">
 
 
 <script id="page-configurations">
@@ -48,7 +53,7 @@
   };
 </script>
 
-  <title>分割线之2021 | fiking</title>
+  <title>git库创建和远程库关联 | fiking</title>
   
 
 
@@ -175,7 +180,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/09/%E5%88%86%E5%89%B2%E7%BA%BF%E4%B9%8B2021/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -188,7 +193,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          分割线之2021
+          git库创建和远程库关联
         </h1>
 
         <div class="post-meta">
@@ -198,14 +203,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-01-09 21:52:53" itemprop="dateCreated datePublished" datetime="2021-01-09T21:52:53+08:00">2021-01-09</time>
+              <time title="创建时间：2021-07-24 23:42:47" itemprop="dateCreated datePublished" datetime="2021-07-24T23:42:47+08:00">2021-07-24</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-24 23:38:40" itemprop="dateModified" datetime="2021-07-24T23:38:40+08:00">2021-07-24</time>
+                <time title="修改时间：2021-07-25 02:30:31" itemprop="dateModified" datetime="2021-07-25T02:30:31+08:00">2021-07-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -213,7 +218,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%81%AF%E7%BA%A2%E9%85%92%E7%BB%BF/" itemprop="url" rel="index"><span itemprop="name">灯红酒绿</span></a>
+                  <a href="/categories/web-%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">web 应用</span></a>
                 </span>
             </span>
 
@@ -230,7 +235,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>223</span>
+              <span>432</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -249,20 +254,48 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>  用了12个小时大致整理下之前的资料，搬迁到当前Blog中，用于装点门面。</p>
- <a id="more"></a>
+         <a id="more"></a>
 
-<p>  写了下之前的剧集和书籍，列了一些流水账，细节的东西有时间重新看之后补充。其它的如看过的电影、到过的地方，不多就不再添加了。当是把之前要写的东西，都写完了。</p>
-<p>  21年嘛，刚开始，很久没有立目标了。抽20个周末的时间做点东西，具体点：</p>
+<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。</p>
+<h3 id="主要过程和命令"><a href="#主要过程和命令" class="headerlink" title="主要过程和命令"></a>主要过程和命令</h3><h4 id="创建本地库"><a href="#创建本地库" class="headerlink" title="创建本地库"></a>创建本地库</h4><ol>
+<li><p>创建库目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir the_c++_Programming_language</span><br></pre></td></tr></table></figure></li>
+<li><p>进入到上述目录，进行初始化git库</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">init</span></span><br></pre></td></tr></table></figure>
+<p>实际执行的效果如下：</p>
+ 
+      <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png" class="" title>
+  
+
+</li>
+</ol>
+<h4 id="创建github库"><a href="#创建github库" class="headerlink" title="创建github库"></a>创建github库</h4><ol>
+<li>点击new按钮进入创建页面 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/new_repository.png" class="" title>
+</li>
+<li>配置项目，然后点击create进行创建 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/create_repo.png" class="" title>
+
+
+</li>
+</ol>
+<h4 id="关联远程库"><a href="#关联远程库" class="headerlink" title="关联远程库"></a>关联远程库</h4><h5 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h5><p>  有两种协议可以访问。</p>
 <ol>
-<li><p> 参考C4等用C++实现一个简单的C语言编译器；</p>
+<li><p>https</p>
+<p>需要本地配置github用户名和密码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote remove https://github.com/fiking/the_cpp_Programming_language.git</span><br></pre></td></tr></table></figure>
+
+
 </li>
-<li><p> GCC0.9的代码有点进展；</p>
-</li>
-<li><p> 翻译三篇编译器相关的论文；</p>
-</li>
-<li><p>整理下收集过的资料文档。</p>
-<p>心平气和，静静心的做事。</p>
+</ol>
+<ol start="2">
+<li><p>ssh</p>
+<p>要上传ssh key到github。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:fiking/the_cpp_Programming_language.git</span><br></pre></td></tr></table></figure>
+<h5 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h5> 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/error_refused.png" class="" title>
+
+<p>没有配置https需要的用户名和密码，访问被拒绝。可以配置用户名和密码解决此问题。或者通过ssh进行绑定。</p>
 </li>
 </ol>
 
@@ -280,7 +313,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://example.com/2021/01/09/%E5%88%86%E5%89%B2%E7%BA%BF%E4%B9%8B2021/" title="分割线之2021">http://example.com/2021/01/09/分割线之2021/</a>
+    <a href="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/" title="git库创建和远程库关联">http://example.com/2021/07/24/git库创建和远程库关联/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -292,7 +325,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E6%B4%BB%E4%B8%8E%E7%94%9F/" rel="tag"><i class="fa fa-tag"></i> 活与生</a>
+              <a href="/tags/hexo/" rel="tag"><i class="fa fa-tag"></i> hexo</a>
           </div>
 
         
@@ -301,13 +334,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/08/AMD1700x-MSI%EF%BC%88X370%EF%BC%89VMware%E6%8A%A5%E9%94%99/" rel="prev" title="AMD1700x+MSI（X370）VMware 报错">
-      <i class="fa fa-chevron-left"></i> AMD1700x+MSI（X370）VMware 报错
+    <a href="/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/" rel="prev" title="几卷书">
+      <i class="fa fa-chevron-left"></i> 几卷书
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/13/%E8%AE%B0%E7%BE%8E%E5%89%A7/" rel="next" title="美剧小记录">
-      美剧小记录 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -367,6 +397,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%BF%87%E7%A8%8B%E5%92%8C%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">主要过程和命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">创建本地库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAgithub%E5%BA%93"><span class="nav-number">2.2.</span> <span class="nav-text">创建github库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E8%BF%9C%E7%A8%8B%E5%BA%93"><span class="nav-number">2.3.</span> <span class="nav-text">关联远程库</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">2.3.1.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="nav-number">2.3.2.</span> <span class="nav-text">错误处理</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -539,7 +570,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'fiking.github.io',
       owner       : 'fiking',
       admin       : ['fiking'],
-      id          : '2ceee8a2941520f036ae130d9b740969',
+      id          : '293ec48478d160a08a6ff080aefd5770',
         language: '',
       distractionFreeMode: true
     });
