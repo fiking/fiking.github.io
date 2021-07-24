@@ -33,23 +33,24 @@ description:
   实际执行的效果如下：
 
   {% if 1 == 1 %} 
-  {% asset_img MSI_VMware_error.jpg title %}
-{% else %}
-  ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\git_init.png)
+      {% asset_img git_init.png title %}
+  {% else %}
+      ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\git_init.png)
 
-{% endif %}
+  {% endif %}
 
 #### 创建github库
 
 1. 点击new按钮进入创建页面
-    {% if 1 == 1 %} 
-    {% asset_img MSI_VMware_error.jpg title %}
+{% if 1 == 1 %} 
+    {% asset_img new_repository.png title %}
 {% else %}
     ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\new_repository.png)
-2. 配置项目，然后点击create进行创建
+
 {% endif %}
-    {% if 1 == 1 %} 
-    {% asset_img MSI_VMware_error.jpg title %}
+2. 配置项目，然后点击create进行创建
+{% if 1 == 1 %} 
+    {% asset_img create_repo.png title %}
 {% else %}
     ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\create_repo.png)
 
@@ -80,9 +81,8 @@ description:
    ```
 
 ##### 错误处理
-{% endif %}
-    {% if 1 == 1 %} 
-    {% asset_img MSI_VMware_error.jpg title %}
+{% if 1 == 1 %} 
+    {% asset_img error_refused.png title %}
 {% else %}
     ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\error_refused.png)
 
