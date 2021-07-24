@@ -1,18 +1,18 @@
 ---
 title: git库创建和远程库关联
 tags:
-  - hexo
+  - 总结文档
 categories:
-  - web 应用
+  - GIT
 date: 2021-07-24 23:42:47
-description:
+description: 
 ---
-
- <!-- more -->
 
 ### 背景
 
   记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。
+
+ <!-- more -->
 
 ### 主要过程和命令
 
