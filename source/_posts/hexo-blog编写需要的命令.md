@@ -12,7 +12,7 @@ date: 2021-01-08 08:40:47
 1. 创建md文件
 
    ```shell
-   hexo new post "hexo blog编写需要的命令"
+   hexo new post "title"
    ```
 
 2.  编写文件内容
