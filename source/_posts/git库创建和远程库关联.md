@@ -67,7 +67,7 @@ description:
    需要本地配置github用户名和密码。
 
    ```shell
-   git remote remove https://github.com/fiking/the_cpp_Programming_language.git
+   git remote add https://github.com/fiking/the_cpp_Programming_language.git
    ```
 
    
