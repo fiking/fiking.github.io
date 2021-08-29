@@ -3,7 +3,7 @@ title: V8-early 之shell实现
 tags:
   - v8
 categories:
-  - JS engine
+  - js engine
   - v8
 date: 2021-08-15 20:36:22
 description:
