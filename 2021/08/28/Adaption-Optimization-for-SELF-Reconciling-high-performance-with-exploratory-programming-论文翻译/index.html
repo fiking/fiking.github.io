@@ -30,7 +30,7 @@
 <meta property="og:description" content="前言  为了增加虚拟机方面的理论知识，开始了虚拟机相关的论文翻译和学习。先制定个伟大的目标，前期每周一篇翻译，后续在根据学习情况进行论文的总结精炼。   开篇文章为 Urs Hölzle 1994年的博士论文《Adaption Optimization for SELF: Reconciling high performance with exploratory programming》。根据网上">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2021-08-28T15:33:03.765Z">
+<meta property="article:modified_time" content="2021-08-29T08:32:03.046Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -197,10 +197,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-08-28 22:02:27 / 修改时间：23:33:03" itemprop="dateCreated datePublished" datetime="2021-08-28T22:02:27+08:00">2021-08-28</time>
+              <time title="创建时间：2021-08-28 22:02:27" itemprop="dateCreated datePublished" datetime="2021-08-28T22:02:27+08:00">2021-08-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-29 16:32:03" itemprop="dateModified" datetime="2021-08-29T16:32:03+08:00">2021-08-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -228,7 +234,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>411</span>
+              <span>1.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -255,7 +261,19 @@
 <h2 id="作者"><a href="#作者" class="headerlink" title="作者"></a>作者</h2><p>Urs Hölzle</p>
 <h2 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h2><p>1994年八月</p>
 <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>面向对象语言带来许多的益处，其中的抽象性，可以让程序员隐藏来自对象客户端的对象实现细节。不幸的是，在跨越抽象边界如频繁的过程调用中总是伴随着巨大的运行时开销。因此，尽管频繁的使用抽象是这类语言的设计目的，但这是不切实际的，因为，它会导致程序非常低效。</p>
-<p>激进的编译器优化会降低抽象的开销。</p>
+<p>激进的编译器优化会降低抽象的开销。但是优化编译器带来长的编译时间会延长编程环境反馈程序变化的时间。此外，优化也会与源码级别的调试冲突。因此，程序员面临一个两难的选择，不得不在高效的抽象和高效的编程环境之间进行选择。本论文会展示如何通过延迟编译调和这个看起来是矛盾的目标。</p>
+<p>融合四个新的技术来达成高性能和高响应：</p>
+<ul>
+<li><em>Type feedback</em> 通过允许编译器基于获取自运行时系统的信息内联消息发送（message send）来取得高性能。平均来说，在有类型反馈的SELF系统上，程序运行会比在之前的 SELF 系统快1.5倍；而与商业的 Smalltalk 实现对比，两个中型的 benchmark 会快三倍。这个水平的性能是从一个比之前 SELF 编译器更简单和更快速的编译器上取得的。</li>
+<li><em>Adaptive optimization</em> 在取得高响应的同时不会牺牲性能，通过使用非优化编译器生成初始代码，同时在运行期间使用优化编译器重编程序中重度使用的代码部分。在前一代的工作平台上如 SPARCstation-2，50 分钟的交互中有将近200个暂停超过200ms，21个暂停超过了 1 秒。在当代的工作平台上，只有13个暂停超过400ms。</li>
+<li><em>Dynamic deoptimization</em> 在需要时通过隐式地重建非优化代码，使得程序员可以远离调试优化过的代码的复杂性。不管一个程序是否被优化过，它都可以被停止，检查和单步调试。比起之前的方法，去优化（deoptimization）支持更多的调试的同时，对于可执行的优化代码添加更少的限制。</li>
+<li><em>Polymorphic inline caching</em> 实时生成类型信息序列来加速来自于相同调用位置但具有不同的类型对象的消息发送。更重要的是，它会为优化编译器搜集了具体的类型信息。</li>
+</ul>
+<p>具有高性能和良好的交互行为的这些技术，让探索性编程既适用于纯粹面向对象语言，也适用于需要更高最终性能的应用领域；调和了探索性编程，繁多的抽象和高性能。</p>
+<h3 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h3><p>作者的感谢，暂不翻译。</p>
+<h3 id="目录列表"><a href="#目录列表" class="headerlink" title="目录列表"></a>目录列表</h3><p>暂不翻译。</p>
+<h3 id="图片列表"><a href="#图片列表" class="headerlink" title="图片列表"></a>图片列表</h3><p>暂不翻译。</p>
+<h3 id="表列表"><a href="#表列表" class="headerlink" title="表列表"></a>表列表</h3><p>暂不翻译。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
     </div>
 
@@ -355,7 +373,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BF%BB%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%A2%98%E7%9B%AE"><span class="nav-number">2.1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">作者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.4.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">2.4.1.</span> <span class="nav-text">摘要</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BF%BB%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%A2%98%E7%9B%AE"><span class="nav-number">2.1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">作者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.4.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">2.4.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">2.4.2.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.3.</span> <span class="nav-text">目录列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.4.</span> <span class="nav-text">图片列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.5.</span> <span class="nav-text">表列表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -432,13 +450,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">27k</span>
+    <span title="总字数">28k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">24 分钟</span>
+    <span title="总时间">25 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
