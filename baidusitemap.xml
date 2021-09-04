@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/</loc>
-    <lastmod>2021-08-31</lastmod>
+    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
+    <lastmod>2021-09-04</lastmod>
   </url>
   <url>
-    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
-    <lastmod>2021-08-29</lastmod>
+    <loc>http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/</loc>
+    <lastmod>2021-09-04</lastmod>
+  </url>
+  <url>
+    <loc>http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/</loc>
+    <lastmod>2021-08-31</lastmod>
   </url>
   <url>
     <loc>http://example.com/2021/08/15/V8-early-%E4%B9%8Bshell%E5%AE%9E%E7%8E%B0/</loc>
@@ -38,10 +42,6 @@
   </url>
   <url>
     <loc>http://example.com/2021/01/08/hexo-blog%E7%BC%96%E5%86%99%E9%9C%80%E8%A6%81%E7%9A%84%E5%91%BD%E4%BB%A4/</loc>
-    <lastmod>2021-07-24</lastmod>
-  </url>
-  <url>
-    <loc>http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/</loc>
     <lastmod>2021-07-24</lastmod>
   </url>
   <url>
