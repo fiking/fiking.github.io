@@ -32,8 +32,9 @@
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_1.png">
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_2.png">
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_3.png">
+<meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_3.png">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2021-09-06T15:32:55.638Z">
+<meta property="article:modified_time" content="2021-09-08T15:00:53.392Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -209,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-06 23:32:55" itemprop="dateModified" datetime="2021-09-06T23:32:55+08:00">2021-09-06</time>
+                <time title="修改时间：2021-09-08 23:00:53" itemprop="dateModified" datetime="2021-09-08T23:00:53+08:00">2021-09-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,14 +239,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.7k</span>
+              <span>8.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -347,7 +348,16 @@
 
 
 <p>合并在一起，这些优化将 SELF的性能提升到合理的水平。举个例子，Chambers 和 Ungar 报告了 SELF 显著地跑赢了 ParcPlace Smalltalk-80 的实现在一个小的类C的整形测试用例集上[26]。</p>
-<h5 id="2-2-3-源码级的语义"><a href="#2-2-3-源码级的语义" class="headerlink" title="2.2.3 源码级的语义"></a>2.2.3 源码级的语义</h5><p>语言和实现特性的结合确保了所有程序的行为，即使错误的部分，也可以通过源码级别的术语独立理解。语言保证了每个消息发送要么找到一个匹配槽（访问它的数据或者运行它的方法），或者导致一个“message not understood” 的错误。最后，这个级别的唯一错误是查找错误。此外，实现保证了所有的原语是安全的。</p>
+<h5 id="2-2-3-源码级的语义"><a href="#2-2-3-源码级的语义" class="headerlink" title="2.2.3 源码级的语义"></a>2.2.3 源码级的语义</h5><p>语言和实现特性的结合确保了所有程序的行为，即使错误的部分，也可以通过源码级别的术语独立理解。语言保证了每个消息发送要么找到一个匹配槽（访问它的数据或者运行它的方法），或者导致一个“message not understood” 的错误。最后，这个级别的唯一错误是查找错误。此外，实现保证了所有的原语是安全的。因为所有的原语会检查它们的操作数和结果，如果操作数无法被执行会以明确的方式失败。例如，所有的整型算术原语检查溢出，数组访问原语检查范围错误。最后，因为 SELF 不允许指针算术和使用垃圾回收，所以系统是指针安全的：不会偶然地复写随机的内存区域或者解引用悬挂指针。这些特性的结合让它更容易找到程序错误。</p>
+<p>安全原语让高效实现更难[21]。例如，每个整型加法不得不检查溢出，从让它变慢。更重要的是，整型操作的返回值类型是未知的：所有的原语都有 “故障块” 的参数，如果操作失败，一个消息会被发送给这个参数。然后这个发送的结果会变成原语调用的返回值。例如，当前 SELF 系统的整型的 “+” 方法调用 IntAdd：带有失败块的原语会将失败块参数转化为任意精度的整型然后进行相加。因此表达式 x + y 的精确的返回值类型是未知的，即使 x 和 y 都是已知的整型：没有溢出，返回值会是整型，但是当结果太大而不能被表示为一个机器级别的整数时，结果就会时任意精度的整数。因此，即使 x 和 y 是已知的整数，编译器也无法静态的知道表达式 x + y + 1 的第二个 “+” 会调用整型的加法还是任意精度数的加法。安全原语帮助程序员的同时也潜在地使执行变慢。</p>
+<h5 id="2-2-4-直接执行语义"><a href="#2-2-4-直接执行语义" class="headerlink" title="2.2.4 直接执行语义"></a>2.2.4 直接执行语义</h5><p>SELF 通过使用动态编译模仿解释器。每当一个没有相关编译过代码的源码方法被调用，编译器会被自动调用生成缺失的代码。反过来，每当用户改变源方法，所有依赖于旧定义的编译过代码会被无效化。为了实现这个系统在源码方法和编译过的方法维持一个依赖链接[71,21]。</p>
+<p>因为没有显式的编译和链接步骤，传统的编写-编译-链接-运行循环被简化为一个编写-运行循环。程序可以在运行时被改变，所以应用可以被在线调试而不需要从头开始运行。</p>
+<h4 id="2-3-编译过程概述"><a href="#2-3-编译过程概述" class="headerlink" title="2.3 编译过程概述"></a>2.3 编译过程概述</h4><p>Figure 2-4 较详细地展示了新的 SELF-93 系统的编译过程。SELF 的方法源码以对象的形式存储到堆上，就像其它的数据对象一样。方法的代码被编码为一个简单栈式机器的一串字节码（“instruction”）。这些字节码可以在解释器上直接执行；但是当前的 SELF 系统从没有这样做。反而，这些字节码总是按需地被翻译为机器码。当一个源码第一次被执行，机器码被实时生成。通常，第一次编译的代码是由“快速但笨”的编译器生成的。未优化的代码是字节码的直接翻译所以相当的慢；章节4 更细节地描述非优化的编译器。</p>
+ 
+  <img src="/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_3.png" class="" title>
+
+
+<p>未优化的代码包含一个调用计数器。每当计数器超过一定的阈值，系统会调用重编译系统来决定是否优化是需要的以及应该重新编译哪些方法。然后重编译系统调用优化编译器。章节5详细的解释了重编译过程，章节6描述优化编译器。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
     </div>
 
@@ -447,7 +457,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BF%BB%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%A2%98%E7%9B%AE"><span class="nav-number">2.1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">作者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.4.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">2.4.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">2.4.2.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.3.</span> <span class="nav-text">目录列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.4.</span> <span class="nav-text">图片列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.5.</span> <span class="nav-text">表列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">2.4.6.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">2.4.7.</span> <span class="nav-text">2. 背景和相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-SELF-%E8%AF%AD%E8%A8%80"><span class="nav-number">2.4.7.1.</span> <span class="nav-text">2.1 SELF 语言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-SELF%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.4.7.2.</span> <span class="nav-text">2.2 SELF系统</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-1-%E5%AE%9E%E7%8E%B0%E6%A6%82%E8%BF%B0"><span class="nav-number">2.4.7.2.1.</span> <span class="nav-text">2.2.1 实现概述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-2-%E6%95%88%E7%8E%87"><span class="nav-number">2.4.7.2.2.</span> <span class="nav-text">2.2.2 效率</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-3-%E6%BA%90%E7%A0%81%E7%BA%A7%E7%9A%84%E8%AF%AD%E4%B9%89"><span class="nav-number">2.4.7.2.3.</span> <span class="nav-text">2.2.3 源码级的语义</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BF%BB%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%A2%98%E7%9B%AE"><span class="nav-number">2.1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">作者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.4.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">2.4.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">2.4.2.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.3.</span> <span class="nav-text">目录列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.4.</span> <span class="nav-text">图片列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%88%97%E8%A1%A8"><span class="nav-number">2.4.5.</span> <span class="nav-text">表列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">2.4.6.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">2.4.7.</span> <span class="nav-text">2. 背景和相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-SELF-%E8%AF%AD%E8%A8%80"><span class="nav-number">2.4.7.1.</span> <span class="nav-text">2.1 SELF 语言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-SELF%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.4.7.2.</span> <span class="nav-text">2.2 SELF系统</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-1-%E5%AE%9E%E7%8E%B0%E6%A6%82%E8%BF%B0"><span class="nav-number">2.4.7.2.1.</span> <span class="nav-text">2.2.1 实现概述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-2-%E6%95%88%E7%8E%87"><span class="nav-number">2.4.7.2.2.</span> <span class="nav-text">2.2.2 效率</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-3-%E6%BA%90%E7%A0%81%E7%BA%A7%E7%9A%84%E8%AF%AD%E4%B9%89"><span class="nav-number">2.4.7.2.3.</span> <span class="nav-text">2.2.3 源码级的语义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-4-%E7%9B%B4%E6%8E%A5%E6%89%A7%E8%A1%8C%E8%AF%AD%E4%B9%89"><span class="nav-number">2.4.7.2.4.</span> <span class="nav-text">2.2.4 直接执行语义</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="nav-number">2.4.7.3.</span> <span class="nav-text">2.3 编译过程概述</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -524,13 +534,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">36k</span>
+    <span title="总字数">37k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">33 分钟</span>
+    <span title="总时间">34 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
