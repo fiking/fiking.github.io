@@ -40,6 +40,12 @@ hexo g
 hexo d
 ```
 
+### 添加搜索索引
+
+```
+https://www.dazhuanlan.com/colaandice/topics/1009423
+```
+
 
 
 ### 参考

@@ -14,6 +14,6 @@ date: 2021-01-08 08:40:47
 {% if 1 == 1 %} 
   {% asset_img MSI_VMware_error.jpg title %}
 {% else %}
-  ![](I:\Blogs\fiking\source\_posts\AMD1700x-MSI（X370）VMware报错\MSI_VMware_error.jpg)
+  ![](H:\Blogs\fiking\source\_posts\AMD1700x-MSI（X370）VMware报错\MSI_VMware_error.jpg)
 
 {% endif %}

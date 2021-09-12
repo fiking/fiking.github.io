@@ -35,7 +35,7 @@ description:
   {% if 1 == 1 %} 
       {% asset_img git_init.png title %}
   {% else %}
-      ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\git_init.png)
+      ![](H:\Blogs\fiking\source\_posts\git库创建和远程库关联\git_init.png)
 
   {% endif %}
 
@@ -45,14 +45,14 @@ description:
 {% if 1 == 1 %} 
     {% asset_img new_repository.png title %}
 {% else %}
-    ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\new_repository.png)
+    ![](H:\Blogs\fiking\source\_posts\git库创建和远程库关联\new_repository.png)
 
 {% endif %}
 2. 配置项目，然后点击create进行创建
 {% if 1 == 1 %} 
     {% asset_img create_repo.png title %}
 {% else %}
-    ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\create_repo.png)
+    ![](H:\Blogs\fiking\source\_posts\git库创建和远程库关联\create_repo.png)
 
 {% endif %}
 
@@ -84,7 +84,7 @@ description:
 {% if 1 == 1 %} 
     {% asset_img error_refused.png title %}
 {% else %}
-    ![](I:\Blogs\fiking\source\_posts\git库创建和远程库关联\error_refused.png)
+    ![](H:\Blogs\fiking\source\_posts\git库创建和远程库关联\error_refused.png)
 
 {% endif %}
 没有配置https需要的用户名和密码，访问被拒绝。可以配置用户名和密码解决此问题。或者通过ssh进行绑定。
