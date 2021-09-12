@@ -135,3 +135,10 @@ deploy:
   type: git
   repository: git@github.com:fiking/fiking.github.io.git
   branch: master
+  
+# auto generate sitemap
+sitemap:
+  path: sitemap.xml
+baidusitemap:
+  path: baidusitemap.xml
+
