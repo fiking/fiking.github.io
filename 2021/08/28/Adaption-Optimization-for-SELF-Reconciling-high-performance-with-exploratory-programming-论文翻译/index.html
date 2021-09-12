@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_3.png">
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_2_4.png">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2021-09-12T14:28:19.265Z">
+<meta property="article:modified_time" content="2021-09-12T14:42:47.686Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -210,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-12 22:28:19" itemprop="dateModified" datetime="2021-09-12T22:28:19+08:00">2021-09-12</time>
+                <time title="修改时间：2021-09-12 22:42:47" itemprop="dateModified" datetime="2021-09-12T22:42:47+08:00">2021-09-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -376,7 +376,7 @@
 <p>Franz[55] 描述了一个在加载时将紧凑的中间代码表示转为机器码的动态编译的变种。就像 Smalltalk ”snapshot“ 中的字节码，中间表示代码是架构独立的，同时，它也尽量是语言独立的（当前的实现只有Oberon支持）。从中间码到机器码的编译是足够快的使得当前加载器与常规加载器相比差异不大。</p>
 <p>动态编译除了语言实现之外对于应用也是有用的[82]，它已经在多种方式下被使用。例如，Kessler et al. 用它来实现调试器的快速断点[84]。Pike et al. 通过动态生成最佳代码序列来加速 “bit-blt” 图形原语[103]。在操作系统中，动态编译被用来高效支持细粒度并行[32，105]和消除协议栈的开销[1]，以及动态链接[67]。动态编译也在其它领域被使用，如数据库查找优化[19，42]，微代码生成[107]，快速指令集仿真[34，93]。</p>
 <h5 id="2-5-2-客制化"><a href="#2-5-2-客制化" class="headerlink" title="2.5.2 客制化"></a>2.5.2 客制化</h5><p>客制化部分编译代码到特定环境的想法与动态编译密切相关因为环境信息直到运行前不总是有效的。例如，Mitchell 的系统[97] 特殊化算术操作到操作数的运行时类型。当变量的类型改变了，所有的依赖于这个类型的编译代码都会被丢弃掉。因为这个语言不支持用户自定义多态且不是面向对象，这个方案的主要动机是降低解释过程的固定开销和将一些通用的内置操作替换为简单的，特定的代码序列（如，用整型加法替换通用加法）。</p>
-<p>相似地，APL 编译器为某些表达式创建特定的代码[80，51，61]。对于这些系统，HP APL 编译器[51]最接近 SELF 使用的客制化技术。HP APL/3000 系统按一条一条语句的方式编译代码。</p>
+<p>相似地，APL 编译器为某些表达式创建特定的代码[80，51，61]。对于这些系统，HP APL 编译器[51]最接近 SELF 使用的客制化技术。HP APL/3000 系统按一条一条语句的方式编译代码。除了执行 APL 特定的优化，编译过的代码被特定化根据特定的操作数类型（维数，每一维的大小，元素类型，存储布局）。这些所谓的”硬“代码比起通用的版本可以更高效地执行因为一个APL操作执行的计算可能会因实际参数类型而有很大差异。为了保持语言的语义，</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
     </div>
 
@@ -553,7 +553,7 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">39k</span>
+    <span title="总字数">40k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
