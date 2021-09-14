@@ -305,13 +305,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Android-Studio/</loc>
-    <lastmod>2021-09-14</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/tags/Linux-Pstore/</loc>
     <lastmod>2021-09-14</lastmod>
     <changefreq>daily</changefreq>
@@ -320,6 +313,13 @@
   
   <url>
     <loc>http://example.com/tags/Linux-%E5%91%BD%E4%BB%A4/</loc>
+    <lastmod>2021-09-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/Android-Studio/</loc>
     <lastmod>2021-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -489,14 +489,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E5%B7%A5%E5%85%B7/</loc>
+    <loc>http://example.com/categories/Linux/</loc>
     <lastmod>2021-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/Linux/</loc>
+    <loc>http://example.com/categories/%E5%B7%A5%E5%85%B7/</loc>
     <lastmod>2021-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
