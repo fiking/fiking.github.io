@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/rectangle_2.png">
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_3_5.png">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2021-10-07T15:31:46.938Z">
+<meta property="article:modified_time" content="2021-10-09T15:08:04.352Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -217,7 +217,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-07 23:31:46" itemprop="dateModified" datetime="2021-10-07T23:31:46+08:00">2021-10-07</time>
+                <time title="修改时间：2021-10-09 23:08:04" itemprop="dateModified" datetime="2021-10-09T23:08:04+08:00">2021-10-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,7 +253,7 @@
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>17 分钟</span>
+              <span>18 分钟</span>
             </span>
 
         </div>
@@ -448,7 +448,9 @@
 <p>在 SELF 系统中，如果超出一定的大小（当前，10个） PICs 就标记为巨态。当一个巨态 PICs 未命中，它不会为了包含新的类型而增长。而是，其中一个场景会被随机选到然后被替换为新的场景。这个系统的一个早期版本使用 “move-to-front” 策略即在前面插入新的场景，往后移动其它的场景且去掉最后一个场景。但是，这个策略已经被放弃因为它的失败开销太大了（所有的10个条目都需要被改变，而不是只有一个）且它的失败率也有非常高的偶然性，例如类型循环的改变。（是的，墨菲定律是成立的–真实程序反应了这个现象）。</p>
 <p><strong><em>Improving linear search</em></strong>。如果每个类型的动态使用频率是已知的，PICs 可以定期重新排序从而将最频繁出现的类型放到 PIC 的开头，降低类型检查执行的平均次数。如果线性搜索不够高效，更复杂的算法如二分搜索或者某些形式的哈希可以被用于许多类型的场景。但是，因为类型的数量平均上是很小的（见图 3-4），这个优化可能不值得大力去做：对于大多数场景一个线性搜索的 PIC 是可能快于其它方法的。</p>
 <p><strong><em>Improving space efficiency</em></strong>。多态内联缓存是大于正常的内联缓存的因为桩例程关联了每个多态调用点。如果空间紧张，有着完全相同消息名的调用点是可以共享一个共同的 PIC 从而减少空间固有开销。在这个设想下，PICs 可以充当快速的特定消息查找缓存。一个多态发送的平均开销很可能高于特定调用点 PICs 因为每个 PIC 的类型数量会增加，这个是由于局部性丢失导致的（一个共享 PIC 将会包含特定消息名的所有接收者类型，调用相关的 PIC 只包含实际出现在调用点的类型）。</p>
-<h4 id="3-6-实现和结果"><a href="#3-6-实现和结果" class="headerlink" title="3.6 实现和结果"></a>3.6 实现和结果</h4><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h4 id="3-6-实现和结果"><a href="#3-6-实现和结果" class="headerlink" title="3.6 实现和结果"></a>3.6 实现和结果</h4><p>我们为 SELF 系统设计和实现了多态内联缓存并且测量它们的效果。这节所有的测量都是在一个有 48 MB内存的轻量加载的 Sun-4/260 上进行的；用于比较的基础系统是1990 年 9 月的 SELF 系统。这个基础系统使用内联缓存；一个直到特定方法的代码的发送需要 8 条指令（9 个周期）。一个内联缓存失败花费 15 毫秒或者 250 周期。失败时间可以通过一些优化和用汇编重编码关键部分来降低。我们估计这些优化可以降低失败的固有开销两倍左右。因此，我们的测量可能会夸大 PICs 的直接性能优势到两倍左右。另一方面，商业的 Smalltalk-80 实现（ParcPlace Smalltalk-80 系统，2.4版本）的测量表明它花费 15 毫秒处理失败，所以我们当前的实现并不是看上去的那样无理由的慢。</p>
+<p>我们实验的系统的单态发送使用了和基础系统相同的内联缓存形式。对于多态发送，一个桩被构造来测试接收者类型和跳转到对应的方法。这个桩有个固定的 8 周期开销（加载接收者类型和跳到目标方法），每个类型测试花费 4 周期。PICs 就像 3.5 节描述的那样实现的。前面章节提到的变化部分基本没有实现，除了调用点可能会被当做巨态当它超过十个接收者类型（但是这种调用没有出现在我们的 benchmarks）。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
     </div>
 
     
@@ -624,7 +626,7 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">47k</span>
+    <span title="总字数">48k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
