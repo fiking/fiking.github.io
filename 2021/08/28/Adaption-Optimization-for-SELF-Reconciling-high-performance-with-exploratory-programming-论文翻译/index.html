@@ -68,7 +68,7 @@
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_6_8.png">
 <meta property="og:image" content="http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/figure_6_9.png">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2022-03-05T09:31:30.021Z">
+<meta property="article:modified_time" content="2022-03-05T12:05:44.234Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -244,7 +244,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-05 17:31:30" itemprop="dateModified" datetime="2022-03-05T17:31:30+08:00">2022-03-05</time>
+                <time title="修改时间：2022-03-05 20:05:44" itemprop="dateModified" datetime="2022-03-05T20:05:44+08:00">2022-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -273,7 +273,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>57k</span>
+              <span>58k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -889,14 +889,12 @@
 <p>对于一些存储，编译器可以静态的知道无需存储检查，例如，当存储一个整型或者存储一个老的常量（因为老的对象从不会在变成新的）。然而，在常见的场景中对于每个存储操作都必须执行存储检查。因为存储时频繁的，一个高效的写保障实现是必须的。SELF-91 的写屏障实现是基于 Wilson 的卡片标记方案[139]。在这个方案中，堆被分为 2^k 字大小（典型的，k = 5..7）的卡块，没个卡在分离的向量里有个关联的字节。一个存储检查只是简单的清理正在更新的位置对应的字节。在垃圾回收时间，收集器会扫描字节向量；每当它找到一个标记位，收集器会检查堆中相关卡片上的所有指针。</p>
 <p>字节标记方案的优势是它的速度。在 SELF-91，存储检查除了实际的存储指令外只涉及 3 条 SPARC 指令：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">st [%obj + offset], %ptr store ptr into object’s field</span><br><span class="line">add %obj, offset, %temp calculate address of updated word</span><br><span class="line">sll %temp, k, %temp divide by card size 2k (shift left)</span><br><span class="line">st %g0, [%byte_map + %temp] clear byte in byte map</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
+<p>这个代码序列假设寄存器 byte_map 保存了字映射的已调整过的基础地址，即，byte_map_start_address - (first_heap_word / 2^k)，因此在计算需要被清理的字节的索引时避免了一个额外的减法。</p>
+<p>我们已经减少了写屏障的实现到每个检查存储只要两条额外的指令而不是前一代 SELF 系统的三条指令。我们新的写屏障是基于标准卡标记提升的通过放宽由卡片标记方案维护的不变量。标准卡标记维护的不变量是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bit <span class="keyword">or</span> byte i is marked &lt;--&gt; card i may contain a pointer from old to <span class="keyword">new</span></span><br></pre></td></tr></table></figure>
+<p>我们方案宽松的不变量是</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bit <span class="keyword">or</span> byte i <span class="keyword">is</span> marked &lt;--&gt; cards i..i+l may contain a pointer <span class="keyword">from</span> old <span class="keyword">to</span> <span class="keyword">new</span></span><br></pre></td></tr></table></figure>
+<p>此时 l 是一个小的常量（在我们当前的实现里是 1）。</p>
 
     </div>
 
