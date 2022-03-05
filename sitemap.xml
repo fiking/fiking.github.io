@@ -312,7 +312,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Android-Studio/</loc>
+    <loc>http://example.com/tags/Andorid-App/</loc>
+    <lastmod>2022-03-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/Android-App/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -333,7 +340,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Android-App/</loc>
+    <loc>http://example.com/tags/Android-Studio/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -348,13 +355,6 @@
   
   <url>
     <loc>http://example.com/tags/POJ/</loc>
-    <lastmod>2022-03-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/Andorid-App/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -503,7 +503,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E5%B7%A5%E5%85%B7/</loc>
+    <loc>http://example.com/categories/Android/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -517,7 +517,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/Android/</loc>
+    <loc>http://example.com/categories/%E5%B7%A5%E5%85%B7/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -552,14 +552,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
+    <loc>http://example.com/categories/GIT/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/GIT/</loc>
+    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
     <lastmod>2022-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
