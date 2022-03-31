@@ -95,8 +95,11 @@
 <meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_7_19.png">
 <meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/table_7_7.png">
 <meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_7_20.png">
+<meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/table_8_1.png">
+<meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_8_1.png">
+<meta property="og:image" content="h:/Blogs/fiking/source_posts/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_8_2.png">
 <meta property="article:published_time" content="2021-08-28T14:02:27.000Z">
-<meta property="article:modified_time" content="2022-03-31T03:58:10.915Z">
+<meta property="article:modified_time" content="2022-03-31T14:15:44.023Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="virtual machine">
 <meta name="twitter:card" content="summary">
@@ -272,7 +275,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-31 11:58:10" itemprop="dateModified" datetime="2022-03-31T11:58:10+08:00">2022-03-31</time>
+                <time title="修改时间：2022-03-31 22:15:44" itemprop="dateModified" datetime="2022-03-31T22:15:44+08:00">2022-03-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -301,14 +304,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>78k</span>
+              <span>79k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1:11</span>
+              <span>1:12</span>
             </span>
 
         </div>
@@ -1070,7 +1073,19 @@
 <p>为了评估哪个架构或者实现特性（任意）对于执行有利，我们分析了 SELF-93 编译的程序的指令使用情况。首先，我们比较 SELF 指令和 SPECInt89 测试集的混合，这个测试集是由 C 写的程序组成的。然后，我们评估 SPARC 架构的两个特性（寄存器窗口和标签计算），这些通常被认为是可以提高面向对象程序的性能。最后，我们检查测试集程序的缓存性能。</p>
 <p>这个结果表明 SELF-93 编译的程序与已优化的 C 程序差异很小，小于 C++ 程序套件。不像前一个研究，我们不能找到任何的“面向对象”硬件特性，可以提升超过 10% 的性能。</p>
 <h4 id="8-1-指令使用"><a href="#8-1-指令使用" class="headerlink" title="8.1 指令使用"></a>8.1 指令使用</h4><p>在设计一个架构的时候，一个首要的任务是识别经常使用的操作，然后优化它们。之前许多的研究已经找到面向对象语言的执行属性，与 C 非常的不同，因此有需要面向对象架构的争辩。例如，Smalltalk 的研究 [86，132] 表明调用比其它语言更频繁。即使和混合语言如 C++（以 C 为核心因此没有太多的不同） 比较，也能找到明显的不同。表 8-1 列出的数据来自于 Calder et al.[16]，测量了几个大的 C++ 应用，然后与 SPECint92 套件以及其它 C 程序比较。这个研究使用 MIPS 架构上的 GNU C 和 C++ 编译器。即使 C++ 在理念上与 C 相似，也有明言了执行行为上的不同：例如，C++ 执行几乎 7 倍多的调用，且执行不到一半的条件跳转。</p>
-<p>基于这些数据，一个期望是纯的面向对象语言如 SELF 与 C 离得更远，因为语言本质上与 C 完全不同。（之前说过，例如，即使是一个整数加法或者 if 语句都会调用消息发送。）但是，执行行为是一个功能，不只是源语言的属性，也有编译技术，后者会造成很大的不同。图 8-1 显示我们测量的四个 SPECint89 整型测试集（用 C 写的）和九个 SELF 程序的动态指令使用情况。</p>
+<p><img src="H:\Blogs\fiking\source_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_1.png"></p>
+<p>基于这些数据，一个期望是纯的面向对象语言如 SELF 与 C 离得更远，因为语言本质上与 C 完全不同。（之前说过，例如，即使是一个整数加法或者 if 语句都会调用消息发送。）但是，执行行为是一个功能，不只是源语言的属性，也有编译技术，后者会造成很大的不同。图 8-1 显示我们测量的四个 SPECint89 整型测试集（用 C 写的）和九个 SELF 程序的动态指令使用情况。总结的数据使用箱型图（下标包含详细的数据）。每个分类最左边的方框表示 SELF-only，即，已编译 SELF 代码的执行，排除所有花费在运行时系统的时间（用 C++ 写的）。每个分类中间的方框（全灰）表示完全的 SELF 程序（即，所有的用户模式指令）。我们测量了两者，因为 SELF 程序经常调用运行时系统的进程，例如，分配对象或者调用 C 库中的函数。有些程序花费三分之一的时间在这些例程上，我们要保证我们的数据不被这些非 SELF 的执行行为带偏。在另一方面，显示 SELF-only 也会误导，因为这些数据不能表示处理器实际执行的指令情况。</p>
+<p><img src="H:\Blogs\fiking\source_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_1.png"></p>
+<p>因为 SPECint89 套件里只有四个测试集，指向 C 的独立数据直接被显示，方框（点缀）只是用于引用。SPECint89 数据来自于 Cmelik et al[33]。</p>
+<p>图 8-1 揭示了几个有趣的观点：</p>
+<ol>
+<li>总体上，SPEC 测试集与 SELF 有些不同。通常在独立的 SPEC 测试集间的差异大于 SELF 和 C 的差异（在图中，SPEC 的盒子通常大于相关的 SELF 盒子）。</li>
+<li>平均上，SELF 程序执行更多非操作，更多无条件跳转，更多逻辑指令。但是，大部分这些不同都可以被当前 SELF 编译器简单的后端解释，下面会详细的解释。因此，它们是当前编译器后端的一部分，不能链接到 SELF 面向对象的特性。</li>
+<li> SELF 基础块与 SPEC 程序的大小相似，4.5 条指令 vs SPEC测试集（几何平均）的 4.4 条。但是，调用和返回更加频繁，每 33 条指令（SELF-only）发生和每 25 条指令（SELF）发生 vs SPECint89 的每 57 条发生。有趣地是，SELF 的运行时系统（用 C++ 写的重度标记内联函数）比起 SELF 代码有更高的调用/返回频率。</li>
+</ol>
+<p>为了更精确地比较，我们排除两类因当前 SELF 编译器后端不足而扭曲的指令。后端没有填充延迟槽（除了在固定的代码模式），因此 SELF 程序包含许多的非操作（6.2% vs C 的 0.45%）。同时，它没有优化跳转链和改变代码块来避免无条件跳转；因此，代码包含许多的无条件跳转（2.7% vs C 中的 0.8%），这些可以被一个更好的后端消除。因为这些额外的指令存在扭曲了其它指令分类的频率，我们在未来的图像中会排除非空操作和无条件跳转。</p>
+<p><img src="H:\Blogs\fiking\source_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_2.png"></p>
+<p>图 8-2 显示已调整的执行频率。比较 SELF 和 SELF-only，可知运行时系统不会影响整体的行为太多。只有两个表现出了明显的不同，分别是条件跳转指令和 sethi 指令。条件跳转指令在 SELF-only 比在 SELF 中更频繁，但和 SPEC 程序相比的话不是很多。</p>
 
     </div>
 
@@ -1250,13 +1265,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">108k</span>
+    <span title="总字数">109k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">1:38</span>
+    <span title="总时间">1:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
