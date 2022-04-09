@@ -319,14 +319,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Android-App/</loc>
+    <loc>http://example.com/tags/Andorid-App/</loc>
     <lastmod>2022-04-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/Andorid-App/</loc>
+    <loc>http://example.com/tags/Android-App/</loc>
     <lastmod>2022-04-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -368,20 +368,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/linux-driver/</loc>
-    <lastmod>2022-04-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/Qcom-cpu/</loc>
-    <lastmod>2022-04-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/tags/Linux-driver/</loc>
     <lastmod>2022-04-09</lastmod>
     <changefreq>daily</changefreq>
@@ -390,6 +376,20 @@
   
   <url>
     <loc>http://example.com/tags/audio/</loc>
+    <lastmod>2022-04-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/linux-driver/</loc>
+    <lastmod>2022-04-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/Qcom-cpu/</loc>
     <lastmod>2022-04-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
