@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
+    <loc>http://example.com/2022/04/14/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
     
     <lastmod>2022-04-14</lastmod>
     
@@ -11,7 +11,14 @@
   <url>
     <loc>http://example.com/2022/04/13/%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
     
-    <lastmod>2022-04-13</lastmod>
+    <lastmod>2022-04-14</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
+    
+    <lastmod>2022-04-14</lastmod>
     
   </url>
   
@@ -514,6 +521,13 @@
     <priority>0.6</priority>
   </url>
   
+  <url>
+    <loc>http://example.com/tags/compiler/</loc>
+    <lastmod>2022-04-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
 
   
   <url>
@@ -637,6 +651,13 @@
   
   <url>
     <loc>http://example.com/categories/dissertation-translation/virtual-machine/</loc>
+    <lastmod>2022-04-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/dissertation-translation/compiler/</loc>
     <lastmod>2022-04-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
