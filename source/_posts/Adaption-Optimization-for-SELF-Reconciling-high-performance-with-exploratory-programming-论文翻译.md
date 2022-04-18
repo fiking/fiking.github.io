@@ -1,7 +1,6 @@
 ---
 title: >-
-  Adaption-Optimization-for-SELF:Reconciling-high-performance-with-exploratory-programming
-  论文翻译
+  SELF 自适应优化：探索性编程与高性能共存
 tags:
   - virtual machine
 categories:
@@ -11,35 +10,13 @@ date: 2021-08-28 22:02:27
 description:
 ---
 
-# 前言
-
-  为了增加虚拟机方面的理论知识，开始了虚拟机相关的论文翻译和学习。先制定个伟大的目标，前期每周一篇翻译，后续在根据学习情况进行论文的总结精炼。
-
-  开篇文章为 **Urs Hölzle** 1994年的博士论文《Adaption Optimization for SELF: Reconciling high performance with exploratory programming》。根据网上资料此文章是 OpenJDK、V8的主要思想来源，所以优先进行阅读。
-
- <!-- more -->
-
-# 翻译
-
-## 论文题目
-
-SELF 自适应优化：探索性编程与高性能共存
-
-## 作者
-
-Urs Hölzle
-
-## 时间
-
-1994年八月
-
-## 正文
-
 ### 摘要
 
 面向对象语言带来许多的益处，其中的抽象性，可以让程序员隐藏来自对象客户端的对象实现细节。不幸的是，在跨越抽象边界如频繁的过程调用中总是伴随着巨大的运行时开销。因此，尽管频繁的使用抽象是这类语言的设计目的，但这是不切实际的，因为，它会导致程序非常低效。
 
 激进的编译器优化会降低抽象的开销。但是优化编译器带来长的编译时间会延长编程环境反馈程序变化的时间。此外，优化也会与源码级别的调试冲突。因此，程序员面临一个两难的选择，不得不在高效的抽象和高效的编程环境之间进行选择。本论文会展示如何通过延迟编译调和这个看起来是矛盾的目标。
+
+ <!-- more -->
 
 融合四个新的技术来达成高性能和高响应：
 
@@ -1387,15 +1364,30 @@ SELF-93 编译器面向快速产生好的代码。三个技术帮助达成这个
 
 这章通过测量一套包含三个小的和六个巨大的 SELF 程序（见表 7-1）。 除了 Richards 测试集，所有的测试程序都是编写的真实用例并不是特意的为测试用途写的。这个应用是不同的程序员写的，表现为一系列编程风格；一个应用（Mango）是通过一个解析生成器产生的。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\Table_7_1.png)
+{% if 1 == 1 %} 
+  {% asset_img Table_7_1.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\Table_7_1.png)
+
+{% endif %}
 
 为了评估类型反馈和自适应重编译的收益，我们比较三个不同 SELF 实现（Table 7-2）。SELF-91 是上一代实现使用了迭代类型分析[21]；这个系统没有使用重编译，也没有使用类型反馈。SELF-93 是前面章节描述的当前系统，使用了动态重编译和类型反馈。最后，SELF-93-nofeedback 是 SELF-93 关闭了重编译和类型反馈的版本。这不是一个正常使用的版本，但因为它优化了所有的方法却没有使用类型反馈，我们可以把它和 SELF-93比较用来估算类型反馈的影响。此外，类型分析（SELF-91也使用了）的影响可以通过比较 SELF-91 和 SELF-93-nofeedback 来估算。
 
 为了评估 SELF 系统的绝对性能，我们也把它和 Smalltalk 及 C++ 进行比较。Smalltalk 时一个动态类型语言，理念上与 SELF 极其相似。我们使用的实现，ParcPlace Smalltalk-80，是广泛使用的商业实现且被当作是当今最快速的可用的 Smalltalk 实现。为了提供另一方面的参考，我们也比较了 SELF-93 和最广泛使用的静态类型面向对象语言，C++。我们使用 GNU C++ 编译器[56]，因为它基本是最广泛使用的 C++ 实现能产生很好的代码，以及 Sun CC，  基于将 C++ 预处理为 C 的典型 C++ 实现。（我们比较这两种编译器因为两个有显著的性能不同点。）表 7-3 列出了所有系统的主要实现特征。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_2.png)
+{% if 1 == 1 %} 
+  {% asset_img Table_7_2.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_2.png)
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_3.png)
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img Table_7_3.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_3.png)
+
+{% endif %}
 
 #### 7.1 方法
 
@@ -1413,29 +1405,59 @@ SELF 程序的执行时间反应了（重）优化代码的性能，即，它们
 
 首先，我们通过比较 SELF-93-nofeedback 和最快的前一代实现，SELF-91 来测量新编译器的基础性能。图 7-1 显示结果（）只是快了一点（）尽管它使用了类型分析，更昂贵的类型预测，和更激进的后端。一个生成代码的非正式分析让我们相信 SELF-91 速度高于 SELF-93-nofeedback 的部分来自于编译器后端的差异。例如，SELF-91 会把除 2 编译为一个 Richards 内部循环的移位，而 SELF-93-nofeedback 不会做这个优化。通常，SELF-91 产生的代码基本显著地不执行没必要的寄存器分配。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_1.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_1.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_1.png)
+
+{% endif %}
 
 如果大部分的性能差距可以通过 SELF-91 的超级后端解释，是不是就意味着类型分析没有性能影响？图 7-2 确认了我们测试集里的程序似乎没有从类型分析中受益：平均上，SELF- 91 没有比 SELF-93-nofeedback 内联更多的发送。通常，类型分析不能推断非内联消息发送的返回值类型，以及非内联发送的参数类型，或者可分配槽类型（即，实例变量）。因为发送到这些值是非常频繁的，消息发送的大部分都不能从类型分析中受益。对于我们测试集中的面向对象程序，类型分析的好处是非常小的。（7.5.4 节将会更细节地讨论类型分析。）
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_2.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_2.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_2.png)
+
+{% endif %}
 
 #### 7.3 类型反馈工作
 
 为了评估类型反馈的性能影响，我们比较 SELF-93 和 SELF-93-nofeedback。因为 SELF-93-nofeedback 比 SELF-91 具有竞争力，我们有理由确定任何类型反馈获得的加速不是人为的削弱 SELF-93-nofeedback 系统，而是一个真正的性能提升。图 7-3 显示我们测量的结果（附录 A 中的表 A-3 包含了详细的数据）。类型反馈显著地提高了生成代码的质量，从而比 SELF-93-nofeedback 有 1.7 倍的提升（几何平均），甚至 SELF-93-nofeedback 总是优化所有的代码而 SELF-93 只是局部代码被优化。重编译系统在利用 PICs 提供的类型反馈来生成更好的代码和找到应用的时间关键路径上似乎特别成功。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_3.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_3.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_3.png)
+
+{% endif %}
 
 类型反馈同时也大幅度降低了测试集程序执行调用的数量（图 7-4）。平均上，类型反馈降低了 3.6 倍调用频次。显然地，类型反馈暴露了许多新的内联机会，这是 SELF-93-nofeedback 没有开发的，因为它缺少接收者类型信息。例如，在 SELF-93-nofeedback 中 Richards 大约一半的非内联发送是访问方法，其只是返回（或者设置）一个实例变量的值[70]。所有的这些发送在 SELF-93 里都被内联。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_4.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_4.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_4.png)
+
+{% endif %}
 
 查看完全未优化 SELF 调用的数量也是很有趣的。在未优化的SELF上，每条消息发送被实现为动态分配调用，除了访问接收者中的实例变量；未优化的程序运行许多次会慢于 SELF-91 和 SELF-93（见第四章）。SELF-93 比起未优化的 SELF （图 7-5 ）少执行了 5% 的调用。作为对比，SELF-91 和 SELF-93-nofeedback 保留了原始的 10%-25% 的调用。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_5.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_5.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_5.png)
+
+{% endif %}
 
 可以预测的是，消除的调用与加速是有一些相关性的：通常，内联一个调用可以提升性能。但是，这个相关性相当的弱（见图 7-6）。如附录 A 中的表 A-4 所示，
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_6.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_6.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_6.png)
+
+{% endif %}
 
 每个调用节省的时间（平均每个测试）有十倍的变化，每个调用从 0.5 到 5 的范围（或者每个可删除调用大约有 10 到 100 到可消除指令）。因为每个测试的平均，它们可能低估了每个内联调用的真正差异：一些内联决策可能导致负受益（如，因为它们增加了太多的寄存器压力，导致太多的溢出周期，比消除调用固有开销的减少的周期还多），然后也有导致更高收益（即，因为它们允许昂贵的原语来常量折叠）。但是，激进的内联通常导致显著地增加 SELF 程序的性能。这种效果与其它语言的研究形成鲜明的对比（如 C 或者 Fortran），这些语言内联被认为只有少量的收益，如果有的话[29,36,39,62,74]。我们将这些差异归因于 SELF 和传统语言的一系列显著差异：
 
@@ -1445,7 +1467,12 @@ SELF 程序的执行时间反应了（重）优化代码的性能，即，它们
 
 图 7-7 表明测试集间的性能提升区别比较大。x 轴表示类型反馈（即，SELF-93-nofeedback 和 SELF-93 的不同）节省的总执行时间。方框总结了每个类别的重要性，即，对于整体加速的贡献。取决于不同的测试集，减少调用固有开销将节省总执行时间开销的 6% 到 63%，中位数是 13% ，算术平均是 25%（几何平均是：18%）。降低的类型测试的数量的贡献几乎和加速一样多，其的中位数是 17% 而平均值是 19%，闭包创建减少的数量也是如此。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_7.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_7.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_7.png)
+
+{% endif %}
 
 其它的效果（如随着编译方法大小的增加效果越好）对于加速做了更大的贡献（中位数 45% ，平均数 38%）但是有更大的波动。对于一个测试集，贡献实际上是负的，即，减缓执行。减缓的一个可能的原因是劣化了寄存器分配（因为增加了寄存器分配），或者更高的指令缓存失效。所有的这些测量都包括了缓存的效果。
 
@@ -1457,7 +1484,12 @@ SELF 程序的执行时间反应了（重）优化代码的性能，即，它们
 
 因为不可能在模拟器中运行 Smalltalk，我们只能获得过程时间测量。就像 7.1 节讨论的，我们估算模拟时间大约是 10-25% 低于经过时间，因为模拟不包含 OS 的固有开销且模拟有个更好的缓存组织。为了比较 SELF 和 C，我们估算 Smalltalk的时间是经过时间的 75%。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_8.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_8.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_8.png)
+
+{% endif %}
 
 对于这些测试集，SELF-93 比 ParcPlace Smalltalk 运行快两到三倍，后者被认为是最快的商用版本 Smalltalk 系统（见图 7-8），即使 SELF 语言更纯粹从而更难以有效的实现[21]。因此，SELF-93  只是比优化过的 C++ 慢 1.7 到 2.4 倍，尽管本质上是不同的语言模型，且事实上 SELF-93 的后端确实劣于 C++ 编译器。如果所有的函数都近似像 SELF 的语义一样被标记为 virtual，C++ 的速度优势会显著地下降到 SELF-93 的 0.9 到 1.4 倍。虽然 C++ 编译器比起 SELF-93 潜在的能执行更多的经典优化，在这些场景下也无法产生更高效的代码，因为它们无法优化动态分发的调用。当然，C++ 程序仍然不支持泛型运算，算术溢出检查，数组边界检查，以及用户定义的控制结构。
 
@@ -1469,7 +1501,12 @@ SELF 程序的执行时间反应了（重）优化代码的性能，即，它们
 
 另一个潜在的异议是，到目前为止已有的性能测试的测试运行都太短了。（上面测试集相对比较短便于简单模拟。）为了保证小的输入不会扭曲性能数据，我们测量了三组大输入的测试集。表 7-4 表明大输入的加速与小输入的加速是相似的。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_4.png)
+{% if 1 == 1 %} 
+  {% asset_img table_7_4.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_4.png)
+
+{% endif %}
 
 #### 7.4 性能的稳定性
 
@@ -1485,11 +1522,21 @@ aVector do: [ | :elem | sum: sum + elem ]
 
 为了测量静态类型信息减少对于性能的影响，我们从 Stanford 测试套件中取出九个小的整型程序，用来评估 SELF-91 编译器[21]。这些小的测试集的内循环典型的只有一到五行，大部分只执行整型运算和数组访问。就如最初所写的，这些测试集大部分为编译器提供了许多重要值的静态类型信息。例如，数组冒泡排序的测试集是一个常量槽，因此编译器可以内联所有的数组访问（at: 和 at:Put:sends）。同时，有一个常量数组让编译器能确定数组的大小，因此允许编译器来推断循环下标的加法计算不会溢出。为了建模”正常“使用场景，我们创建了每个测试集的第二个版本，消除静态类型信息的一些来源，通常是将常量槽改为分配槽。所有的改变都是比较小的，不会影响到测试集的算法属性。例如，bubble 测试集的唯一修改是将被排序的数组从常量槽改为可分配槽。图 7-9 显示了 SELF-91 在测试集上的性能（显示的性能是相关于用全优化的 GNU C 编译器编译的等价 C 的性能）。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_9.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_9.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_9.png)
+
+{% endif %}
 
 在 SELF-91 有完整的类型信息时，它会执行的非常好，能达到优化的 C 的速度的 45%。当缺少类型信息时 SELF-91 的性能会陡然下降；例如，bubble 变慢超过了六倍。平均而言，在 SELF-91 中修改过的测试集变慢了 2.8 倍。在失去了静态类型信息的重要来源，编译器不再能够很好地优化测试集。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_10.png)
+{% if 1 == 1 %} 
+  {% asset_img figure_7_10.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_10.png)
+
+{% endif %}
 
 SELF-93 的性能更稳定，平均只下降了 16%（图 7-10）。即使一个对象的类型静态不可知，类型反馈也可以提供它的类型，通过添加一个类型测试的形式附带一个小的运行时开销。类型反馈让SELF的性能更少的依赖于静态类型信息，因此当这些信息缺少时性能变化更小。
 
@@ -1510,7 +1557,12 @@ SELF-93 的性能更稳定，平均只下降了 16%（图 7-10）。即使一个
 
 前一代的 SELF 实现也有相似的问题，因为它们也只类型预测了 ifTrue: 而没有预测 ifNil:。我们将这个例子翻译为 SELF，然后每个表达式运行 100，000 次（表 7-5）。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_5.png)
+{% if 1 == 1 %} 
+  {% asset_img table_7_5.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_5.png)
+
+{% endif %}
 
 在 nil 上，SELF -93 比 SELF-91 稍微快了点，因为类型反馈使得它可以内联 isNil 发送；SELF-93-nofeedback 相当的慢，因为有一个相对低质量的编译器后端。但是，所有的系统都做得比较好因为它们正确地预测了 ifTrue:。在 nil2 上，使用静态类型预测的编译器遇到了同 Smalltalk 系统完全相同的问题，因此产生了明显较慢的代码；例如，SELF-91 几乎是慢了 5 倍。相比之下，因为类型反馈预测了 ifNil:IfNotNil: 消息的接收者，SELF-93 为 nil1 生成了本质上相同的代码。因为类型反馈可以预测任意的消息发送，而不只是一些简单的特定场景，能提供更稳定的性能。
 
@@ -1518,7 +1570,12 @@ SELF-93 的性能更稳定，平均只下降了 16%（图 7-10）。即使一个
 
 第二个例子显示了 SELF 中消息发送被错误预测的影响。这个例子使用表达式 p1 + p2 和 p1 add: p2 来加两个点。两个表达式计算出完全相同的结果。在第一个场景中，静态类型预测会预测 p1 为一个整型，因为它是 a+ 消息的接受者；在第二个场景中，不会发生这样的错误预测因为 add: 不是一个类型预测消息名。Table 7-5 显示运行每个表达式 100，000 次的结果。
 
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_6.png)
+{% if 1 == 1 %} 
+  {% asset_img table_7_6.png title %}
+{% else %}
+  ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_6.png)
+
+{% endif %}
 
 既不使用反馈而不使用重编译，SELF-91 变现出很大的变化，大约是 1.9 倍。SELF-93-nofeedback 预测一个整型接收者（像 SELF-91）但是在遇到一个特定陷阱时（见 6.1.4节）通过重编译方法退出错误的预测。在遇到特定场景后重编译降低错误预测的惩罚到 10%。因此，在错误预测的场景 SELF-93-nofeedback 运行得比 SELF-91 快；但是，缺少类型反馈，编译器不能内联 add: 发送，因此，代码仍然显著地慢于 SELF-93。最后，SELF-93 产生的代码在场景和显示里都几乎没有性能变化。SELF-93 从不会预测为一个整型接受者，因为来自未优化代码的类型反馈信息表明正确的接受者类型是 Point（重调用未优化的编译器执行一个发送即使是为了 +）。故，类型反馈和重编译有助于降低性能变化。
 
@@ -1543,11 +1600,21 @@ SELF-93 的性能更稳定，平均只下降了 16%（图 7-10）。即使一个
 
 类型反馈使用类型测试序列内联了发送，根据接受者类型它会从几个内联的代码序列选择一个。也就是用类型反馈替代了一个类型测试分派（在一个 PIC 或者方法导言中）用一行类型测试。例如，假设 print 是发送给 T1 和 T2 的对象类型：
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7.png)
+
+{% endif %}
 
 第一印象是，对于每个内联的发送，类型反馈替换每个分发测试都是一个确定的内联测试。因此，会认为在应用类型反馈优化前后程序执行的类型测试是相同的。然而，图 7-11 表明情况不是这样的：带有类型反馈编译的程序执行更少的类型测试。对于每个测试集，图中显示了相对于 SELF-93-nofeedback 的分配和内联类型测试的数量（上限是 SELF-93-nofeedback，下限是 SELF-93。）
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_11.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_11.png)
+
+{% endif %}
 
 在所有的测试集中，SELF-93 执行比较少的类型测试；平均而言，只有原始测试的 73%。显然，一个简单的设想大概是是类型反馈的效果是不完整的。但是，类型反馈确实用内联测试替换了分发测试：然而分发测试的数量超过了内联测试，在 SELF-93-nofeedback 中大概是 2.1 ：1 ，反之 SELF-93 中的比率是 1：10。
 
@@ -1574,15 +1641,30 @@ unknown_trap(); “will never return”
 
 类型反馈也降低了每个类型测试实际测试的类型数量（它的路径长度）。例如，在第一个类型测试成功之后的类型测试（即，对象类型测试是第一个类型测试）有一个长度的路径，即使这个类型测试包含几个场景。图 7-13 显示 SELF-93-nofeedback 和 SELF-93 的分发和内联测试的路径长度。每个类别的左框表示 SELF-93-nofeedback，右框表示 SELF-93。图 7-13 强调了两个效果。首先，内联的类型测试比起方法分发时的类型测试有更短的路径长度。例如，在 SELF-93 中每个类型测试序列的内联类型测试执行只有 1.08 个比较，但是分发测试执行了 1.62 个比较。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_12.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_12.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_7_13.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_13.png)
+
+{% endif %}
 
 第二，类型反馈减少了内联类型测试的路径长度（从 1.24 到 1.08），但是增加了分派类型测试的路径长度（从 1.36 到 1.62）。内联测试中减少路径长度的主要原因是内联降低了代码中多态的度，通过为每个调用者创建被调用者的分离拷贝。因此，特定（内联的）被调用者中使用的类型只是它的调用者使用的类型，而不是几个调用者的合集。在 SELF-93 中内联类型测试的异常低路径长度（以及同样低的异常方差）显示绝大多数内联的需要一个类型测试的发送只需要执行单个比较来找到它们的目标。
 
 分派测试增加的路径长度可能是没有内联的多态或者巨态调用的结果。因为许多单态调用被内联了，剩下的调用有更高的多态度，因此更长的路径长度。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_14.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_14.png)
+
+{% endif %}
 
 图 7-14 显示类型测试的平均稀有度，即，它们多态的度（类型测试中的场景数量或分派序列）。对于任意可能的执行类型测试的度总是大于或者等于它的路径长度。例如，一个度为 2 的测试（即，正确和错误的测试）可以有一个在 1 和 2 之间的路径长度，2是当它还包含未知场景，1 表示它不包含未知场景。数据表示了动态平均。
 
@@ -1596,11 +1678,21 @@ unknown_trap(); “will never return”
 
 就像我们在前两节看到的，类型反馈降低了类型测试的数量和每个测试执行的工作。同时，这里有两个因素帮助降低 SELF-93 中类型测试的固有开销。图 7-15 显示了 SELF-93-nofeedback（上界） 和 SELF-93（下界）中类型测试花费的执行时间。在所有的测试集中，SELF-93 在类型测试中花费更少的时间；平均少于 1.62 次（几何平均）。这个降低不是分派和内联测试（即，更快的内联测试）不同代码序列的结果 -- 两个序列几乎完全相同。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_15.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_15.png)
+
+{% endif %}
 
 图 7-16 显示了 SELF-93 中类型测试花费的执行时间的百分比，分为分派和内联测试。平均上，在执行我们的测试集程序时，SELF-93 只花费了 15% 的时间在类型测试上；同时，大的测试集比小的测试集花费更少的时间在类型测试上。在与其它系统比较时，SELF-93 中的类型测试固有开销显得比较平和，特别是在考虑系统的绝对速度的时候（因为系统其它部分相关固有开销的增加看起来变得更快）。与之相比，SOAR，一个 RISC 处理器上带有特殊硬件支持的 Smalltalk 实现，花费了 23% 的时间在方法分派上，也花费了 24% 的时间在整数标签检查它没有包含特殊硬件[132]。在 Lisp 系统中，标签检查基本相似于类型测试，因为 Lisp 没有动态分派。Steenkiste 报告在 MIPS-X [121] 的 Lisp 上 11% 到 24% 的执行时间被花费在标签处理上，同时，Taylor 报告 SPUR 机器 （一个标签架构）上有 12% 到 35% 的指令调用了标签检查[126]。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_16.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_16.png)
+
+{% endif %}
 
 综上，类型反馈降低了类型测试的数量，每个测试的工作（路径长度）数量，和每个类型测试的总执行时间。平均上，程序花费小于 15% 的时间在类型测试上，即，消息分派。
 
@@ -1616,15 +1708,30 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 图 7-18 显示 sieve 的内循环执行的周期数，在 SELF-93 中是 32 周期 vs SELF-91 中 8 周期。后端不同对于性能不同有更多的影响。不必要的寄存器移动和未填充的延迟槽，在 32 个周期中有 14 个，缺少数组优化消耗了另外 6 个周期（SELF-91 使用了派生的指针来一步通过数组，而 SELF-93 在每个迭代中索引数组。）类型分析只消除 4 条指令，两个 k 的整数类型测试。因此，如果 SELF-93 有 SELF-91 的后端优化但不执行类型分析，它在 sieve 上的性能会更有竞争力。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_17.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_17.png)
+
+{% endif %}
 
 图 7-19 显示在 SELF-93 中加入类型分析不大可能可以加速任何的测试集，因为平均类型测试开销低于总执行时间的 10 %。例如，bubble 在 SELF-93 中慢了 6 倍，也只花费了 10% 在类型测试上。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_18.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_18.png)
+
+{% endif %}
 
 综上，SELF-93 在这些测试集上相对比较低的性能源自我们最初决定保持编译器小和快速的决定。当有一个带有全局数据流分析和标准优化的后端，SELF-93 能达到一个好的性能水平，可以和 SELF-91 在这些测试集上竞争。标准的数据流技术也会降低类型测试的固有开销：对于值 v 的一个类型测试的每个分支 i，定义一个辅助值 typev 来表示类型测试的结果， 在分支 i 开始的地方加入一个赋值语句 typev = Ti（Ti 表示正在测试的），然后加入 kill（v）到 kill（typev）中。然后，我们可以优化的类型测试使用了标准的值传播：如果 typev 的一个单定义点到达 v 的一个类型测试，这个类型测试可以被消除。使用标准的数据流测试而不是成熟的类型分析，牺牲了一些精度，因为当超过一个定义点到达一些点时值传播会 “丢失” typev 的值，而类型分析会保持追踪值的集合。但是，前面提到的大部分主要的类型测试调用单个类型然后标记“例外”跳到不通用（82 页中的图 7-14）。因此，typev 最多一个定义点会到达其它的类型测试，类型信息丢失信息的情况将不会发生。因此，我们相信加入标准的数据流到编译器中将会和全类型分析系统差不多，能消除大部分冗余的类型测试。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_19.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_19.png)
+
+{% endif %}
 
 ##### 7.5.5 重编译效果
 
@@ -1632,7 +1739,12 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 对于大部分的程序，未优化的代码只占总执行时间的 5% 。有两个程序花费了大部分的时间在未优化代码上，PrimMaker 和 UI1，两个都使用了动态继承（DI），在我们的比较中这降低了所有优化编译器的效果。对于动态继承，一个对象可以实时地改变它的继承结构，从而改变了继承的方法集合。当前 SELF 无法内联任何可能会被动态继承影响的发送，DI 的查找结果不是一个编译时常量。DI 也会对重编译系统造成问题；因此，它从不重编译会被 DI 影响的方法。
 
+{% if 1 == 1 %} 
+  {% asset_img table_7_7.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_7_7.png)
+
+{% endif %}
 
 有两个测试集几乎没有花费时间在未优化的代码上，Richards 和 DeltaBlue，是两个较小的测试集，大部分时间花费在非常快的已编译方法上。例如，Richards 花费 95% 的时间在已有的 7 个已编译方法上。（对于大程序，前 20 的已编译方法合起来占了 40-60% 的执行时间。）
 
@@ -1650,7 +1762,12 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 类型反馈在优化 SELF 程序里非常的成功：在 SELF-93 编译器中，一个大的 SELF 应用套件的性能提高了 1.7 倍。比起 SELF-91，这个前一代 SELF 编译器，SELF-93 快了 1.53 倍，即使 SELF-91 有明显更多的编译，执行更多的后端优化。类型反馈降低了程序 3.6倍的调用次数。基于统计的重编译系统在寻找我们应用中的时间关键路径上是高效的；大部分的应用花费少于 5% 的时间在未优化的代码上。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_7_20.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_7_20.png)
+
+{% endif %}
 
 虽然，SELF 中的任意发送都是动态分派的，优化程序的分派的固有开销是比较合适的。SELF-93 用类型测试序列实现消息发送，用 PICs（第三章）或内联代码。即使 SELF-93 编译器执行昂贵的优化来消除冗余的类型测试，类型测试的执行时间开销还是比较小的，我们的测试套件大约只有 15%（包括方法分派的测试）。类型反馈比起没有使用反馈的系统实际降低了类型测试的固有开销。内联类型测试有更短的路径长度：平均上，一个类型测试序列在跳到目标代码前只要执行 1.08 个比较。
 
@@ -1670,11 +1787,21 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 在设计一个架构的时候，一个首要的任务是识别经常使用的操作，然后优化它们。之前许多的研究已经找到面向对象语言的执行属性，与 C 非常的不同，因此有需要面向对象架构的争辩。例如，Smalltalk 的研究 [86，132] 表明调用比其它语言更频繁。即使和混合语言如 C++（以 C 为核心因此没有太多的不同） 比较，也能找到明显的不同。表 8-1 列出的数据来自于 Calder et al.[16]，测量了几个大的 C++ 应用，然后与 SPECint92 套件以及其它 C 程序比较。这个研究使用 MIPS 架构上的 GNU C 和 C++ 编译器。即使 C++ 在理念上与 C 相似，也有明言了执行行为上的不同：例如，C++ 执行几乎 7 倍多的调用，且执行不到一半的条件跳转。
 
+{% if 1 == 1 %} 
+  {% asset_img table_8_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_1.png)
+
+{% endif %}
 
 基于这些数据，一个期望是纯的面向对象语言如 SELF 与 C 离得更远，因为语言本质上与 C 完全不同。（之前说过，例如，即使是一个整数加法或者 if 语句都会调用消息发送。）但是，执行行为是一个功能，不只是源语言的属性，也有编译技术，后者会造成很大的不同。图 8-1 显示我们测量的四个 SPECint89 整型测试集（用 C 写的）和九个 SELF 程序的动态指令使用情况。总结的数据使用箱型图（下标包含详细的数据）。每个分类最左边的方框表示 SELF-only，即，已编译 SELF 代码的执行，排除所有花费在运行时系统的时间（用 C++ 写的）。每个分类中间的方框（全灰）表示完全的 SELF 程序（即，所有的用户模式指令）。我们测量了两者，因为 SELF 程序经常调用运行时系统的进程，例如，分配对象或者调用 C 库中的函数。有些程序花费三分之一的时间在这些例程上，我们要保证我们的数据不被这些非 SELF 的执行行为带偏。在另一方面，显示 SELF-only 也会误导，因为这些数据不能表示处理器实际执行的指令情况。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_1.png)
+
+{% endif %}
 
 因为 SPECint89 套件里只有四个测试集，指向 C 的独立数据直接被显示，方框（点缀）只是用于引用。SPECint89 数据来自于 Cmelik et al[33]。
 
@@ -1686,7 +1813,12 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 为了更精确地比较，我们排除两类因当前 SELF 编译器后端不足而扭曲的指令。后端没有填充延迟槽（除了在固定的代码模式），因此 SELF 程序包含许多的非操作（6.2% vs C 的 0.45%）。同时，它没有优化跳转链和改变代码块来避免无条件跳转；因此，代码包含许多的无条件跳转（2.7% vs C 中的 0.8%），这些可以被一个更好的后端消除。因为这些额外的指令存在扭曲了其它指令分类的频率，我们在未来的图像中会排除非空操作和无条件跳转。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_2.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_2.png)
+
+{% endif %}
 
 图 8-2 显示已调整的执行频率。比较 SELF 和 SELF-only，可知运行时系统不会影响整体的行为太多。只有两个表现出了明显的不同，分别是条件跳转指令和 sethi 指令。条件跳转指令在 SELF-only 比在 SELF 中更频繁，但和 SPEC 程序相比的话不是很多。sethi 指令用于加载 32位常量；有两个原因导致它们频繁地在已编译的 SELF 代码里出现：第一，SELF 中值 true，false 和 nil 是对象，通过 32 位代码常量表示；相反，C 程序使用短立即数 0 和 1 表示。第二，用类型描述器的地址来表示一个对象类型，消息分派的实现会比较接收者的类型和期望的类型。因为消息分派是频繁的，所以是 32 位常量。
 
@@ -1694,13 +1826,23 @@ SELF-91 在原始 Standford 测试集上性能比较好的原因有两个。首�
 
 SELF 比 SPEC 整型测试集执行更少的比较。这个结果让我们感到意外；我们预期 SELF会执行更多的比较，因为消息分派调用了比较并且频率比较高。如果 SELF 使用间接函数调用来实现消息分派，可以解释面向对象编程模式低条件跳转频率的原因，这种模式典型的将 if 和 switch 替换为动态分派；Calder et al. 通过比较 C++程序和 SPEC C 程序来观察这个影响[16]。但是，因为 SELF 实现没有使用间接函数调用，我们无法用这个来解释差异。一个可能的方式是 SELF 优化器消除了足够多的分派类型测试，从而降低了比较的整体频次。
 
+{% if 1 == 1 %} 
+  {% asset_img table_8_2.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_2.png)
+
+{% endif %}
 
 表 8-2 总结了指令使用主要不同。整体上，SELF 程序和 SPEC C 程序只有很少的不同，考虑到两个语言非常的不同，这是一个令人惊奇的结果。更令人惊讶的是 SELF 比 C++ 更接近 C。图 8-3 从 [16] 和 我们自己的测量总结了 C++ 的数据。在每个分类上，SLEF 都比 C++ 更接近 SPEC。例如，C++ 中的基础块大小高了 SPEC 1.6 倍，但 SELF 只比 SPEC 高了 1.1 倍。（有些不同可能是由于 SPARC 和 MIPS 编译器不同导致的，但 Calder 等使用了相同的编译器技术（GNU）来编译 C 和 C++。）
 
 显然，执行行为是一个源语言属性更是一个编译器技术功能。我们相信当编译器使用特定的 O0 优化，C++（或其它面向对象语言）和 C 的大部分不同都会消失。当然，直到这样的系统实际被实现，不能确定一个更好的优化是否可以实际让其它面向对象语言更接近 C。但是，根据我们的数据，任何关于面向对象语言要有必要的硬件支持的宣称需要被谨慎对待，除非用于研究的系统采用了先进的技术，或者当这样的优化已经被在特定语言上展示位低效了。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_3.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_3.png)
+
+{% endif %}
 
 #### 8.2 寄存器窗口
 
@@ -1712,7 +1854,12 @@ SPARC 架构 [118] 定义了一组重叠的寄存器窗口，允许过程通过�
 
 期望，有效寄存器窗口越多寄存器固有开销会下降，因为更少的溢出和下溢出。对于 7 个窗口（大部分的 SPARC 实现都是这个窗口数）的 SELF-93 固有开销中位数只有 11%。C++ 程序的固有开销波动比较大。对于大部分的 Richards 版本，固有开销是 0（因为它不会超过 7 个调用深度），但如果用 Sun CC 编译固有开销是 74%（显然，cfront-base 编译器比 GNU C++ 执行较少的内联）。类似的，DeltaBlue 的固有开销在 16% 到 74% 间波动，这取决于编译器和版本（虚拟与否）。没有意外的，未优化的 SELF 程序有极端高的固有开销，因为它们基本都有超过 8 的调用深度。对于 7 个寄存器窗口，未优化 SELF 代码的中位数固有开销是 140%。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_4.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_4.png)
+
+{% endif %}
 
 作为比较，SOAR 架构有 8 个窗口，每个窗口有 8 个寄存器；Ungar 报告所有调用中只有 2.5% 会导致寄存器溢出[132]。对于未优化的 SELF 这个比率是 9.4%。 显著不同的原因可能是大部分 SELF 没有硬关联通用的控制结构，但 Smalltalk-80 有。因此，在 SELF 中 if 语句或者循环导致了更多的调用深度，而在 Smalltalk 里是没有的。
 
@@ -1779,7 +1926,12 @@ if (x is integer) { // 3 instructions (test, cond. branch, unfilled delay slot)
 
 因此，标签运算指令节省的周期数是 5 * number_of_adds + 5 * number_of_subtracts + 2 * number_of_integer_tag_tests。表 8-3 表示了 SELF-93 中这些操作的频次，假设它们每个都只要一个周期。 整数运算指令很少使用，平均上所有指令中只出现了 0.6%；整数标签测试更频繁，中位数是 2.2%。在没有硬件支持标签整数时，我们估计预测 SELF 会比最大使用标签指令的系统慢 7%。
 
+{% if 1 == 1 %} 
+  {% asset_img table_8_3.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_3.png)
+
+{% endif %}
 
 但是，真正的节省可能更小，因为我们的估算做了几个简化的假设，所有的这些都倾向于夸大标签运算指令的收益：
 
@@ -1805,13 +1957,28 @@ SELF-93 没有明显的从 SPARC 架构中的标签加法和减法中受益：�
 
 SELF-93 的代码大约比 SELF-91 或者 SELF-93-nofeedback 大 25%，就像我们在 7.5.6 节看到的。增加的代码空间会对缓存固有开销有多大影响？为了获得一个近似解，我们测量了 SELF-91 的缓存行为，这个系统生成最小的代码（图 8-6）。SELF-91 的指令固有开销大约是使用了 128K 缓存大小的 SELF-93 的一半，当缓存更大时数据更低。对于参考系统的 32K 缓存，SELF-91 只比带有理想内存系统的系统慢 20%，相反却比 SELF-93 慢了 40% 。尽管增加了指令缓存的开销，SELF-93 却运行地相当的快。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_5.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_5.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_8_6.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_6.png)
+
+{% endif %}
 
 总结下，指令缓存失效在 SELF-93 上有重大的影响。对于我们基础的带有 32K 缓存系统，SELF-93 比带有无限大缓存的时候慢 40%。将缓存加倍到 64K 减少了一半的性能惩罚，而减少缓存一半大小会加倍惩罚。因此，比起寄存器窗口和标签指令的组合，指令缓存的大小对于SELF-93 的性能有巨大的影响。
 
+{% if 1 == 1 %} 
+  {% asset_img table_8_4.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_4.png)
+
+{% endif %}
 
 但是，我们应该强调的是，对于我们参考机器的缓存设计，大缓存的固有开销部分原因是保守参数导致的。特别是，主缓存的延迟是 26 周期，与 SPARCstation-2 的缓存相同，是当前工作站典型缓存的上边界（表 8-4）。但是，我们觉得保守的缓存参数对于预测未来的性能更有帮助，因为处理器（缓存）和主存间的速度差距预计在未来会扩大。其它研究已经表明科研上和商业负载上指令固有开销与 SELF 测量的开销相似。例如，Cvetaovic 和 Bhandarkar [38] 报告了运行在 DEC Alpha 系统上的一些 SPECint92 和 TCP 测试集上，指令缓存失效开销占总执行时间的 30-40%。
 
@@ -1821,15 +1988,35 @@ SELF-93 的代码大约比 SELF-91 或者 SELF-93-nofeedback 大 25%，就像我
 
 Diwan 等也测量到他们的 ML 程序的数据缓存开销会随着使用写不分配策略大幅增加，即，缓存不会再写失败的时候分配缓存组。在 SELF-93 上也是这样的（见图 8-8）。对于 32K 缓存，写不分配增加了平均 1.6 倍的缓存开销，这个倍数会随着缓存变大而增加，当 512K 时达到了 2.1 倍。使用写不分配，写失败率令人震惊的，对于一个 32K 的缓存从 22% 到 70%（！），几乎没有随着大缓存下降（见图 8-9）。虽然我们的模型中没有写失败的相关开销，但是找到这些极端高的失败率是关注点，因为它们帮助解释了为什么写不分配对于如 SELF-93 这样的分配密集的系统是不好的缓存策略。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_7.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_7.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_8_8.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_8.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_8_9.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_9.png)
+
+{% endif %}
 
 写失败率之所以那么高，是因为系统中对象分配的方式是通过一个拷贝分代垃圾回收做的（见图 8-10）。通常，这样的系统连续在“创建区”分配对象[131]。在每次清除后，创建区变为空。因此，所有的系统在分配一个对象时都不得不增加一个指针来标记有效空间的开始位置；如果一个指针指向的空间超出了创建区，一个清理会被发起，它会将所有的存活对象从创建区搬运到另一个内存空间。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_8_10.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_8_10.png)
+
+{% endif %}
 
 创建区比起最大的缓存都大--400K 字节 在 SELF 中。新分配的对象的内存位置几乎可以保证不在缓存中，因为分配器涉及到一个连续的 400 K字节的块，从最后一次对象被分配就在这个地址上。因此，存储初始化的对象在写不分配缓存里都将会缓存失效，因为对象的所有字在它们第一次读的时候已经被初始化了；第一次读的时候会导致一个额外的缓存失效，从而分配一个缓存组。
 
@@ -1845,7 +2032,12 @@ Wilson 等人 [140] 争论这样的分配方式会将导致直接映射缓存有
 
 根据我们的性能评估结果，有可以提升 SELF-93 性能的地方嘛？表 8-5 列出了 SELF-93 一系列提升点。
 
+{% if 1 == 1 %} 
+  {% asset_img table_8_5.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_8_5.png)
+
+{% endif %}
 
 除了硬件改进带来的收益（最后两项），表中的加速点是基于测量开销和估算部分可以消除来大致估计的。两个主要的提升点是：
 
@@ -1887,7 +2079,12 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 图 9-1 给出了一个例子。前四组停顿被聚集在一起，因为它们在时间周期里（规则2）使用了超过一半的总执行时间。类似的，下面三个短暂停被分成下个（长）停顿，形成超过一秒的长停顿。两个聚类不会融合成一个大的 2.5 秒的聚类（即使得到的聚类仍然满足规则 2，但它也没有在示例中），因为它们被一个超过 0.5 秒的无暂停周期分割（规则 3）。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_1.png)
+
+{% endif %}
 
 这个停顿聚类的说明例子相当的保守，可能会高估了用户经验下的停顿。但是，我们相信比起测量独立的停顿，使用停顿聚类是更实际的方式。因此，我们希望这种方式会加强我们的结果，尽管是一个保守的方法，这个测量结果仍然是好的。我们也希望这个方式能启发到其它（例如，递增的垃圾回收），在表征暂停时间时会使用相似的方式。
 
@@ -1903,17 +2100,37 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 我们测量一个 SELF 用户接口的 50 分钟的会话 [28] 中发生的停顿。这节涉及完成一个 SELF 教程，包括浏览，编辑，和做一个小的编程改变。在教程间，我们发现了一个复制黏贴代码的错误，所以这节也包含一些“真实生命周期”的定位分析。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_2.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_2.png)
+
+{% endif %}
 
 图 9-3 显示了实验期间编译暂停的分布。几乎三分之二的可测量停顿在十分之一秒以下。图 9-4 显示绝对时间里相同的数据；前两个框在 y = 50 的时候截断，从而可以在柱状图的剩余部分显示更多的细节。如果我们使用 200ms 作为可感知停顿的最低阈值，则只有 195 个停顿超过了这个阈值。类似的，如果我们使用一秒作为停顿分布的最低阈值，则在 50 分钟运行中，会有 21 个暂停。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_3.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_3.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_9_4.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_4.png)
+
+{% endif %}
 
 停顿聚类标记了编译停顿的短期聚集。但是，停顿不是均匀的分布在大的时间周期里的。图 9-5 （在 108 页）显示了如图 9-4 一样的停顿如何分布在整个 50 分钟的交互过程里。每个暂停是一个尖峰，它的高度表示（聚类）停顿长度；x 轴表示经过的时间。注意 x 轴的范围比 y 轴的范围大许多（有三个数量级），因此，图像通常夸大尖峰的高度和接近度。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_5.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_5.png)
+
+{% endif %}
 
 在运行时，几个重要的程序都是从 0 开始的（即，没有预编译代码）。这些工作集的每个改变都会导致编译的混乱，在图 9-5 表示为尖峰组。初始化组包括了最长的停顿，是由于启动用户交互界面导致的；下一组表示教程的第一阶段，这里大部分的用户交互代码都是第一时间执行。最后两组是在发现错误后调用调试器的，通过检查栈来找到错误的原因。
 
@@ -1925,13 +2142,23 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 另一方面，系统交互行为会因为更快的 CPUs 而得到提升。今天工作站和高端 PCs 已经明显快于我们测量使用的 SPARCstation-2（见表 9-1）。为了调研更快 CPUs 的效果，我们重新分析了我们的流程，通过选择代表当代工作站或者 PC （三倍快于 SPARCstation-2）以及未来工作站（十倍快）的参数。
 
+{% if 1 == 1 %} 
+  {% asset_img table_9_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_9_1.png)
+
+{% endif %}
 
 图 9-6 比较了 SPARCstation-2 和两个模拟系统上的停顿。对于每个停顿长度，该图显示了超过该停顿长度的停顿次数。注意对于更快的机器，该图不只是原始图像向左移动，因为它可能会结合编译，而慢的系统不会结合编译。例如，如果两组编译在 SPARCstation-2 相隔 1 秒，它们在 “当代” 工作站只相隔了 0.33 秒，所以会被合并成为单个停顿（见 9.1 节的规则）。但是，这个效果的整体影响是相当小的，这验证了我们早期的观察，停顿聚类相对不敏感于停顿间时间参数的值。
 
 在当代的工作站上，只有 13 个停顿超过了 0.4 秒。这些数据验证了我们在当代 SPARCstation-10 机器上的非正式实验：停顿有些时候仍会引人注意，但它们很少分散注意力了。更快的下一代工作站将会消除几乎所有的让人注意的停顿：只有 4 个停顿会超过 0.2 秒。在相同的机器上，当前的 SELF 系统应该被认为是一个 “优化解释器。”（但是，停顿在实时动画或视频上仍然没有足够短，因为人类的眼睛在这些场景下可以识别出低于 0.1 秒的停顿的。）
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_6.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_6.png)
+
+{% endif %}
 
 “在更快的机器上，任何东西都会更好” 的论据经常误导，特别是如果它们假设任何东西（如，问题大小或者程序大小）也保持常量。我们相信我们的论据跳出了这个谬论，因为独立编译的长度不依赖于程序大小或者程序输入，而是依赖于编译单元的大小，即，方法大小（还有在优化期间被内联进来的方法）。除非人们的编程风格改变了，不然方法的平均大小将会保持不变，因此独立停顿在更快的机器上会更短。因此，如上面已经注意到的，我们不会简单的通过加速因子除以停顿时间，但会重分析整个过程，通过正确的统计短的停顿间时间，然后将独立的短停顿合并成长停顿。更大型的程序会延长重编译需要的稳定时间（见下面的 9.4.1 节），但是我们的经验是程序大小不会影响到独立编译的聚合。换句话说，尽管大型的程序可能会导致更多的停顿，但它们不会加长停顿本身。因此，我们相信预测用户感知的系统的交互性会被更快的处理器提升是安全的，如图 9-6 显示的。
 
@@ -1943,7 +2170,12 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 为了评价快速非优化编译器和慢速优化编译器的结合的收益，我们测量了普通用户交互的执行时间，如显示一个对象，或者打开一个编辑器。这是典型的长编译停顿会特别的分散注意力的工作。在序列的开始，系统开始于空的代码缓存。表 9-2 显示了序列独立的交互。对于测量，交互序列中执行的交互显示在表中，中间没有其它的活动，除了一些琐碎的事情，如将光标放在文本编辑器上。因此，序列开始于一个空的代码缓存，交互可能重用前一次交互已经编译的代码。交互 13 到 15 测量了系统可以多快的反应函数定义的改变，使用了重定义的整形加法方法的 “错误场景”。
 
+{% if 1 == 1 %} 
+  {% asset_img table_9_2.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_9_2.png)
+
+{% endif %}
 
 有几个点是值得注意的。首先，SELF-93 通常执行更快的交互方式；平均上，是 SELF-91 的 3.45 倍，是 SELF-93-nofeedback 的 1.6 倍（几何平均；中位数是 4.0 和 1.6）。但是，有些相对大的变化：一些测试运行得比 SELF-93 快（如，编号 16 分别是 9.6 和 3.6 倍快），但是少量的用例（如，编号 6）运行得比没有重编译的系统慢。自适应重编译在运行时引入了一定的变化，使得一些交互因为重编译变慢了。
 
@@ -1965,25 +2197,50 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 表 9-3 表示主要的配置参数和他们的功能。
 
+{% if 1 == 1 %} 
+  {% asset_img table_9_3.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_9_3.png)
+
+{% endif %}
 
 ##### 9.4.1 大程序的启动行为
 
 前一节描述了（重）编译小段代码导致的停顿。本节调研了大程序从零编译会发生的事情。为了看看性能是如何随时间推移而变化的，每个测试集开始于空的代码缓存，然后重复执行 100 次。虽然测试集相对比较大，测试运行得比较短，优化代码大约两秒。因此，前几个运行取决于编译时间，因为大的代码体已经被编译和优化了（图 9-7）。例如，Typeinf 第一次运行花费了超过一分钟，然而第十次运行小于三秒。在几次运行之后，编译结束，大部分程序的执行时间变得稳定了，除了 UI1，它在运行 15 的时候有了另一个编译。但是，初始的尖峰是比较大的：典型的，第一次执行慢了第 100 次执行 20-50 倍。为什么会出现初始执行峰值？
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_7.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_7.png)
+
+{% endif %}
 
 图 9-8 （114 页）将几个测试集的启动阶段分为编译和执行。UI1 的大部分初始执行时间消耗在非优化编译上，和慢速执行的非优化代码；在 UI1 上，优化编译时间从不决定执行时间。为了降低 UI1 的初始执行尖峰，非优化编译器不得不更快和生成更好的代码。与之相比，优化编译决定了 Typeinf 启动阶段，也（基本）决定了 CecilComp 的。CecilInt 位于中间--在优化编译是第一次运行的一小部分消耗，但是是第二次运行的主要消耗。总之，测试集之间高的初始执行时间的原因是不同的，没有单一的瓶颈。
 
 程序启动时间应该与程序大小相关：一个预期是大程序需要更长来达到稳定的性能，因为更多的代码需要（重）编译。图 9-9 （115页）显示了测试集的 “稳定时间”，根据程序大小绘制。（稳定时间是指程序的编译时间发生到初始启动尖峰的“膝盖”。）如预期的，一些相关性是存在的：通常，大程序需要更长的时间启动。但是，相关性并不完美，它不能预期。例如，大程序花费更多的时间在小的循环上，将会更快达到好的性能，因为只需要小部分代码被优化。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_8.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_8.png)
+
+{% endif %}
 
 如果启动编译相关于程序大小，我们可以用上面的测量来表征系统的启动行为，它依赖于程序大小和执行时间（表 9-4）。如果程序是小的，启动时间也比较小，因此小程序的启动行为是好的。如果程序长时间运行，启动行为也会很好，因为初始编译被长执行时间隐藏了。但是，如果大程序只执行比较短的时间，当前的 SELF 系统不能隐藏动态编译导致的启动时间。我们的测试集都进入了这些分类里，因为它们选择的输入都是让执行时间更短，因此可以合理的方式来模拟它们。在实际环境里，预期程序会运行的更长，因此，启动行为会好于测试集的。
 
+{% if 1 == 1 %} 
+  {% asset_img table_9_4.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_9_4.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_9_9.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_9.png)
+
+{% endif %}
 
 ##### 9.4.2 性能稳定性
 
@@ -1993,15 +2250,35 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 总体上，除了启动阶段，性能相对稳定。我们的图像倾向于夸大系统性能的易变性，因为独立的执行时间（即，单次运行用时）比较短，因此即使是一个小的绝对编译开销，也注册为明显的尖峰。图 9-12 显示测量间隔造成了多少不同；它呈现了同图 9-7 相同的数据但分组从五到一，模拟大测试集的效果。如果我们使用更长的测试集运行，没有异常的话，性能似乎非常的稳定，初始的下降也会呈现的比较小。但是，我们相信保持较小的独立测量间隔是正确的测量变化的方式，因为它反应了一个交互系统典型操作花费的时间。直观上，尖峰的 “视觉高度” 表明尖峰对于交互使用的影响程度：一个 0.1 秒的小尖峰几乎不引人注意，但一个两秒的尖峰就令人担忧了。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_10.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_10.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_9_11.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_11.png)
+
+{% endif %}
 
 本章展示的测量过程不是完全可以重现的，因为每次运行确切的事件顺序总是变化的。例如，调用计算器衰变是通过一个进程实现的，每 4 个CPU秒会醒一次。因为时钟中断不能达到可重现，调用计数器的值（因此重编译决策）在每次运行时都不同。但是，不同运行的形状通常时相似的。对于本节的图像，我们重复每个测量五次，然后排序结果图，使用排在第三（中间）的图像。图 9-13 显示的是排序后最坏的情况，配置与图 9-11 相同。除了 UI1，两个图像非常的相似。但是，UI1 的行为很不同，有三个大的重编译发生在运行 30，50，和 75。（这些不同出现是一个极端的例子：当我们尝试调查造成差异的原因，我们无法重现行为。）
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_12.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_12.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_9_13.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_13.png)
+
+{% endif %}
 
 综上，大程序初始运行很慢，因为它们还没优化且花费更多时间在编译上。在启动阶段花费的编译时间大致和程序大小是成比例的。在两分钟后（在 SPARCstation-2上），所有的程序都达到稳定性能。
 
@@ -2016,7 +2293,12 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 计数器衰变对稳定性的影响最大；而且衰变和不衰变之间的差异是巨大的。图 9-14 显示了如同图 9-11 相同系统的变化性，除了半衰期不是15秒，而是无限大。所有的程序明显有了更高的变化。同时，这几个函数似乎没有收敛到一个稳定的性能级别上，即使是 100 次迭代后也没有。直观上，这些行为的原因是清晰的：没有衰变调用计数，每个单方法最终都会超过重编译的阈值，因而被优化。因此，只有在很少方法被重编译的情况下性能才会稳定。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_14.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_14.png)
+
+{% endif %}
 
 ##### 9.4.4 配置参数在最终性能上的影响
 
@@ -2028,11 +2310,21 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 为了测量最后两个因素的影响，我们调整调用限制和半衰期时间，然后测量对应的执行时间。对于每个参数组合，我们从测试集 100 次重复里选择最好的执行时间，然后将这个时间归一化为测试集的最好时间。也就是说，对于特定测试集产生最好性能的参数配置获得 100% 的值。因此，对于另一个参数组合，一个 150% 的值将意味着这个组合会比最好的参数组合执行时间长 1.5 倍。在 SPARCstation-2 测量时间。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_15.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_15.png)
+
+{% endif %}
 
 图 9-15 显示性能测试的结果概况，所有测试集的平均（数据被限制在 200%；最坏参数组合的真实值超过了 1100%）。整体上，两个参数的行为符合预期的：增加调用限制值和降低半衰期，都增加了执行时间，因为这会导致更少的方法被重编译，则应用中更少的部分被优化到。但是，性能概况“起伏不定，”表明性能不是同单个参数变化而单调变化。起伏一部分是测量误差的结果（之前说过在 SPARCstation-2 上缓存效果导致的变化会达到 15%），一部分也是使用基于时间衰变引入的随机性元素的结果。后一个效果在“坏”参数组合时特别强（短半衰期，高调用限制）。图 9-16 显示了 CecilComp 的性能概况，是我们测到的“最起伏”的中的一个；它在半衰期或者高调用限制值方面表现出强烈的变化。因为控制半衰期例程的计时器中断在程序执行过程中并不总是在确定的相同点上到来，一个循环可能在一个运行中被优化（如，在 4 秒的半衰期里），但在另一个运行中没有优化（在 8 秒的半衰期里），因为计数器在可以触发一个重编译前总是定时衰减的。这个解释与起伏不能准确重现的事实是一致的（即，现象被重现了，但精确的位置和起伏高度不能重现）。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_16.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_16.png)
+
+{% endif %}
 
 综上，重编译的参数在可预测的方式上影响着性能；通常，降低调用限制值和增加计数器半衰期可以提高性能。在一定的参数值范围里，性能曲线相对平滑，运行系统在交互响应和性能之间达成一个最佳折衷方案。
 
@@ -2042,13 +2334,28 @@ SELF-93 的数据缓存行为即使是在小缓存的情况下也很好；在 32
 
 对于两个编译器，在已测量的字节码数量来看，编译时间接近于源大小的线性函数，SELF-93-no-feedback 的相关性系数是 0.98，SELF-91 的是 0.96。因为两个编译器的编译速度都是源长度的线性函数（带有微不足道的启动固有开销），相应的编译速度可以被表示为单个数值。平均上，SELF-93-nofeedback 每字节花费了 1.1ms，SELF-91 花费了 2.6 ms；换句话说，SELF-93-nofeedback 编译快了大约 2.5 倍。更快的编译可以归因于更简单的编译器前端（不需要执行类型分析），和简单的后端。因此，除了消除更多的消息发送，类型反馈也加速了编译。比起第四章描述的非优化编译器，SELF-93-nofeedback 大约字节慢了 5-6 倍（见25页的图 4-2 的详细信息）。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_17.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_17.png)
 
+{% endif %}
+
+{% if 1 == 1 %} 
+  {% asset_img figure_9_18.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_18.png)
+
+{% endif %}
 
 如 114 页的图 9-8，一些程序的启动阶段被优化编译支配者，因此，希望进一步提高编译器速度。图 9-19 显示了 SELF-93-nofeedback 在编译上的时间分布是如何的。几乎有 60% 花费在前端，这个时间超过一半是执行消息查找和做内联决策。大部分的查找时间可以被查找缓存消除，即，一个缓存映射查找关键字到槽描述器上。这样的缓存还没有被实现，因为当前的消息查找执行了两个功能：它们寻找目标槽，然后记录这组槽和查找结果依赖的对象。后者在源码改变后需要无效化已编译代码。每个已编译方法包含了一个依赖组，其包含了在编译期间所有查找执行的查找依赖集的并集。无论何时一个对象改变，所有的包含这个对象的方法都会被丢弃。一个查找缓存不得不存储依赖集和查找结果，然后会需要一个依赖系统的重组织。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_9_19.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_9_19.png)
+
+{% endif %}
 
 有了查找缓存，编译器将大约能快三分之一，然后后端将会开始支配编译时间，即使它没有执行太多的优化。虽然编译器可能因为使用了某些标准的编程技巧而加速，但更显著的提升需要基础的设计改变。一个主要的低效来源是编译器不得不执行许多的通用操作，这些操作被重复了许多次。例如，编译器不得不内联一个方法里的每个 if 控制结构的一些消息发送，创建许多的中间节点和伪寄存器。最终，大部分节点都被优化掉，但是也会消耗宝贵的编译时间。一个可能的降低编译时间的方式是部分评估通过消息发送的编译像 ifTrue:或者 +。如果这些消息可以生成预优化中间码模板，许多的编译效果就可以被避免。不幸地是，实现这样的模板涉及几个不平凡的问题，如怎样参数化模板，以及如何独立于它们嵌入（例如，一个方法实现了 for 循环的优化重度依赖于类型已知（整形）和参数的值（整数或者负数））来优化它们。
 
@@ -2086,7 +2393,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 一些优化如内联，寄存器分配，常量折叠，和拷贝传播使得方法的活动记录不能直接反映源码级别的活动。例如，一个简单的物理栈帧可能包含几个源码级活动，因为消息发送被内联了。变量在不同的时间位于不同的位置，同时一些变量可能没有运行时位置。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_10_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_10_1.png)
+
+{% endif %}
 
 在图 10-1 中的例子显示了内联的效果。物理栈包含了三个活动A‘，C'，和 F'。与之相比，源码级的栈包含了额外的活动，这些被编译器内联了。例如，活动 B 被内联到 A'，所以 B 不出现在物理栈踪迹上。
 
@@ -2098,7 +2410,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 考虑下面的代码段：
 
+{% if 1 == 1 %} 
+  {% asset_img opt.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\opt.png)
+
+{% endif %}
 
 因为表达式 i + j 是编译时常量，编译器会在生成的代码中消除它的计算。但是，如果程序在给 k 赋值前暂停，并且程序员将 j 改为 10 会怎样？优化代码的执行不能被恢复，因为它会为 k 产生一个不是预期的值。当然，在未优化的代码上，他们是没有问题的，因为加法仍然被已编译的代码执行。
 
@@ -2119,7 +2436,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 为了显示源码级的栈踪迹和执行退优化，系统需要从已优化机器级状态重构回源码级状态。为了支持这个重构，SELF 编译器为已编译方法包含的每个范围生成 *范围描述* [23] ，即，每个初始源方法和所有它内联的方法。一个范围描述指定了范围在物理栈帧的虚调用树上的位置，然后记录这个位置或者它参数的值和位置（见图 10-2）。编译器也描述已编译方法里每个子表达式的位置和值。这些信息是用于重建评估表达式的栈的，这些表达式等待被后面的消息发送消耗。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_10_2.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_10_2.png)
+
+{% endif %}
 
 为了找到物理程序计数器的正确范围，调试器需要知道*虚拟计数器*（源码位置），即，范围里的一对范围描述器和源位置。因此，每个方法生成的调试信息也包含了物理和虚拟程序计数器的映射。
 
@@ -2127,7 +2449,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 图 10-3 显示一个方法在两个不同时间停顿。当一个方法停在时间 t1 上，物理 PC 是 28，对应的源码位置是方法 B 的第五行。因此一个栈踪迹会显示 B 被  A 调用，隐藏了 B 通过编译器被 A 内联了的事实。相似的，在时间点 t2 上，源码视图上会显示 D 被 C 调用，C 被 A 调用，显示了三个栈帧，而不是一个。为了显示完整的栈踪迹，这个进程在每个物理栈帧上都是简单的重复。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_10_3.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_10_3.png)
+
+{% endif %}
 
 ##### 10.2.2 转换函数
 
@@ -2141,7 +2468,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 图 10-4 说明了这个过程。转化扩展了一个包含三个虚拟活动的已优化栈帧为一组三个未优化栈帧，因此，创建了虚拟帧和物理帧间的一一映射。
 
+{% if 1 == 1 %} 
+  {% asset_img figure_10_4.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_10_4.png)
+
+{% endif %}
 
 只有那些正在调试（单步）的程序部分需要被转换。这些程序部分将会运行非优化代码；其它部分会全速运行。如 10.2.1 节描述的，不需要转换就可以检查程序状态。
 
@@ -2245,7 +2577,12 @@ SELF 纯的基于消息的计算模型需要昂贵的优化来达成好的性能
 
 表 10-1 表明已编译方法各个部分的内存使用与机器指令使用的空间的相对关系。例如，垃圾回收需要的重定位信息大约是实际代码大小的 17% 。数据是依次运行所有测试集程序获得，代表了 3.3 M 字节编译器生成的数据。因为未优化和已优化方法有不同的特性，只有优化编译的数据显示在第二列。因此，第一列表示的是实践中实际使用配置的数据分布，而，第二列数据表明纯已编译代码的特性。
 
+{% if 1 == 1 %} 
+  {% asset_img table_10_1.png title %}
+{% else %}
 ![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\table_10_1.png)
+
+{% endif %}
 
 空间消耗可以划分未三类。第一类包含方法头和机器指令；同时，还有实际方法执行需要的所有信息。第二类，包含在程序改变后使已编译代码失效需要的依赖链接（见 10.3）。第三类，包含所有调试相关的信息：范围描述、PC 映射（见 10.2.1 节）和垃圾回收的重定位信息（为了更新包含在调试信息中的对象指针）。这些包含了重编译需要的所有信息，但不包含源码本身。
 
