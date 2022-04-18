@@ -9,13 +9,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/index.html</loc>
-    
-    <lastmod>2022-04-18</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/index.html</loc>
     
     <lastmod>2022-04-18</lastmod>
@@ -30,6 +23,13 @@
   </url>
   
   <url>
+    <loc>http://example.com/tags/index.html</loc>
+    
+    <lastmod>2022-04-18</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://example.com/schedule/notes.html</loc>
     
     <lastmod>2022-04-18</lastmod>
@@ -38,13 +38,6 @@
   
   <url>
     <loc>http://example.com/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/</loc>
-    
-    <lastmod>2022-04-18</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://example.com/2022/04/14/%E4%B8%80%E7%A7%8D%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97%E5%8D%95%E4%B8%80%E9%9D%99%E6%80%81%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E7%9A%84%E6%96%B9%E6%B3%95/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
@@ -233,14 +226,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Android-%E4%B9%8B-APP%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%A4%9A%E7%BB%84%E4%BB%B6/</loc>
+    <loc>http://example.com/2021/01/08/Android-APP-%E6%B7%BB%E5%8A%A0%E6%8C%89%E9%94%AE/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Android-APP-%E6%B7%BB%E5%8A%A0%E6%8C%89%E9%94%AE/</loc>
+    <loc>http://example.com/2021/01/08/Android-%E4%B9%8B-APP%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%A4%9A%E7%BB%84%E4%BB%B6/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
@@ -261,13 +254,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/POJ-2406/</loc>
-    
-    <lastmod>2022-04-18</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://example.com/2021/01/08/Linux-%E5%91%BD%E4%BB%A4%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2022-04-18</lastmod>
@@ -275,14 +261,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Pstore-dmesg-read%E7%AF%87/</loc>
+    <loc>http://example.com/2021/01/08/POJ-2406/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Pstore-dmesg-write-%E7%AF%87/</loc>
+    <loc>http://example.com/2021/01/08/Pstore-dmesg-read%E7%AF%87/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
@@ -304,6 +290,13 @@
   
   <url>
     <loc>http://example.com/2021/01/08/Qcom-wled-%E6%96%B9%E5%BC%8F%E8%83%8C%E5%85%89%E6%8E%A7%E5%88%B6/</loc>
+    
+    <lastmod>2022-04-18</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://example.com/2021/01/08/Pstore-dmesg-write-%E7%AF%87/</loc>
     
     <lastmod>2022-04-18</lastmod>
     
@@ -340,14 +333,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Android-App/</loc>
+    <loc>http://example.com/tags/Andorid-App/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/Andorid-App/</loc>
+    <loc>http://example.com/tags/Android-App/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -368,6 +361,13 @@
   </url>
   
   <url>
+    <loc>http://example.com/tags/Linux-%E5%91%BD%E4%BB%A4/</loc>
+    <lastmod>2022-04-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/tags/%E7%AE%97%E6%B3%95%E9%A2%98/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
@@ -376,13 +376,6 @@
   
   <url>
     <loc>http://example.com/tags/POJ/</loc>
-    <lastmod>2022-04-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/Linux-%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -466,13 +459,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/compiler/</loc>
-    <lastmod>2022-04-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/tags/%E6%95%85%E4%BA%8B/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
@@ -488,6 +474,13 @@
   
   <url>
     <loc>http://example.com/tags/%E6%97%A5%E5%89%A7/</loc>
+    <lastmod>2022-04-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/compiler/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -594,14 +587,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
+    <loc>http://example.com/categories/GIT/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/GIT/</loc>
+    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -629,13 +622,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/dissertation-translation/</loc>
-    <lastmod>2022-04-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/%E7%81%AF%E7%BA%A2%E9%85%92%E7%BB%BF/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
@@ -650,7 +636,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://example.com/categories/dissertation-translation/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -665,6 +651,13 @@
   
   <url>
     <loc>http://example.com/categories/dissertation-translation/virtual-machine/</loc>
+    <lastmod>2022-04-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2022-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
