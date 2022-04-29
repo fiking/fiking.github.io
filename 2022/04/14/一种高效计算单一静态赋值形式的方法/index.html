@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://example.com/2022/04/14/%E4%B8%80%E7%A7%8D%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97%E5%8D%95%E4%B8%80%E9%9D%99%E6%80%81%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E7%9A%84%E6%96%B9%E6%B3%95/figure_4.png">
 <meta property="og:image" content="http://example.com/2022/04/14/%E4%B8%80%E7%A7%8D%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97%E5%8D%95%E4%B8%80%E9%9D%99%E6%80%81%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E7%9A%84%E6%96%B9%E6%B3%95/figure_5.png">
 <meta property="article:published_time" content="2022-04-14T04:04:46.000Z">
-<meta property="article:modified_time" content="2022-04-28T15:19:04.292Z">
+<meta property="article:modified_time" content="2022-04-29T12:22:23.339Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -211,7 +211,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-28 23:19:04" itemprop="dateModified" datetime="2022-04-28T23:19:04+08:00">2022-04-28</time>
+                <time title="修改时间：2022-04-29 20:22:23" itemprop="dateModified" datetime="2022-04-29T20:22:23+08:00">2022-04-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -240,14 +240,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.9k</span>
+              <span>11k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>10 分钟</span>
             </span>
 
         </div>
@@ -334,7 +334,7 @@
 <p>证明，对于任意 $X \in S$ 和任意 $Y\in DF(X)$。有一个从 X 到 Y 的路径，其中在 Y 之前的所有节点都被 X 支配。同时也有一条从 Entry 到 Y 的路径，其中所有的节点都没有被 X 支配。因此，两条路径共有的第一个节点是 Y。</p>
 <p><strong>定理 2</strong> <em>对于任意变量 V 需要 $\phi-函数$ 的节点的集合是迭代支配边界 $DF(S)$，其中 S 是 V 的赋值集合。</em></p>
 <p>证明，V 需要$\phi-函数$的节点集合是$J(S)$。由引理 6  和对 J 定义中 i 的归纳，我们有<br>$$<br>J^+(S) \subseteq DF^+(S).<br>$$<br>归纳步骤如下：<br>$$<br>J_{i+1} = J(S\cup J_i) \subseteq J(S\cup DF(S)) \subseteq DF^+(S\cup DF^+(S)) = DF^+(S).<br>$$<br>Entry 节点在 S 中，所以引理 7 有另一个归纳<br>$$<br>DF^+(S) \subseteq J^+(S).<br>$$</p>
-<h2 id="最小SS形式构建"><a href="#最小SS形式构建" class="headerlink" title="最小SS形式构建"></a>最小SS形式构建</h2><p>图 4 的算法是用于插入琐碎$\phi-$函数的。对于程序中的每个变量，算法的外循环只执行一次。使用的数据结构有：</p>
+<h2 id="最小SSA形式构建"><a href="#最小SSA形式构建" class="headerlink" title="最小SSA形式构建"></a>最小SSA形式构建</h2><p>图 4 的算法是用于插入琐碎$\phi-$函数的。对于程序中的每个变量，算法的外循环只执行一次。使用的数据结构有：</p>
 <ul>
 <li><em>W</em>  是一个正在处理的 CFG 节点的工作列表。这个算法的每次迭代，W 被初始化为包含赋值到 V 的节点的集合 $A(V)$。每个迭代在工作列表为空的时候结束。</li>
 <li><em>Work(\</em>)* 是标志数组，一个节点一个标志，如果 X 曾经被添加到 W，则 $Work(X)$ 是 1。在每次迭代中，每个节点都可能且只有一次被添加到 W。</li>
@@ -362,8 +362,17 @@
 
 <p>下一个引理表明，对于转换程序的一个变量，将“The”赋值变成一个新的名字是合理的。</p>
 <p><strong>引理 8</strong> <em>转换程序提到的每个新名字$V_i$ 是一个确切赋值的目标</em>。</p>
-<p>证明，</p>
-
+<p>证明，因为计数器 $C(V)$ 在处理每个赋值给 V 都自增，可以且只有一次赋值给$V_i$。因为$V_i$的任意使用都有$i = Top(S(V))$ V被替换为$V_i$，其中至少有一个赋值给$V_i$。</p>
+<p>对于每个变量 V 和 CFG 节点 X，在$SEARCH(X)$ 的第一个循环结束时，我们可以根据$S(V)$的栈顶关联 V 的名字$TopAfter(V，X)$。特别的，<br>$$<br>TopAfter(V, X) = V_i \ \ 其中 i = Top(S(V))<br>$$<br>如果 X 的子节点 Y 没有 V 的$\phi-$函数，则 Y 中 V 的第一次使用（任意）被替换成 $TopAfter(V，X)$ 的使用。因此 Y 从它的父节点 $X = idom(Y)$ 继承了 V 的名字。另一方面，CFG 中 Y 的任意前驱 P 确定一个名字 $TopAfter(V, P)$ ，与转换后的程序是否和源程序等价的问题，有明显的相关性。幸运的时是，候选名字间是没有冲突的。</p>
+<p><strong>引理 9</strong> <em>对于任意的变量 V 和任意的 CFG 边 $P\rightarrow Y$ ，满足如下公式时，使得 Y 没有 V 的 $\phi-$函数，</em><br>$$<br>TopAfter(V, P) = TopAfter(V, idom(V)). \ \ \ \ (5)<br>$$<br>证明，我们会假设$P \neq idom(Y)$。因为 Y 没有 V 的$\phi-$函数，如果一个节点 X 有$Y\in DF(X)$，则 X 不会赋值给 V 的一个名字。我们在下面两次使用了这个事实。</p>
+<p>通过引理 2，$Y\in DF_local(P) \subseteq DF(P)$ 和 P不赋值给 V 的一个名字。令 Y 是赋值给 V 的序列 $idom(P), idom(P), …$ 的第一个节点。然后<br>$$<br>TopAfter(V, P) = TopAfter(V, U). \ \ \ \ (6)<br>$$<br>因为 U 赋值给 V 的一个名字，$Y \not\in DF(U)$。但是 U 支配 Y 的一个前驱，所以 U 严格支配 Y。对于 $U \gg X \geq\geq idom(Y)$ 的任意 X，我们有 $X \geq\geq P$，因为$X \gg Y$。通过 U 的选择，$U \gg X \geq\geq P$ 隐含了 X 不会赋值给 V 的一个名字。因此<br>$$<br>TopAfter(V, U) = TopAfter(V, idom(Y)).<br>$$<br>且（5）伴随着（6）。</p>
+<p><strong>引理 10</strong> <em>考虑转换后程序的任意控制流路径和对应源程序中的路径。对于沿着路径遇到的任意的变量 V 和任意的边$X \rightarrow Y$ ，在源程序中从 X 流向到  Y 的 V 的值，等价于已转换程序中从 X 流向 Y 的 $TopAfter(V, X)$ 的值。</em></p>
+<p>证明，我们沿着路径进行归纳，在入口每个输入值赋值之后，以 $V = V_0$ 开始。为了继续归纳，考虑沿着路径上的任意连续的边$X\rightarrow Y \rightarrow Z$，令 $j = WhichPred(Y, X)$。我们假设$V = TopAfter(V, X)$ 沿着第一条边，然后显然有 $V = TopAfter(V, Y)$ 沿着第二条边。</p>
+<p>如果 V 在 Y 中有$\phi-$函数，则 $\phi$ 的第 j 个操作数是$TopAfter(V, X)$ 且已转换程序的$\phi-$函数的目标是接受 V 的值。如果 V 在 Y 中没有$\phi - $ 函数，则引理 9 已证。在两个场景下，V 的正确值在定义了 Y 的普通代码的基本块开头就是有效的了。在基本块里，已转换函数的控制流与 SEARCH的第一个循环处理的语句序列是相同的。对于每个变量 V，我们确实有$V = TopAfter(V, Y)$ 沿着第二条边。</p>
+<p><strong>定理 3</strong> <em>通过应用图 4 中的算法以及图 5 的算法，任意的程序都可以转为最小化的 SSA 形式。</em></p>
+<p>证明，图 4 将 V 的 $\phi$ 函数放入迭代支配边界 $DF^+(S)$ 的节点中，S 是源程序中赋值给 V 的集合。通过定理 2，$DF^+(S)$ 是 V 需要$\phi-$函数的节点的集合，所以我们获得了 SSA 定义中最少 $\phi-$函数的条件 1。</p>
+<p>我们仍然必须表明图 5 做了正确的重命名。SSA 形式定义中的条件 2 来自引理 8。SSA 形式定义中的条件 3 来自引理 10。</p>
+<h2 id="控制图的构造"><a href="#控制图的构造" class="headerlink" title="控制图的构造"></a>控制图的构造</h2>
     </div>
 
     
@@ -462,7 +471,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">静态单一赋值形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E9%85%8D%E8%BE%B9%E7%95%8C"><span class="nav-number">3.</span> <span class="nav-text">支配边界</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">定义和算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%94%AF%E9%85%8D%E8%BE%B9%E7%95%8C%E6%89%BE%E9%9C%80%E8%A6%81%E7%9A%84-phi-%E5%87%BD%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">使用支配边界找需要的 $\phi$ 函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8FSS%E5%BD%A2%E5%BC%8F%E6%9E%84%E5%BB%BA"><span class="nav-number">4.</span> <span class="nav-text">最小SS形式构建</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">静态单一赋值形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E9%85%8D%E8%BE%B9%E7%95%8C"><span class="nav-number">3.</span> <span class="nav-text">支配边界</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">定义和算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%94%AF%E9%85%8D%E8%BE%B9%E7%95%8C%E6%89%BE%E9%9C%80%E8%A6%81%E7%9A%84-phi-%E5%87%BD%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">使用支配边界找需要的 $\phi$ 函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8FSSA%E5%BD%A2%E5%BC%8F%E6%9E%84%E5%BB%BA"><span class="nav-number">4.</span> <span class="nav-text">最小SSA形式构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E5%9B%BE%E7%9A%84%E6%9E%84%E9%80%A0"><span class="nav-number">5.</span> <span class="nav-text">控制图的构造</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -539,13 +548,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">155k</span>
+    <span title="总字数">156k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">2:21</span>
+    <span title="总时间">2:22</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
