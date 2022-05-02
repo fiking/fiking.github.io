@@ -29,11 +29,22 @@
 <meta property="og:site_name" content="fiking">
 <meta property="og:description" content="摘要 我们提出一个简单的 SSA 构造算法，它允许直接从抽象语法树或者字节码翻译到一个基于 SSA 的中间表示形式。这个算法不需要事先的分析，且保证在中间表示构造期间是 SSA 的形式。这样允许在构造期间应用基于 SSA 的优化。在完成后，中间表示是最小且纯的 SSA 形式。尽管它很简单，我们算法的运行时间与 Cytron 等人的算法相当。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_1.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_1.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_2.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_2.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_3.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_4.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_3.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_4.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_5.png">
+<meta property="og:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_5.png">
 <meta property="article:published_time" content="2022-04-30T09:23:43.000Z">
-<meta property="article:modified_time" content="2022-04-30T14:42:40.149Z">
+<meta property="article:modified_time" content="2022-05-02T14:33:42.328Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_1.png">
 
 <link rel="canonical" href="http://example.com/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/">
 
@@ -197,10 +208,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-04-30 17:23:43 / 修改时间：22:42:40" itemprop="dateCreated datePublished" datetime="2022-04-30T17:23:43+08:00">2022-04-30</time>
+              <time title="创建时间：2022-04-30 17:23:43" itemprop="dateCreated datePublished" datetime="2022-04-30T17:23:43+08:00">2022-04-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-02 22:33:42" itemprop="dateModified" datetime="2022-05-02T22:33:42+08:00">2022-05-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -228,14 +245,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>6.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -264,7 +281,78 @@
 <li>证明算法的高效性和简易性。是通过再 Clang 中实现这个算法，然后和 Clang/LLVM 中的 Cytron 等人的算法实现进行比较来证明的。（第 6 节）。</li>
 </ul>
 <p>据我们所知，本文提出的这个算法是第一个可以在可规约 CFG 上构建最小和纯 SSA 而不需要依赖于其它的分析。</p>
-<h2 id="简单的-SSA-构造"><a href="#简单的-SSA-构造" class="headerlink" title="简单的 SSA 构造"></a>简单的 SSA 构造</h2><p>接下来，我们描述我们的算法来构造 SSA 形式。</p>
+<h2 id="简单的-SSA-构造"><a href="#简单的-SSA-构造" class="headerlink" title="简单的 SSA 构造"></a>简单的 SSA 构造</h2><p>接下来，我们描述我们的算法来构造 SSA 形式。它与 Cytron 等人的算法在基础想法上是有本质的不同的。Cytron 等人的算法在正向操作上是一种激进的方式：首先，这个算法收集了所有变量的定义。然后，它计算了相关 $\phi$ 函数的放置，最后，将这些变量定义点推下去给使用点。相比之下，我们的算法以一种延迟方式后向工作：只有当变量被使用，我们才会去查找它的到达定义。如果它在当前位置未知，我们会后向搜索程序。我们沿途会在 CFG 的连接点插入 $\phi$ 函数，直到我们发现想要的定义。我们使用记录来避免重复查找。</p>
+<p>这个过程有几个步骤组成，我们会在这节的剩余部分详细解释。首先，我们考虑单个基础块。然后，我们扩展算法到整个 CFGs。最后，我们展示如何处理不完整的 CFGs，其在 AST 翻译为 IR 的过程中经常出现。</p>
+<h3 id="局部值标号"><a href="#局部值标号" class="headerlink" title="局部值标号"></a>局部值标号</h3> 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_1.png" class="" title>
+
+
+<p>当转换一个源程序时，一系列语句的 IR 通常是以单个基础块结束。我们按程序执行顺序处理这些语句，对于每个基础块，我们都有每个变量到当前定义表达式的映射。当遇到一个变量赋值，我们记录赋值右侧的 IR 作为变量当前的定义。因此，当一个变量读，我们会查找它的当前定义（见算法 1）。这个过程被命名为<em>局部值标号</em>[9]。当一个块的局部值标号完成，我们认为这个块已填充了。特别是，后继只能添加到已填充块中。这个属性在后续处理不完全 CFGs 的时候就会用到。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_1.png" class="" title>
+
+
+<p>一个简单的程序及其处理结果如图 1 所示。为了演示，我们通过名字 $V_i$ 表示每个 SSA 值。在具体的实现中，我们只会参考表达式的表示。名称没有其它意义，特别是它们不是命令式语言意义上的局部变量。</p>
+<p>现在，如果在基本块中分配变量之前读取变量，则会出现问题。这可以在变量 d 及其对应值$V_?$的示例中看到。在这个场景中，d 的定义可以在从 CFG 根到当前块的路径中找到。而且，源程序中的多个定义可以搜索到相同的使用。下一节显示如何扩展局部值标号到处理这些场景的。</p>
+<h3 id="全局值标号"><a href="#全局值标号" class="headerlink" title="全局值标号"></a>全局值标号</h3> 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_2.png" class="" title>
+
+
+<p>如果一个块没有包含一个变量的定义，我们在它的前驱中递归查找定义。如果块只有有单个前驱，只需要递归地查找它的定义。此外，我们从所有的前驱中收集定义，然后构造 $\phi$ 函数，即连接它们到一个简单的新值。在这个基础块中，$\phi$ 函数记录为当前的定义。</p>
+<p>在前驱中查找一个值可能会导致更多递归的查找。由于程序中的循环，它们可能会导致无限递归。因此，<em>在递归前</em>，我们会创建没有操作数的 $\phi$ 函数，将其记录为块中变量的当前定义。然后我们确定$\phi$函数的操作数。如果递归查找返回到这个块中，这个 $\phi$ 函数会提供定义且递归结束。算法 2 给出执行全局值标号的伪代码。它的第一个条件将会用于处理不完整的  CFGs，因此当前假设它总是错的。</p>
+<p>图 2 给出了这个过程。为了演示，值 $V_i$ 的下标按算法插入它们的顺序给出。我们假设循环是在读 x 前创建的，即，$V_0$ 和 $V_1$ 通过局部值标号记录为 x 的定义，然后只有循环之后的语句会查找 x 。当循环之后的块没有记录 x 的定义，我们会执行一个递归地查找。块只有一个前驱时，不需要 $\phi$ 函数。前驱是一个循环头，其中没有 x 的定义且有两个前驱。因此，我们会放置一个无操作数的 $\phi$ 函数 $V_2$。第一个操作数是流入循环的值$V_0$。第二个操作数需要进一步递归。$\phi$ 函数 $V_3$ 被创建然后从它的直接前驱中获得操作数。特别的是，$V_2$ 会比较早的被放置，来打破递归。</p>
+<p>递归查找可能会留下一些冗余的 $\phi$ 函数。我们说一个 $\phi$ 函数 $V_{\phi}$ 是<em>细小的</em>，是当且仅当它只依赖于自己和一个其它值$V$任意次：</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_2.png" class="" title>
+
+
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_3.png" class="" title>
+
+
+<p>$\exists v \in V: v_{\phi} : \phi(x_1, … x_n) x_i \in {v_{\phi}, v}$ 。这样的 $\phi$ 函数可以移除，使用 v 的值替换（见算法 3）。作为一个特例，$\phi$ 函数可能除了它本身没有使用其它值了。这意味着它可能不可达，或者在开始块中。我们会用一个未定义值替换它。</p>
+<p>此外，如果 $\phi$ 函数被成功替换，其它使用这个替换值的 $\phi$ 函数也有可能会变成细小的。因为这个原因，我们将这个简化递归应用到它所有的使用点。</p>
+<p>这种方式能用于无环的语言结构。这个场景中，我们可以在处理块之前填充它所有的前驱。递归将只会搜索所有已填充的块。这确保了我们可以从前驱中取到每个变量的最新定义。例如，在 if-then-else 语句中，包含条件的块可以在 then 和 else 分支处理前被填充。 因此，在两个分支完成之后，连接分支的块会被填充。这种方式在构建循环之后读取变量时也适用。但是，当在循环中读取变量时，正在构建中，一些前驱–至少跳回循环头的前驱–会丢失。</p>
+<h3 id="处理不完整的-CFGs"><a href="#处理不完整的-CFGs" class="headerlink" title="处理不完整的  CFGs"></a>处理不完整的  CFGs</h3><p>我们称一个基本块是密封的，如果没有更多的前驱被加入到这个块中。由于只有填充块可能有后继块，所以前驱块总是填充过的。请注意密封块不一定是填充的。直观地，一个填充块包含它所有的指令，可以为它的后继提供变量定义。反过来，一个密封块可能会在它的前驱中查找变量定义，因为所有的前驱是已知的。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_4.png" class="" title>
+
+
+<p>但是如何在一个未密封的块中处理变量查找，这个块没有这个变量当前的定义？在这个场景下，我们放置一个无操作数的 $\phi$ 函数到块中，然后将其记录为代理定义（见算法 2 中的第一个场景）。因此，我们在每个块中维护这些代理的一组 <strong>incompletePhis</strong>。当最后这个块密封时，我们为这些 $\phi$ 函数添加操作数（见算法 4）。然后，当 $\phi$ 函数已经完成，我们会检查它是否是细小的。</p>
+<p>在 IR 构建中，封闭一个块是一个显式操作。我们通过图 3a 中的构建 while 循环的例子的示例如何合并这步。首先，我们构建 <strong>while header</strong> 块，然后添加一条从 <strong>while entry</strong> 块到它的控制流边。因为从 <strong>body exit</strong> 跳出需要在之后添加，我们还不能封闭 <strong>while header</strong>。下一步，我们创建 <strong>body entry</strong> 和 <strong>while exit</strong> 块，且添加从 <strong>while header</strong> 到这两个块的条件控制流。没有更多的前驱会被加入到 <strong>body entry</strong> 块中，所以现在我们可以封闭它了。由于循环中的中断指令，<strong>while exit</strong> 块可能会获得更多的前驱。现在我们填充循环体。这些可能会包含更多的内部控制结构，如图 3b 给出的 if。最后，它们在 <strong>body exit</strong> 块处收敛。构成主体的所有块都在这个点封闭。现在我们添加一个回到 <strong>while header</strong> 的边，封闭 <strong>while header</strong>。这个循环就完成了。在最后一步，我们封闭 <strong>while exit</strong> 块，然后继续 while 循环之后的源语句的 IR 构建。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_3.png" class="" title>
+
+
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="实时优化"><a href="#实时优化" class="headerlink" title="实时优化"></a>实时优化</h3><p>在前一节中，我们表明了我们会在细微 $\phi$ 函数创建之后，立即优化它们。因为 $\phi$ 函数属于 IR，这个意味着我们能在 SSA 构建期间应用 IR 优化。显然，不可能应用所有的优化。在这节中，我们阐述哪种 IR 优化可以在 SSA 构造期间执行，以及调查它们的效率。</p>
+<p>我们从 $\phi$ 函数的优化是否可以移除所有的细微 $\phi$ 函数的问题开始。就像 2.2 节已经提到的，我们递归优化所有使用了已经移除的细微 $\phi$ 函数的 $\phi$ 函数。由于一个 $\phi$ 函数优化成功后只能使得使用前一个的 $\phi$ 函数变得微不足道，这个机制保证我们能优化所有的细微 $\phi$ 函数。在第 4 节中，我们表明，对于可规约的 CFGs，这等价于构建最小的 SSA 形式。 </p>
+<p>因为我们的方法可能会导致显著的琐碎检查的数量，我们使用下面的缓存技术来加速这样的检查：当构建一个 $\phi$ 函数时，我们记录前两个不同的操作数，它们也不同于 $\phi$ 函数本身。这些操作数作为 $\phi$ 函数非细微性的目击者。当一个新的细微检查发生，我们再比较目击者。如果它们以及 $\phi$ 函数都彼此不同，这个$\phi$ 函数仍然时不平凡的。否则，我们需要找一个新的目击者。因为直到第二个操作数前的所有操作数都等于第一个或者 $\phi$ 函数本身，我们只需要考虑再两个老的目击者之后创建的操作数。因此，这个技术加速了同一个 $\phi$ 函数上的多个细微检查。</p>
+<p>这个机制有更多的简单变种，使得可以再大部分但不是全部的场景下构建最小的 SSA：如我们可以不优化已替换 $\phi$ 函数的使用者，而是优化唯一的操作数。这个变体对于 IR 来说特别有趣，因为它本身没有为每个值提供使用者列表。</p>
+<p>这个 $\phi$ 函数的优化是众多可以在 IR 构建期间执行的优化的其中一种。通常，我们的 SSA 构建算法允许利用保守的 IR 优化，即，只需要局部分析的优化。这些优化包括：</p>
+<p><strong>算术简化</strong> 所有的 IR 节点执行窥孔优化，在可能的情况下返回简化后的节点。例如，减法 $x-x$ 的构建总是产生常数 0。</p>
+<p><strong>通用子表达式消除</strong> 这个优化重用已经存在的被局部值标号识别了的值。</p>
+<p><strong>常量折叠</strong> 这个优化在编译时间里计算常量表达式，如，2*3 被优化成 6。</p>
+<p><strong>拷贝传播</strong> 这个优化会移除局部变量不必要的赋值，如，x = y。在 SSA 形式中，并不需要这样的赋值，我们可以直接使用右侧的值。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_4.png" class="" title>
+
+
+<p>图 4 表明了这些优化的效果。我们想要构造图 4a 给出的代码段的 SSA 结构。没有实时优化，则对应的 SSA 形式的程序如图 4b。使能优化带来的第一个不同是发生在值 $V_2$ 构建的期间。因为和 0 按位与总是产生 0，算法简化触发，简化了这个值。而且，常量值总是有效的。因此，通用子表达式消除在值 $V_2$ 上重用了值 $V_1$。下一步中，常量传播将与 0 的比较折叠为 <strong>false</strong>。因为条件跳转的条件是 false，我们可以忽略 <strong>then</strong> 部分。在 <strong>else</strong> 的部分里，我们执行拷贝传播，将 $V_0$ 注册为 res 的值。类似的，$V_6$ 会消除，函数的结尾返回 $V_0$。图 4c给出优化后的 SSA 形式的程序。</p>
+<p> 这个例子演示了实时优化可以更多的降低 $\phi$ 函数的数量。甚至比根据 Cytron 等人的定义得到的最小 SSA 形式，它会导致需要更少的 $\phi$ 函数。</p>
+<h3 id="任意控制流最小的-SSA-形式"><a href="#任意控制流最小的-SSA-形式" class="headerlink" title="任意控制流最小的 SSA 形式"></a>任意控制流最小的 SSA 形式</h3><p>到目前为止，我们的 SSA 构建算法在非可规约控制流的场景下不能构建最小的 SSA 形式。图 5b 给出了图 5a 显示的程序的已构造的 SSA 形式。图 5c 给出了对应的最小 SSA 形式 – 通过 Cytron 等人的算法构建的。因为变量 x 只有一个定义，通过我们算法构建的 $\phi$ 函数存在多余的。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/fig_5.png" class="" title>
+
+
+<p>通常，$\phi$ 函数一个非空集合 P 是冗余的，当且仅当 $\phi$ 函数只是相互依赖或者只依赖其它的一个值$v: \exists v \in V \forall v_i \in P: v_i : \phi(x_1, …, x_n) \ x_i \in P \cup {v}$ 。特别是，当 P 只包含一个 $\phi$ 函数时，这个定义退化为 2.2 节给出的平凡 $\phi$ 函数的定义。我们表明每个冗余 $\phi$ 函数 P ，其包含了一个强连接分量（SCC），也是冗余的。这些暗示着独立于源程序的极简主义定义，其比 Cytron 等人的定义更严格[10]。</p>
+<p><strong>引理 1</strong> <em>令 P 是关于 v 的冗余 $\phi$ 函数集。然后强连通分量 $S\subseteq P$ 也是冗余的。</em></p>
+<p>证明，令 $P’$ 为 P 的缩合，即，P 中的每个 SCC 都收缩为单个节点。这导致了$P’$ 是无环的[11]。因为 $P’$ 是非空的，它有个叶子节点 $s’$。令 S 是 SCC，其与 $s’$ 相关。因为 $s’$ 是叶子，S 的 $\phi$ 函数只关联与$v$ 或 S 中的其它 $\phi$ 函数。因此，S 是一个冗余的 SCC。</p>
+<p>算法 5 利用了引理 1 来移除多余的 $\phi$ 函数。函数 <strong>removeRedundantPhis</strong> 处理一组 $\phi$ 函数，然后计算它们导出子图的 SCCs。图 6b 显示了来自图 6a 的数据流图生成的 SCCs。每条虚线边指向一个不属于其来源的 SCC 的值。我们按拓扑顺序处理 SCCs，保证当前 SCC 外用到的值已经签约了。在我们的例子中，这意味着我们首先处理仅包含 $\phi_0$ 的 SCC。由于 $\phi_0$ 是 SCC 中唯一的 $\phi$ 函数，在移动平凡 $\phi$ 函数的期间，我们已经处理了它了。因此，我们跳过这个 SCC。</p>
+ 
+  <img src="/2022/04/30/%E7%AE%80%E5%8D%95%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E9%9D%99%E6%80%81%E5%8D%95%E4%B8%80%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F%E6%9E%84%E9%80%A0/algo_5.png" class="" title>
+
+
+<p>对于下一个包含 $\phi_1-\phi_4$ 的 SCC，我们构造两个集合：集合 <strong>inner</strong> 包含所有仅在 SCC 内具有操作数的所有 $\phi$ 函数。集合 <strong>outerOps</strong> 所有操作数不属于 SCC 的 $\phi$ 函数。对于我们的例子，inner = {$\phi_3$, $\phi_4$} ，outerOps = {$\phi_0$, +}。</p>
 
     </div>
 
@@ -364,7 +452,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84-SSA-%E6%9E%84%E9%80%A0"><span class="nav-number">2.</span> <span class="nav-text">简单的 SSA 构造</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84-SSA-%E6%9E%84%E9%80%A0"><span class="nav-number">2.</span> <span class="nav-text">简单的 SSA 构造</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%80%BC%E6%A0%87%E5%8F%B7"><span class="nav-number">2.1.</span> <span class="nav-text">局部值标号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7"><span class="nav-number">2.2.</span> <span class="nav-text">全局值标号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E4%B8%8D%E5%AE%8C%E6%95%B4%E7%9A%84-CFGs"><span class="nav-number">2.3.</span> <span class="nav-text">处理不完整的  CFGs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E4%BC%98%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">实时优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BB%E6%84%8F%E6%8E%A7%E5%88%B6%E6%B5%81%E6%9C%80%E5%B0%8F%E7%9A%84-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">任意控制流最小的 SSA 形式</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -441,13 +529,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">162k</span>
+    <span title="总字数">167k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">2:27</span>
+    <span title="总时间">2:31</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
