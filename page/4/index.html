@@ -171,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/Pstore-dmesg-%E6%B3%A8%E5%86%8C%E7%AF%87/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/Pstore-dmesg-read%E7%AF%87/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -185,7 +185,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/01/08/Pstore-dmesg-%E6%B3%A8%E5%86%8C%E7%AF%87/" class="post-title-link" itemprop="url">Pstore dmesg 注册篇</a>
+            <a href="/2021/01/08/Pstore-dmesg-read%E7%AF%87/" class="post-title-link" itemprop="url">Pstore dmesg read篇</a>
         </h2>
 
         <div class="post-meta">
@@ -220,14 +220,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -239,10 +239,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>个人博客搭建笔记。</p>
+          <p>   当系统重启后，可以把数据从pstore中读出来，并创建文件节点，提供用户接口来获取文本数据。</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ramoops_probe</span><span class="params">(struct platform_device * pdev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* 从pstore中取出数据 */</span></span><br><span class="line">	err = ramoops_init_przs(dev, cxt, &amp;paddr, dump_mem_sz);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/* 写入文件节点 */</span></span><br><span class="line">	err = pstore_register(&amp;cxt-&gt;pstore);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/01/08/Pstore-dmesg-%E6%B3%A8%E5%86%8C%E7%AF%87/">
+              <a class="btn" href="/2021/01/08/Pstore-dmesg-read%E7%AF%87/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1262,13 +1263,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">184k</span>
+    <span title="总字数">185k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">2:47</span>
+    <span title="总时间">2:48</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

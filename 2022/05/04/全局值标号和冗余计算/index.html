@@ -46,7 +46,7 @@
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_15.png">
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_16.png">
 <meta property="article:published_time" content="2022-05-04T11:12:55.000Z">
-<meta property="article:modified_time" content="2022-05-22T03:55:20.688Z">
+<meta property="article:modified_time" content="2022-05-27T01:16:39.991Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-22 11:55:20" itemprop="dateModified" datetime="2022-05-22T11:55:20+08:00">2022-05-22</time>
+                <time title="修改时间：2022-05-27 09:16:39" itemprop="dateModified" datetime="2022-05-27T09:16:39+08:00">2022-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,14 +251,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.3k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -429,7 +429,22 @@
 <li>$V_i \leftarrow \phi(V_i, V_j)$ 被替换为 $V_i \leftarrow V_j$</li>
 </ul>
 <p>在任意场景中，新的赋值都会加入到平凡赋值的工作列表中。</p>
-<h2 id="阶段二：消除冗余"><a href="#阶段二：消除冗余" class="headerlink" title="阶段二：消除冗余"></a>阶段二：消除冗余</h2>
+<h2 id="阶段二：消除冗余"><a href="#阶段二：消除冗余" class="headerlink" title="阶段二：消除冗余"></a>阶段二：消除冗余</h2><p>如第 3 节解释的，我们以递增顺序遍历秩。在这个循环中，我们首先以逆顶层顺序遍历节点，移动代码以及消除由这个移动创建的任意局部冗余。然后我们消除当前秩的全局冗余。</p>
+<p>每个节点的基本处理过程是，从任意后继移动有效的计算式到当前节点，然后让在当前节点中的计算式对任意前驱有效。代码移动实际上分为两步，将计算式 C 拷贝到 C 将要移动到的节点的 LCT 中，然后将 C 从它移除的节点的 LCT 表中删除。当我们在以逆顶层序遍历节点时移动计算式，我们只是在做拷贝。原始的计算式临时留在原始的 LCT 中，它现在是冗余的。和其它冗余一起，这个原始的计算将会被全局冗余子过程消除。通过在代码移动时延迟删除，可以让记录保持有一些技术上的简化。</p>
+<p><em>移动计算表（MCT）</em> 在程序流图的每条不是回边的边中都有维护一个。MCT 包含了当前所有可以从边的目的节点移动的计算式。一条边的 MCT 的每个记录包含了一个计算式 c 和一个指向边的目的的 LCT 中的相关计算式 B 的指针。一些关于这个表应该记住的要点：</p>
+<ol>
+<li>MCT 持有移动候选者，可能移动也可能不动。在 MCT 中，这些计算式可以像 LCT 的计算式一样的方式访问。它们也算作操作数在移除平凡赋值的使用。</li>
+<li>MCT 的持续存在，像 LCT 关联的每个节点。它可能会获得或者失去单独计算，但在第 2 阶段期间它永远不会重置。</li>
+<li>以逆顶层序访问节点确保了一个节点所有的出边的 MCT 在要处理该节点时，被填充了具有合适的秩的可移动计算式。</li>
+</ol>
+<p>每个节点实际的处理依赖于节点类型。这边有三个场景：</p>
+<ul>
+<li>循环头。</li>
+<li>准备区。</li>
+<li>所有其它的节点（正常节点）。</li>
+</ul>
+<p>回顾 4.2 节，没有节点可以同时是循环头和准备区。我们将首先考虑正常节点的场景，然后考虑其它类型作为特殊场景的算法。</p>
+<h3 id="正常节点的处理"><a href="#正常节点的处理" class="headerlink" title="正常节点的处理"></a>正常节点的处理</h3>
     </div>
 
     
@@ -528,7 +543,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段二：消除冗余</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段二：消除冗余</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%B8%B8%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">正常节点的处理</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -605,13 +620,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">184k</span>
+    <span title="总字数">185k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">2:47</span>
+    <span title="总时间">2:48</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
