@@ -23,14 +23,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/index.html</loc>
+    <loc>http://example.com/schedule/index.html</loc>
     
     <lastmod>2022-05-28</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/schedule/index.html</loc>
+    <loc>http://example.com/categories/index.html</loc>
     
     <lastmod>2022-05-28</lastmod>
     
@@ -205,14 +205,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Linux-%E5%91%BD%E4%BB%A4%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://example.com/2021/01/08/Linux-Pstore-%E7%AE%80%E4%BB%8B/</loc>
     
     <lastmod>2022-05-28</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/2021/01/08/Linux-Pstore-%E7%AE%80%E4%BB%8B/</loc>
+    <loc>http://example.com/2021/01/08/Linux-%E5%91%BD%E4%BB%A4%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2022-05-28</lastmod>
     
@@ -389,14 +389,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/Linux-%E5%91%BD%E4%BB%A4/</loc>
+    <loc>http://example.com/tags/Linux-Pstore/</loc>
     <lastmod>2022-05-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/Linux-Pstore/</loc>
+    <loc>http://example.com/tags/Linux-%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2022-05-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
