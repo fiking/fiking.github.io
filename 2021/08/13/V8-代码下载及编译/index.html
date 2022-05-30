@@ -255,6 +255,7 @@
       
         <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>  为了学习和了解 Javascript Engine 的工作原理，在本地下载了V8的代码。</p>
  <a id="more"></a>
+
 <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ol>
 <li>硬件平台：x86_64</li>
 <li>OS: ubuntu 20.04</li>
@@ -263,19 +264,19 @@
 <li>安装depot_tools</li>
 </ol>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:<span class="regexp">//</span>chromium.googlesource.com<span class="regexp">/chromium/</span>tools/depot_tools.git</span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="2">
 <li>在空目录下拉取 V8 代码 </li>
 </ol>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">fetch</span> v<span class="number">8</span></span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="3">
 <li>更新工具包</li>
 </ol>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gclient <span class="keyword">sync</span></span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="4">
 <li>在 V8 的代码根目录下更新编译所需工具</li>
 </ol>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/build/i</span>nstall-build-deps.sh</span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="5">
 <li>编译</li>
 </ol>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tools<span class="regexp">/dev/gm</span>.py x64.release</span><br></pre></td></tr></table></figure>
@@ -468,7 +469,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">2:55</span>
+    <span title="总时间">2:56</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
