@@ -48,7 +48,7 @@
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_17.png">
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_18.png">
 <meta property="article:published_time" content="2022-05-04T11:12:55.000Z">
-<meta property="article:modified_time" content="2022-06-02T15:12:57.230Z">
+<meta property="article:modified_time" content="2022-06-03T10:22:58.153Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -224,7 +224,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 23:12:57" itemprop="dateModified" datetime="2022-06-02T23:12:57+08:00">2022-06-02</time>
+                <time title="修改时间：2022-06-03 18:22:58" itemprop="dateModified" datetime="2022-06-03T18:22:58+08:00">2022-06-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,14 +253,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
+              <span>14k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
+              <span>13 分钟</span>
             </span>
 
         </div>
@@ -471,8 +471,43 @@
 
 <h3 id="循环头节点的处理"><a href="#循环头节点的处理" class="headerlink" title="循环头节点的处理"></a>循环头节点的处理</h3><p>循环头节点的处理与正常节点类似。完全如 5.1.1 节中描述的计算式会被移到循环头中，但是一个不同的技术会识别出可以移出循环头的计算式。</p>
 <p>在正常节点的场景下，仅根据一些局部条件将计算移出节点。在循环头节点，我们希望将计算式移除循环（放入着陆垫）。为了安全地完成这个，我们必须验证循环中已经存在的计算式，这会让结果是有效的，无论控制何时从循环外进入循环头节点。为了做这个，我们使用名为<em>问题传播</em> 的技术来确定循环中是否有些计算式会和我们希望移除的计算式计算出相同的结果一样。</p>
-<h4 id="问题传播"><a href="#问题传播" class="headerlink" title="问题传播"></a>问题传播</h4><p>问题传播会根据需要搜素尽可能全的图，来决定给定的计算式 Q 是否式冗余的。这个搜素如同 5.1 节中的计算式移动，但是传播一个计算式的问题的规则与移动计算式本身的规则在某些地方是不同的。忽略虚拟边，其它的不同会做简短的解释。</p>
-
+<h4 id="问题传播"><a href="#问题传播" class="headerlink" title="问题传播"></a>问题传播</h4><p>问题传播会根据需要搜素尽可能全的图，来决定给定的计算式 Q 是否式冗余的。这个搜素如同 5.1 节中的计算式移动，但是传播一个计算式的问题的规则与移动计算式本身的规则在某些地方是不同的。忽略虚拟边，其它的不同会做简短的解释。一个关于 Q 的问题是 Q 右侧的变量重命名。重命名适当地使用变量名，无论此刻问题在哪里；它就是 5.1.2 节中解释的表达式 $\phi$ 重命名。</p>
+<p>在问题传播开始前，给定的表达式 Q 姑且被标记为冗余的。在传播的过程中，它可能被标记为非冗余的。当 Q 已经被标记为非冗余的，它将不会在被标记成冗余的，因此搜索可能会在这个点终止。当传播终止时如果 Q 仍然被标记为冗余的，则 Q 确实时冗余的，可以被消除。</p>
+<p>如果 Q 的任意操作数被包含 Q 的节点 n 里的 LCT 中的非 $\phi$ 计算式定义，则搜索终止，Q 被标记为非冗余的。否则，为题被传播到 n 的前驱。问题没有在节点中解决会被传播到前驱（带着合适的 $\phi$ 重命名），除非被下面的某条规则阻止了。</p>
+<p>问题传播的停止规则被声明为下面两种场景。在一个循环头节点当前段的处理中，局部搜索受限于相关的循环体，且所有的问题都源于循环头。在随后的冗余消除中，全局搜素会检查尽可能多的必要的控制流图的项，当前秩的所有计算式是问题的源头。终止搜索的规则在这两个场景中有轻微地不同。另一个不同是，全局搜索维护了一张会让 Q 冗余的计算式的列表（初始是空的）。</p>
+<ol>
+<li><p>在局部搜索中，如果一个问题将会被传播给循环头节点的前驱，则搜索会终止，Q 会被标记为非冗余的。</p>
+</li>
+<li><p>在全局搜索中，如果一个问题将被传播给程序入口节点的前驱，则搜索会终止，Q 会被标记为非冗余的。</p>
+</li>
+<li><p>在两个搜索中，如果一个问题将沿着超过一个出边传播给一个分支节点，且问题在两个出边上是不同的，则搜素会终止且 Q 会被标记为冗余的。</p>
+</li>
+<li><p>在两个搜索中，如果一个问题将沿着超过一个出边传播给分支节点，且问题再两个出边上是相同的，则只有第一个到达的问题会被进一步传播。</p>
+</li>
+<li><p>在两个搜索中，如果问题被传播给一个包含计算式 C 的节点中，其中 C 的右侧匹配了问题，则问题在这个方向上不会进一步传播了。（Q 的标记不会被改变。）在这个场景的全局搜索中，如果 C 不是 Q，则指向会标记 Q 冗余的指针列表会增加指向 C 的指针。</p>
+</li>
+<li><p>在两个搜索中，如果一个问题被传播到一个节点，且这个节点的 LCT 中有一个非 $\phi$ 计算式定义了问题的一个操作数，则搜索会终止，Q 被标记为非冗余的。</p>
+<p>只有在前一个场景中没有找到匹配项时才会测试这个场景。这个测试和前一个测试都是不分等级的。这些测试通过使用 SSA 形式的程序来简化。如果一个表达式和一个创建这个表达式的一个操作数的赋值在同一个节点中，则使用这个操作数的表达式必须在创建这个操作数的表达式之后。</p>
+</li>
+</ol>
+<h4 id="移除循环的表达式"><a href="#移除循环的表达式" class="headerlink" title="移除循环的表达式"></a>移除循环的表达式</h4><p>在前一步中由局部搜索识别出为冗余的循环头节点里的任意表达式，可以移出这个循环。我们分两步进行这个操作。直观地，我们拷贝计算式到着陆垫（这会导致头节点里的旧拷贝变成冗余的），然后在消除各种其它冗余时，消除这个旧的拷贝。在头节点里临时留下旧的拷贝只是为了技术上的便利。令$V_h \leftarrow E$ 是要移除的计算式 C，令$V_p$ 是最新的生成名字。令$E_p$ 是 E 的操作数 $\phi$ 重命名之后的结果（如 5.1.2 节），为了来自着陆垫的入边。为从着陆垫到循环头节点的边，添加$V_p \leftarrow E_p$ 到 MCT 中。这个 MCT 项指回 c。如同往常的，“移动”在这个时候只是拷贝。计算式 C 一直在循环头节点里，但它现在是冗余的，会被全局冗余子过程消除。</p>
+<h3 id="着陆垫节点的处理"><a href="#着陆垫节点的处理" class="headerlink" title="着陆垫节点的处理"></a>着陆垫节点的处理</h3><p>着陆垫的处理类似于正常节点的处理。完全如同 5.1.1 节那样，我们开始于将计算从它的后继（循环头节点）移入着陆垫。然后我们尝试将计算式直接从循环退出节点直接移动到着陆垫，不用将它们放入循环中中转。计算式可以从循环的退出节点移动到着陆垫，如果满足下面的条件：</p>
+<ol>
+<li>要移除的计算式是在循环的着陆垫的所有虚拟出边的 MCT 中。如果有超过一个虚拟出边，我们反过来考虑每一个。对于每个虚拟出边，我们遍历当前秩的 MCT 项，为了其它的出边，尝试将它们与 MCT 项匹配（不管秩）。这些就像 5.1.1 节中的超过一个真实出边的正常节点的处理过程。</li>
+<li>表达式的每个操作数必须在着陆垫中是有效的。因为这个程序是 SSA 形式的，这个条件等价于循环里没有到这个操作数的赋值。一个测试这个条件的简单方式是，检查包含这个操作数的定义的节点的顶层序的数值。如果它早于或者等于着陆垫的数字，则这个条件满足。</li>
+</ol>
+<p>当可以移进着陆垫节点的计算式已经被识别出来，则移动它们的过程完全如同 5.1.1 节。</p>
+<p>识别可以移出着陆垫的计算式的过程，完全如同 5.1.2 节。</p>
+<h3 id="消除全局冗余"><a href="#消除全局冗余" class="headerlink" title="消除全局冗余"></a>消除全局冗余</h3><p>在当前秩，逆顶层序遍历完节点后，执行这个子过程。我们以任意方便的顺序遍历当前秩的计算式。（例如，我们已顶层序访问节点，然后遍历每个节点的 LCT 中的当前秩的计算式。）</p>
+<p>对于每个计算式 Q ，我们首先检查 Q 是否已经在秩中晋升了。如果有，则现在它可能会有比其它使用 Q 的结果的一些计算式有更高的秩。我们算法的整体结构大致是，它只当使用的表达式有如 Q 相同的节点时，我们遍历 Q 的结果的局部使用。如果有必要，每个局部使用被晋升，所以有秩 R+1 或者更大。当阶段 2 完成时，计算式的秩和它们操作数的秩之间的相关关系将会被存到每个节点中。</p>
+<p>处理计算式 Q 的下一步是检测冗余，通过应用 5.2.1 节中的子算法和全局规则。如果 Q 被发现是冗余的，则它会被下面的技术消除：</p>
+<ol>
+<li>创建一个新的变量 V 来记录 Q 将会计算出来的值（冗余的）。</li>
+<li>对于那些放入标记 Q 冗余的计算式列表的每个计算式 C ，一个$V \leftarrow (C 的输出)$ 形式的赋值会被插入。</li>
+<li>Q 的表达式部分被替换成 V 的使用。</li>
+</ol>
+<p>如果在上面步骤 2 中有不止一个计算式 C，则程序将不在是 SSA 形式。通过在新的变量 V 上应用 4.3.1 节的规则，可以转换为 SSA 的形式。虽然，用了写人为的方式识别新的等价，但4.3.1 节的简单规则在这里看起来是最好的。当 SSA 形式已经被重建，通过将平凡赋值放入工作列表，使用 4.5 节的算法，可以移除它们。</p>
+<h2 id="阶段-3：正常化"><a href="#阶段-3：正常化" class="headerlink" title="阶段 3：正常化"></a>阶段 3：正常化</h2>
     </div>
 
     
@@ -574,7 +609,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段二：消除冗余</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%B8%B8%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">正常节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E5%90%8E%E7%BB%A7%E4%B8%AD%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97%E5%BC%8F"><span class="nav-number">5.1.1.</span> <span class="nav-text">从后继中移动计算式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E5%8F%AF%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.2.</span> <span class="nav-text">识别可移动计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%A4%B4%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.2.</span> <span class="nav-text">循环头节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BC%A0%E6%92%AD"><span class="nav-number">5.2.1.</span> <span class="nav-text">问题传播</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段二：消除冗余</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%B8%B8%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">正常节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E5%90%8E%E7%BB%A7%E4%B8%AD%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97%E5%BC%8F"><span class="nav-number">5.1.1.</span> <span class="nav-text">从后继中移动计算式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E5%8F%AF%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.2.</span> <span class="nav-text">识别可移动计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%A4%B4%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.2.</span> <span class="nav-text">循环头节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BC%A0%E6%92%AD"><span class="nav-number">5.2.1.</span> <span class="nav-text">问题传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%BE%AA%E7%8E%AF%E7%9A%84%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">5.2.2.</span> <span class="nav-text">移除循环的表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9D%80%E9%99%86%E5%9E%AB%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.3.</span> <span class="nav-text">着陆垫节点的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E9%99%A4%E5%85%A8%E5%B1%80%E5%86%97%E4%BD%99"><span class="nav-number">5.4.</span> <span class="nav-text">消除全局冗余</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-3%EF%BC%9A%E6%AD%A3%E5%B8%B8%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">阶段 3：正常化</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -651,13 +686,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">200k</span>
+    <span title="总字数">203k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:02</span>
+    <span title="总时间">3:04</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
