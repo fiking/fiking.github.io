@@ -47,8 +47,13 @@
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_16.png">
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_17.png">
 <meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_18.png">
+<meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_19.png">
+<meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_20.png">
+<meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_21.png">
+<meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_22.png">
+<meta property="og:image" content="http://example.com/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_23.png">
 <meta property="article:published_time" content="2022-05-04T11:12:55.000Z">
-<meta property="article:modified_time" content="2022-06-03T15:09:18.590Z">
+<meta property="article:modified_time" content="2022-06-04T09:02:54.391Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -224,7 +229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-03 23:09:18" itemprop="dateModified" datetime="2022-06-03T23:09:18+08:00">2022-06-03</time>
+                <time title="修改时间：2022-06-04 17:02:54" itemprop="dateModified" datetime="2022-06-04T17:02:54+08:00">2022-06-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,14 +258,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
+              <span>20k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
+              <span>18 分钟</span>
             </span>
 
         </div>
@@ -518,7 +523,79 @@
 <p>PL.8 编译器算法的整体最坏时间复杂度是$O((E+N) * N * C * R)$，其中 E，N，C 的含义同上（MR 的单个过程），R 是秩的数量。Morel 和 Renvoise 与 PL.8 编译器组联合报告了 MR 的一次应用通常只需要 3 到 5 次迭代，而不是最坏数量 $N+1$ 次迭代。</p>
 <p>图 1 中的例子说明了 MR，PL.8编译器，和这里给出的算法三者之间的不同。在连接节点中，现在 $A<em>B$ 的值是沿着一条路径在$C</em>B$ 下计算出来的，所以它对于 MR，PL.8 编译器，或者其它任意词法方法是无效的。如果我们移除原始程序中所有的平凡赋值，将所有的 C 的使用替换为 A 的使用，我们使得程序更易于优化。MR 的一个过程会为 X 消除$A*B$的冗余计算。对于$X+1$ 的冗余计算，它无法做任何事情。这个局部冗余有二阶效应，它将会在 PL.8 的第二阶段消除。</p>
 <p>对于可归约流图的程序，我们算法会获得 PL.8 编译器获得的任何东西。我们还识别了许多 PL.8 编译器错过的冗余，因为我们使用了全局值标号。我们算法的最坏时间复杂度是 $O(C<em>N</em>E)$。如果两个边界上所有的参数被替换为名义参数 n，则我们的算法是$O(n^3)$ 改进了 PL.8 编译器算法的 $O(n^4)$。</p>
-<h3 id="值标号"><a href="#值标号" class="headerlink" title="值标号"></a>值标号</h3><p>起源于 Coke 和 Schwartz[7] 的值标号是基础块的符号执行，为进入该块的所有变量提供不同的符号值。基础块中的通用子表达式消除是直接的。如果一个符号值计算两次，在第二次会消除它。因此，代码中<br>$$<br>C \leftarrow A; D \leftarrow A<em>B; E \leftarrow C</em>B;<br>$$<br>D 和 E 有符号值<br>$$<br>(A@entry) *(B@entry)<br>$$<br>第二个计算式可以消除。符号值得哈希允许值标号不需要操作巨大得值就能处理。几个编译器（包括 PL.8 编译器）已经将这个原始的值标号从基础块推广到扩展的基础块。</p>
+<h3 id="值编号"><a href="#值编号" class="headerlink" title="值编号"></a>值编号</h3><p>起源于 Coke 和 Schwartz[7] 的值标号是基础块的符号执行，为进入该块的所有变量提供不同的符号值。基础块中的通用子表达式消除是直接的。如果一个符号值计算两次，在第二次会消除它。因此，代码中<br>$$<br>C \leftarrow A; D \leftarrow A<em>B; E \leftarrow C</em>B;<br>$$<br>D 和 E 有符号值<br>$$<br>(A@entry) *(B@entry)<br>$$<br>第二个计算式可以消除。符号值得哈希允许值标号不需要操作巨大得值就能处理。几个编译器（包括 PL.8 编译器）已经将这个原始的值标号从基础块推广到扩展的基础块。</p>
+<p>Reif 和 Lewis [14] 在指编号中引入了全局方法。他们的方法隐含了许多方式中的一个，可以识别两个变量将会有相同的值。有其它的构造 [3] [15] 与 Reif 和 Lewis 的工作的思想相似，在大量的信息，最坏情况复杂度中做各种权衡，因此难以实现。这些算法中的任意一个都可以用于开始我们的算法，通过将程序转为精简的 SSA 形式。</p>
+<p>启动冗余消除过程只是任务的一部分，如图 19 所示的代码。沿着一条路径上，T 的计算式与 R 的计算式是冗余的，而沿着另一条路径，T 的计算式与 S 的计算式是冗余的。E 和 A 的不同阻止了任意从纯词法的方式上消除这些冗余。值编号不会受这些不同的影响，但它仍然只能回答它看到的程序提出的问题。三个变量 R，S，T 需要有三个明确的值编号。传统的组织形式，会先分析再优化，不会进行优化。我们的算法会沿着连接节点的入边向后移动 T 的计算式。有一个拷贝会与 R 冗余，而另一个拷贝与 S 冗余。我们的算法会消除这两个冗余。只有在 T 的计算式已经被拆分成两个拷贝之后，才会提出值编号相等的相关问题。</p>
+ 
+  <img src="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_19.png" class="" title>
+
+
+<h3 id="其它问题"><a href="#其它问题" class="headerlink" title="其它问题"></a>其它问题</h3><p>p-图的构造[17] 是静态单赋值形式的先导，有些时候会用于优化[11]。用于 SSA 形式的显式 $\phi$ 函数让它更易于一起工作。</p>
+<p>Allen [2] 赋了一个局部秩（在基础块里），用它们来组织基础块里的冗余消除，以及循环不变量的外提。我们的全局秩是类似的使用方式，可以组织更广泛的消除和外提。</p>
+<p>“着陆垫”的名字是最近有的[8]，但相似的思想已经出现了很长一段时间了[2] [12]。Morel 和 Renvoise 建议使用着陆垫来帮助分析，在必要的时候拆分一些边。我们拆分更多的边，执行一些额外的冗余消除，如 4.2 节的图 14 所示。Morel 和 Renvoise 在[13, p.102]中认识到他们的缺陷，但他们选择了在添加着陆垫之外不允许拆分的方式。</p>
+<h2 id="最优准则"><a href="#最优准则" class="headerlink" title="最优准则"></a>最优准则</h2><p>这节中，我们将会讨论哪些限制对于消除冗余计算式是最好的。我们将会描述哪些限制我们已经放置在算法中了。我们会表明我们的算法在 DAGs 上是最佳的（在这些限制里）。然后我们会检测带有循环的程序里丢失的场景。</p>
+<h3 id="DAG-程序"><a href="#DAG-程序" class="headerlink" title="DAG 程序"></a>DAG 程序</h3><p>因为下面说明的一些原因，无法从 DAG 中移除所有的冗余。我们将会枚举三种冗余，似乎消除它们是不合理的。然后，一个最优算法是可以消除所有其它冗余的。</p>
+<ol>
+<li><p>即使在 DAG 中，仍然无法判定两个表达式是否可以计算相同的值。如果两个值由相同操作符在相同操作数上构造到，我们会说这两个值是透明等价的。因此，在<br>$$<br>A\leftarrow B<br>$$</p>
+<p>$$<br>C \leftarrow E +(A*3)<br>$$</p>
+<p>$$<br>D \leftarrow E+(B*3)<br>$$</p>
+<p>我们会识别出 $C=D$，而在<br>$$<br>A \leftarrow B+3<br>$$</p>
+<p>$$<br>C\leftarrow A +2<br>$$</p>
+<p>$$<br>E \leftarrow B +2<br>$$</p>
+<p>$$<br>D \leftarrow E+3<br>$$</p>
+<p>我们无法识别出$C=D$。为了这个小节的目的，在定义精简 SSA 形式中，我们只考虑透明等价这种。</p>
+<p>计算式是等价的但不是透明等价的造成的冗余，我们无法消除。</p>
+</li>
+<li><p>消除所有透明产生相同值得计算式，可能会是组合爆炸的，或者是不安全的转换。</p>
+<p>考虑节点 u 中的一个 DAG，由一条沿着值计算的路径。假设这个路径通过节点 v，之后在节点 w 上计算了相同的值。而且，假设在 DAG 中有一条路径会穿过 v 但不会计算这个值。发生这种情况的一个例子是图 20。节点 u 和 w 是$A*B$ 的两个计算式。节点 v 是两个 if 语句之间的任意节点。</p>
+<p>通过将代码的一个拷贝放入 v 来消除冗余，则在 P 条件的每个分支下的 Q 条件的拷贝。这个会允许语句 w 从在 P 的真实分支下的拷贝中移除。这样的转换会导致一个程序大小的指数爆炸。</p>
+ 
+     <img src="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_20.png" class="" title>
+   
+
+<p>第二种消除冗余的方式是将计算式 $A<em>B$ 的一个拷贝放在 P 的测试之前。则这允许我们将语句（u）和（v）改为平凡赋值。这样的转换是不安全的，因为如果 P 和 Q 两个都是错误的，沿着路径执行它引入了$A</em>B$ 的计算。这个路径在之前没有这样的计算。</p>
+<p>更通常的，我们将会消除如下形式的冗余：（A）从执行的计算式所在的节点 u 开始，到执行的等价计算式所在的节点 w 有一条路径；（B）有另一条从根穿过 v 到 w 的路径，沿着这条路径在 w 的计算式式这个值的第一个计算式；（C）有一条从 v 到 DAG 退出节点的路径，不包含等价于 w 中的冗余的计算式。</p>
+</li>
+<li><p>有一个执行两个不等价计算式的程序，然后（依赖于后面的控制流）一个或者另一个会使得后面的计算变得冗余。冗余的计算不会被消除，除非额外的平凡赋值被插入程序中，来保证正确的值可以被存储到值将会获取的位置上。这个程序需要任意数量这样的赋值，存取的开销会超过计算式的开销。</p>
+<p>例如，考虑图 21。如果 P 是正确的，则在程序段末尾的计算式 $A<em>B$ ，相对于计算式 $C</em>B$ 是冗余的。如果 P 是错误的，则更早的 $A*B$ 计算式是冗余的。</p>
+ 
+     <img src="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_21.png" class="" title>
+   
+
+<p>正式地说，如果有两条路径穿过节点 u，v，w，一条路径上 u 中的计算式对于 w 中的计算式 C 是冗余的；另一条路径上，v 中的计算式与 C 是冗余的；没有一条路径上，u 和 v 的计算式的值是透明等价的，则我们将无法消除这个冗余。</p>
+</li>
+</ol>
+<p>我们已经枚举了三种冗余，尝试消除它们似乎是不合理的，我们的算法不会尝试消除它们。在 DAG 上，成功了。</p>
+<p><strong>定理</strong>：在我们的算法终止在 DAG 之后，任意剩余的冗余是上面三种之一，则算法不会尝试消除它。</p>
+<p><em>大致证明</em>：</p>
+<p>我们考虑阶段 2 末尾的程序，它仍然是精简 SSA 形式且没有平凡赋值。通过秩和路径长度的归纳，沿着路径表达式是透明等价的，当且仅当，它们是词法相同的，除了沿着路径连接节点的重命名。更准确地是，假设一个控制流沿着一个路径从节点 u 到节点 v（从 u 到自己是一个空路径），表达式 E 和 F 出现在节点 u 和 v 中。如果沿着路径将 F 移动回 u 的结果与 E 是词法相同的，我们说这些表达式是词法相同的，除了 $\phi$ 函数重命名。沿着路径连接节点的每条入边，将表达式移动回去可能回插入 $\phi$ 函数，如 5.1.2 节。</p>
+<p>定义<em>失败</em>为还有剩余的冗余其没有被之前枚举的覆盖，这些应该被移除。为了证明没有失败，我们会假设这里有失败然后得到矛盾的结果。多亏了 4.5 节的局部冗余消除，任意一个失败涉及节点 u 中的计算式 B 和节点 w 中的计算式 C，这些节点是不同的，有一条从 u 到 w 的路径。（特定的路劲被认为是失败的一部分。）B 和 C 计算了相同的表达式 E，是沿着路径部分来自连接节点的重命名，E 不是一个 $\phi$ 函数。</p>
+<p>我们可以将两个数字与任意失败联系起来：E 的秩，沿着失败发生从 u 到 w 的路径长度。如果有任意失败发生，则我们可以从中选择一个最大路径长度和一个最小秩。我们会从中产生一个矛盾，证明这个已选择的失败必须是类型 2 或者 3。</p>
+<p>因为 E 的操作数对于 u 中的 B 是有效的（部分来自 $\phi$ 函数的应用），没有一个是在 w 中计算的。5.1.2 节中在 MCT 中放置了一个 C 的项，这个MCT 是从 u 到 w 的失败路径上的最后一条边。令 v 是这条边的源。在 5.1.1 节中不会移动 MCT 项，所以 v 有另一条出边 f，因此没有等价于 C 的计算式放置在 f 的 MCT 中。通过最大化已选择的失败里的路径长度，任意从 v 开始沿着 f 的路径没有等价于 C 的计算式。</p>
+<p>节点 u，v，w 已经证明满足我们宣布无法消除的第二类冗余定义的条件（A）和（C）。因为已选择的失败是一个失败，条件（B）必须是错误的。沿着任意路径从根穿过 v 到 w，一个等价于 C 但在 C 之前的计算式。多亏了边拆分，分支节点 v 是 w 的唯一前驱。因此，C 是全冗余的。但是，全局问题传播，不会像 5.4 节中的冗余一样消除 C。这暗示着传播停止在问题传播的细节的第三个规则里（5.2.1 节）。因此冗余是第三类，与之前是矛盾的。</p>
+<h3 id="循环程序"><a href="#循环程序" class="headerlink" title="循环程序"></a>循环程序</h3><p>在这个子节中，我们考虑当应用的程序带有循环时，两个被全局算法错失的场景。还有其它的场景，但已知场景中这两个看起来是最重要的。</p>
+<ol>
+<li><p>如果被移到循环头节点的代码可能仍然是在每个从头节点到循环退出节点的路径上的代码。局部问题传播没有考虑将这样的代码放置到着陆垫节点。这个失败的一些简单场景容易被辨认出来，我们的算法简单的扩展就能处理它们。但是，通用场景是困难的。一个循环通过许多路径会有许多退出可达。有几个等价的计算式集合起来像单个计算式，这些出现在所有的相关路径上。理想地，这个算法将被扩展成能识别出这些出现的集合计算式。</p>
+</li>
+<li><p>这个算法不会考虑沿着回边可能的计算式移动。在图 22 中的程序段通过将循环头节点视为普通的连接节点可以得到提升。如果我们沿着循环的回边移动$A+B$ 计算式的第一个拷贝，同时移动另一个拷贝到着陆垫，则我们可以在循环里移动拷贝，就好像它最初放置在条件语句之后一样。这个拷贝的副本会出现在 <strong>then</strong> 和 <strong>else</strong> 分支，且 <strong>then</strong> 分支里的副本会与 Y 的赋值合并。这个会降低 $A+B$ 计算的数量到每次迭代恰好只有一个（部分来自着陆垫的初始计算）。</p>
+ 
+     <img src="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_22.png" class="" title>
+   
+
+<p>虽然在这个例子中很有吸引力，沿着回边移动会导致一些组织上的问题。在一个计算式到达循环头节点时，循环里的当前秩的计算式移动已经完成。沿着回边的移动没有任何帮助，除非用于留在循环里的拷贝的秩被强制大于当前的秩。这会导致无限循环：一个秩为 R 的表达式到达循环头节点，沿着回边移动有秩$R+\delta $，然后再次到达循环头节点但是是以秩为$R+\delta $ 的方式到达的，沿着回边移动以秩$R+\delta + \delta $ 进行，如此一直循环。当循环是嵌套的，难以确定要怎样才能保有足够的空间来避免无限递归的同时，不失去优化机会。一个可能的方式是尝试迭代我们整个算法，基于理解，当一个计算式沿着回边移动不会再进一步了时，直到下一次迭代。但这也可能会导致无限递归，如图 23 所示。</p>
+ 
+     <img src="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/figure_23.png" class="" title>
+   
+
+</li>
+</ol>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>我们已经证明了如何以比较小的代价在可归约程序上获得通常比较昂贵的优化，多亏了三个创新的协助：全局表达式秩，单一静态赋值（SSA）中间表达形式，和$ \phi$ 重命名表达式。</p>
+<p>全局秩可以让我们迅速利用二阶效应，而不需要重复分析。当另一个算法重复调用来反复利用二阶效应时，秩也帮助表征需要的迭代次数。</p>
+<p>程序的 SSA 形式使得我们可以简单的移除平凡赋值。这也允许我们识别和利用表达式间的等价，这些表达式在通用形式上词法是不同的。如果一个程序是 SSA 形式，则词法相同的表达式总是有相同的值，不管它们在哪里出现。因此，如果一个程序是 SSA 形式，带有相同值编号的表达式将会是词法相同的，除了沿着路径的 $\phi$ 重名。</p>
+<p>在边拆分的线性边界数量的帮助下，$\phi$ 重命名使得我们在从一个连接节点移动计算式到它的前驱时能够维持 SSA 形式。在通过中间过程期间维持 SSA 形式是重要的，因为它允许代码与每个节点关联，表示为一张表，可以高效的访问和更新。</p>
+<p>我们还指定了一个合理的最优准则。在没有循环的程序这样一个特定场景里，我们算法生成的代码被证明是最优的。这个最优是在第 8 节解释的技术意义上的。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>我们感谢 Fran Allen，Trina Avery，和 Ron Cytron，因为他们为这个文章的草稿提出了宝贵的意见。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>略。</p>
 
     </div>
 
@@ -621,7 +698,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-2%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段 2：消除冗余</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%B8%B8%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">正常节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E5%90%8E%E7%BB%A7%E4%B8%AD%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97%E5%BC%8F"><span class="nav-number">5.1.1.</span> <span class="nav-text">从后继中移动计算式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E5%8F%AF%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.2.</span> <span class="nav-text">识别可移动计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%A4%B4%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.2.</span> <span class="nav-text">循环头节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BC%A0%E6%92%AD"><span class="nav-number">5.2.1.</span> <span class="nav-text">问题传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%BE%AA%E7%8E%AF%E7%9A%84%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">5.2.2.</span> <span class="nav-text">移除循环的表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9D%80%E9%99%86%E5%9E%AB%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.3.</span> <span class="nav-text">着陆垫节点的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E9%99%A4%E5%85%A8%E5%B1%80%E5%86%97%E4%BD%99"><span class="nav-number">5.4.</span> <span class="nav-text">消除全局冗余</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-3%EF%BC%9A%E6%AD%A3%E5%B8%B8%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">阶段 3：正常化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">7.</span> <span class="nav-text">相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%97%E4%BD%99%E6%B6%88%E9%99%A4"><span class="nav-number">7.1.</span> <span class="nav-text">冗余消除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E6%A0%87%E5%8F%B7"><span class="nav-number">7.2.</span> <span class="nav-text">值标号</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">算法概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">阶段 1：程序预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">分析图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">4.2.</span> <span class="nav-text">修改图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B8%BA-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">转为 SSA 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.1.</span> <span class="nav-text">简单 SSA 形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80-SSA-%E5%BD%A2%E5%BC%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">精简 SSA 形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E8%B5%8B%E4%B8%80%E4%B8%AA%E7%A7%A9"><span class="nav-number">4.4.</span> <span class="nav-text">给每个计算赋一个秩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%B9%B3%E5%87%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">4.5.</span> <span class="nav-text">移除平凡赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-2%EF%BC%9A%E6%B6%88%E9%99%A4%E5%86%97%E4%BD%99"><span class="nav-number">5.</span> <span class="nav-text">阶段 2：消除冗余</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%B8%B8%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">正常节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E5%90%8E%E7%BB%A7%E4%B8%AD%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97%E5%BC%8F"><span class="nav-number">5.1.1.</span> <span class="nav-text">从后继中移动计算式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E5%8F%AF%E7%A7%BB%E5%8A%A8%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.2.</span> <span class="nav-text">识别可移动计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%A4%B4%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.2.</span> <span class="nav-text">循环头节点的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BC%A0%E6%92%AD"><span class="nav-number">5.2.1.</span> <span class="nav-text">问题传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E5%BE%AA%E7%8E%AF%E7%9A%84%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">5.2.2.</span> <span class="nav-text">移除循环的表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9D%80%E9%99%86%E5%9E%AB%E8%8A%82%E7%82%B9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">5.3.</span> <span class="nav-text">着陆垫节点的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E9%99%A4%E5%85%A8%E5%B1%80%E5%86%97%E4%BD%99"><span class="nav-number">5.4.</span> <span class="nav-text">消除全局冗余</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-3%EF%BC%9A%E6%AD%A3%E5%B8%B8%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">阶段 3：正常化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">7.</span> <span class="nav-text">相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%97%E4%BD%99%E6%B6%88%E9%99%A4"><span class="nav-number">7.1.</span> <span class="nav-text">冗余消除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E7%BC%96%E5%8F%B7"><span class="nav-number">7.2.</span> <span class="nav-text">值编号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E9%97%AE%E9%A2%98"><span class="nav-number">7.3.</span> <span class="nav-text">其它问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E5%87%86%E5%88%99"><span class="nav-number">8.</span> <span class="nav-text">最优准则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DAG-%E7%A8%8B%E5%BA%8F"><span class="nav-number">8.1.</span> <span class="nav-text">DAG 程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%A8%8B%E5%BA%8F"><span class="nav-number">8.2.</span> <span class="nav-text">循环程序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">9.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">10.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">11.</span> <span class="nav-text">引用</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -698,13 +775,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">205k</span>
+    <span title="总字数">209k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:06</span>
+    <span title="总时间">3:10</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
