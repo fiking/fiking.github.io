@@ -22,18 +22,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。">
+  <meta name="description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示">
 <meta property="og:type" content="article">
 <meta property="og:title" content="机器独立的编译器中的代码生成">
 <meta property="og:url" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。">
+<meta property="og:description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
 <meta property="article:published_time" content="2022-06-11T01:18:57.000Z">
-<meta property="article:modified_time" content="2022-06-11T01:48:13.299Z">
+<meta property="article:modified_time" content="2022-06-19T14:16:19.270Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
 
 <link rel="canonical" href="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/">
 
@@ -197,10 +199,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-06-11 09:18:57 / 修改时间：09:48:13" itemprop="dateCreated datePublished" datetime="2022-06-11T09:18:57+08:00">2022-06-11</time>
+              <time title="创建时间：2022-06-11 09:18:57" itemprop="dateCreated datePublished" datetime="2022-06-11T09:18:57+08:00">2022-06-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-19 22:16:19" itemprop="dateModified" datetime="2022-06-19T22:16:19+08:00">2022-06-19</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -228,14 +236,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>79</span>
+              <span>3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -247,10 +255,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。</p>
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示，促进了表达式相关的上下文和数据依赖信息的使用。代码生成过程分成了几个阶段。这使得更简单以及能更好的理解代码生成过程，并且允许对生成代码的质量进行重大改进。讨论了初步确定寻址方式，寄存器和其它位置的分配，以及代码选择场景分析等的算法。这篇文章描述的算法已经在 PQCC 编译器中实现和使用。</p>
  <a id="more"></a>
 
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来有些关注点在构建机器独立的编译器上：依赖于目标机器（已编译的程序要运行的机器）的信息与机器无关算法相分离（以表格的形式）的编译器。已经有面向语言独立编译器的发展，特别是自动解析器生成。但是，在更难的编译器后端形式化问题上进展少得多，即在从编译器表示程序的中间表示到生成机器码的部分。以这种方式希望能为广泛的机器生成高质量的代码。这是这篇文章的主题。</p>
+<p>代码生成将会在 Carnegie-Mellon 大学的 Prodution-Quality Compiler-Compiler (PQCC) 的框架上进行讨论。虽然我们的一个目标是代码能与最好的手写编译器相比较，但 PQCC 的工作不关注优化本身：从很大程度上说，编译器技术取自 Bliss-11 优化编译器[12]。迄今为止的研究集中在：</p>
+<ol>
+<li>制定以机器依赖信息分离到表格的形式的方式的编译过程，同时保留继承自原始 Bliss-11 编译器结构的杰出代码质量。</li>
+<li>自动化或者简化从一个机器描述生成表的过程。</li>
+</ol>
+<p>本文描述的工作主要涉及（1）。一个更完整的机器形式化讨论和代码生成器自动生成可以在 [3] 中找到。</p>
+ 
+  <img src="/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png" class="" title>
 
+
+<p>在我们可以构建一个全的 PQCC 系统前，我们首先要理解目标编译器的编译过程，如 PQC，使用的模型。一个编译器结构的简单图如图 1 所示；在这篇文章中，我们将会处理标记为 DELAY，TNBIND，和 CODE 的阶段。一个源语言程序由 LEXSYN 阶段解析为一个中间类解析树的符号，我们可以称它为 TCOL。然后，FLOW 阶段做全局的数据流分析，可能会识别出能降低程序大小或者时间开销的代码转换。之后，DELAY 阶段做一组优化和分析，基本上达成最后要生成的代码的“形状”上的推测。在之后，TNBIND 使用这个推测（此处是需要临时变量的）来执行目标机器上寄存器和其它位置的分配。然后，CODE 阶段执行场景分析来实际生成符号形式的机器代码。最后，FINAL 执行窥孔优化和代码移动优化，获得实际的目标机器代码。这些阶段名都来自于 BLISS-11 编译器[12]；我们使用它们便于优化分组。但是，我们已经识别了三类特别的“阶段”，通常定义为单树或者单图的遍历，将会构成实际的编译器。</p>
+<p>这篇文章的下一节，给出了足够多的机器形式化，来理解代码生成的问题。在 3.1 ~ 3.5 节中，讨论了DELAY 阶段与猜测程序树段的最好指令和地址模式有关的部分。在 3.6 节给出了寄存器分配算法。在 5.2 和 5.3 节，我们讨论了基础的代码生成算法和它使用控制流优化，通用子表达式，和其它信息的扩展，最后，在第 6 节中，我们总结了结果，然后讨论了机器独立的编译器原型实现的现状。</p>
+<h2 id="指令集处理器形式化"><a href="#指令集处理器形式化" class="headerlink" title="指令集处理器形式化"></a>指令集处理器形式化</h2><p>我们从机器模型或者指令集处理器的概述开始。我们通过七个组件来定义一个指令集处理器：<em>机器操作</em>和<em>数据类型</em>，指定了机器上的有效操作；<em>存储基础，访问模型（AMs）</em>，和<em>操作数类</em>，指定了机器上的有效位置和它们如何作为操作数访问的；<em>指令域和格式</em>，指定了指令的二进制表示。</p>
+<p>与每条指令相关联的是一组<em>输入/输出断言</em>，其表达了指令的动作。一个<em>输出断言</em>指定了指令执行之后处理器的状态，作为指令执行前处理器状态的函数。注意到因为大部分的处理器状态保存不变，所以我们实际需要表达的只是被改变了的状态。与每个输出断言成对的是<em>输入断言</em>，它指定了处理器状态的条件函数。输出断言成立，即状态有了一个新值，当且仅当输入断言满足（如果输入断言没有满足，则状态不会改变）。断言表达为一个<em>程序树模式</em>，其对应于指令执行的操作。例如，ADD 指令表达为<br>$$<br>A \leftarrow A+E<br>$$<br>其中，A 是累加器，E 是一个内存操作数。将断言表示为程序树的效果是，我们可以将这些作为模式树与程序树“匹配”，这可以实现一条指令。</p>
+<p>处理器状态实际的位置是<em>存储基础</em>（SBs）。SBs 可能是各种大小的简单位置，如一个累加器或者条件码，或者位置的数组，如通用寄存器数组或者主存。</p>
+<p>通常有几个指令操作数的选择，根据机器上不同的地址模型：“寄存器下标”，“间接通过内存位置”，“一个累加器”，等等。这些将被称为<em>访问模型</em>（AMs）。这些对指令操作数的访问模型的一致性由<em>操作数类</em>指定。特别的，一个操作数类定义了一个指令的操作数位置：它指定了一组访问，其在上下文中是有效的。访问模式的指定集合中的任意一个可能会用于获取/存储指令的相关操作数。例如，一个 ADD 指令可能需要一个通用的寄存器作为操作数接收结果，然后允许一个立即数常量或者内存位置作为其它操作数（在更早的例子中，A 和 E 是操作数类）。</p>
+<p>随着我们下一节的处理，一个机器地址的三级描述（存储基础，访问模式，操作数类）的效果在降低机器描述的大小和帮组生成良好的代码上应该变得更明显。</p>
+<p>为了一些特定的目的，我们发现将访问模型分为三类是有用的：原子，分子，和复合。一个原子访问模式是一条指令的参数的一个立即数类型，即，一个在它的值范围有些限制的常量。一个分子访问模式，是一个到存储基础的直接访问（存储基础索引的字/位的位置是原子的）。相比之下，分子访问模式（所有的其它场景）包含到存储基础的间接和索引访问。就本文的目的而言，只有分子访问模式是有意义的；我们将这种访问模式称为一个存储类，因为它表示了一个存储基础里的一个特定位置集合。</p>
+<p>同时，对于每个适用的访问模式，与一个操作数类关联的是信息指定，包括时间和空间开销，以及二进制格式信息。这样的额外信息也与每条指令关联。但是，这边读者可以忽略这些细节，除了要注意它们允许我们去评估代码序列的开销，和在需要时生成抽象操作的实际二进制表示。</p>
+<p>详细的机器形式化讨论可以在 [3] 和 [4] 中找到。前面提到的内容在这边已经足够了。就第 3 节和第 5.2 节而言，形式化的核心组成是访问模式和指令断言。这两个都表示为一个模式树，主要的代码生成过程简单地由遍历源码树组成，匹配这些模式来确定当前树节点使用的代码序列和位置。</p>
+<h2 id="代码生成之前的操作"><a href="#代码生成之前的操作" class="headerlink" title="代码生成之前的操作"></a>代码生成之前的操作</h2><p>在流分析和代码生成器之间的阶段执行一系列的机器相关的优化，此处仅简要概述这些优化。更完整的解释会在 [12] 中找到，其解释了 Bliss-11 编译器做的优化；在 [8] 中，讨论了为 PQC 做的扩展。这里的讨论必须是简短的，我们只保留足够的解释来设置代码生成器实际操作需要的上下文。</p>
+<p>PQC 和传统编译器间一个主要的不同是”代码生成器“没有必要去做任意如下的决策，包括关于局部或全局寄存器分配，结果临时变量的分配，评估顺序的确定，或者任意传统上被认为是”代码生成“的任务。当然，所有这些功能都会被执行，但不是通过实际确定要生成什么代码的阶段进行的。</p>
+<h3 id="上下文确定"><a href="#上下文确定" class="headerlink" title="上下文确定"></a>上下文确定</h3>
     </div>
 
     
@@ -349,7 +380,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -426,13 +457,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">209k</span>
+    <span title="总字数">212k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:10</span>
+    <span title="总时间">3:13</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
