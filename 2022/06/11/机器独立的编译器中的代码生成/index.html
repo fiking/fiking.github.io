@@ -31,7 +31,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
 <meta property="article:published_time" content="2022-06-11T01:18:57.000Z">
-<meta property="article:modified_time" content="2022-07-17T10:02:33.587Z">
+<meta property="article:modified_time" content="2022-07-17T13:40:08.955Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-17 18:02:33" itemprop="dateModified" datetime="2022-07-17T18:02:33+08:00">2022-07-17</time>
+                <time title="修改时间：2022-07-17 21:40:08" itemprop="dateModified" datetime="2022-07-17T21:40:08+08:00">2022-07-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,14 +236,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.5k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -330,7 +330,17 @@
 <p>实际上，在编译过程中使用这些规则执行启发式搜索是不合理的。因此，我们使用一个执行大量此类搜索的程序来产生一组表，这些表涉及少量或不存在搜索策略来获得期望的代码序列。这个程序是代码生成器的生成器，或者叫 CGG。其在[3] 和 [2] 中有详细的描述。</p>
 <p>CGG 包含的选择”感兴趣的“代码生成场景（模式树）的启发式规则，代码生成器很可能遇到。如果在目标机器指令集里不存在可以解决这个场景的指令，用于生成一条或一组指令的搜索技术将会完成这个任务。如果找到了多个待选项，则最低开销的待选项会被保留。作为 CGG 这些搜索的一个结果，当前在编译时唯一应用的一个规则时获取分解，其本质是寄存器分配和模式组合（会在下一节中进一步讨论）。</p>
 <p>这里值得注意的是 CGG 策略不保证有一个优化方案，或者确实有方案被找到。例如，在一条指令或者一组指令序列被找到前，已经到达了搜索深度的极限了。可能也存在一个公理需要确定代码序列等价的目标树可能不在公理的范围里的场景。程序等价的一般场景还未解决，因为没有一组产生式可以表示正确覆盖所有程序树的完备性。但是，这一理论结果对实际影响不大；对于”真正的“机器和”真正的“程序，一组小的产生式集和限制搜索深度看起来是足够的。</p>
-<h3 id="代码生成器"><a href="#代码生成器" class="headerlink" title="代码生成器"></a>代码生成器</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4>
+<h3 id="代码生成器"><a href="#代码生成器" class="headerlink" title="代码生成器"></a>代码生成器</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>代码生成器使用 CGG 的输出作为它的模式数据库和相对应的代码序列。它的基本操作是检索所有假设会用于解析树的模式集合，在这些中间找到最低开销的指令序列并应用。在目标树的叶子节点没有匹配模式的叶子节点的场景中（如，包含一个表达式，其模式期望一个简单的存储单元），预取/存储分解规则被用来获得一个简单的存储单元，通过为子树生成代码。</p>
+<p>因为 PQC 的结构，许多简单的传统”代码生成“任务不存在了。例如，全“寄存器”分配，实际是 TN 分配，已经做完了。因此，代码生成器基本不关心实际使用的存储位置。因为，TN 赋值和分配过程已经为可能的存储类型检查了机器描述，至少会有一个模式被匹配上。因此，当没有模式匹配上的时候，代码生成算法不需要处理在可能的存储类中获得存储位置。如果需要将数据从一个位置移到另一个位置（因为 TNs 已经被赋予了不同的存储类型或者在一个相同存储类型里的不同位置），则这些会被做完；这个转换的开销已经被计算为特定 TN 赋值开销的一部分。</p>
+<h4 id="模式匹配"><a href="#模式匹配" class="headerlink" title="模式匹配"></a>模式匹配</h4><p>在当前代码生成器中模式恢复是很简单的。模式在每个上下文（real，flow，void，address）里通过主要的（根）模式树的操作符索引。主要的操作符可能是任意的算术，关系，或者布尔操作符。模式在每个恢复集里排序，通过一个成本指标（当前是代码大小）以”收益”递减的形式排序。我们把”收益“和”开销“区别对待，因为收益表示选择一个模式的值覆盖另一个的。开销和收益决定的细节将会在 5.3 节中给出。比起简单的索引 CGG 产生的模式，从它们 [6] 中可以为表驱动的代码生成器派生出一个更高效的表示。这本质上避免了当一个模式匹配失败时，需要重新匹配新模式的相似部分。我们暂时认为使用这样的方案来取得代码生成器原型的合理性能是不必要的。</p>
+<p>作为模式索引方案的结果，当给出一个目标树时，代码生成器将会尝试首先使用最高收益模式。如果匹配成功，相关的代码序列将会被关联到匹配模式的树的部分。否则，低收益的模式将会被尝试直到有一个匹配上。最终会有一个模式匹配上，因为 CGG 至少为每个操作符生成一个模式。如果公式库或者搜索深度不足以为一些操作符找到代码序列，CGG 的使用者需要扩展它的已知信息。这可能需要涉及扩展公理系统，扩展它的场景生成器，扩展机器描述（例如，添加新的指令），或者添加新的”虚拟指令“（作为公理），如，定义一个浮点算术操作作为生成子例程调用。</p>
+<h4 id="反转代码生成"><a href="#反转代码生成" class="headerlink" title="反转代码生成"></a>反转代码生成</h4><p>代码生成器新的特性是它以逆执行顺序生成代码。一个传统的代码生成器通常是做左到右，深度优先，递归树访问叶子节点，如果需要，为每个叶子节点生成代码，然后返回操作符节点，为操作符生成代码，一直重复直到为整个树生成所有代码。因为我们的代码生成器尝试去利用机器的地址模式和尽可能多的指令集，它从树的根节点出发，然后为操作符找到最高收益的模式。这个模式通常是跨过树最大节点集合的模式。通过为每个不匹配模式叶子的树节点重复这个过程（应用获取/存储分解），模式的最小数量会被用于匹配这个树，这会产生最低开销的代码序列。没有详尽的枚举，是不可能保证实际最低开销的代码序列[11]。但是，启发式技术会产生最接近它的相似值，而且通常是最低成本的序列，而且不需要详尽搜索的计算。</p>
+<p>在我们的编译器中，这个匹配任务由于公共子表达式（cse）的存在而变得复杂；一个模式不可能跨过 cse 边界的。cse-创建和cse-最后使用的特殊场景也必须被处理。但是，事实上，cse 结果的目的是由 TN 赋值确定的，生成使用 cse 结果的代码是简单的，即使计算这个结果的代码还没有被生成。</p>
+<p>代码生成器的输出是指令序列的双向链表；树形结构和它的一些修饰（cse 链，流图，等）被丢弃了。</p>
+<h3 id="流分析和临时分配信息的使用"><a href="#流分析和临时分配信息的使用" class="headerlink" title="流分析和临时分配信息的使用"></a>流分析和临时分配信息的使用</h3><p>现在我们讨论处理上一节讨论过的算法里的程序流优化和变量分配的设计。这些阶段间交互的实现在本次写作中还没有完成。</p>
+<p>在图 1 显示的模型中，TNBIND 阶段做 TN 的赋值到存储位置。TNBIND 做这个的部分是 PACK 阶段，其尝试解决 2-1/2 维度的装箱问题，这个问题是个已知的 NP 完全问题。因为 PACK 有更多的存储位置利用率的全局知识，为了其对代码形状的评估，它可能会选择违反 DELAY 使用的”无限寄存器“的假设（当然，因为这个假设在任意真实的机器上是错误的）。此外，因为它实现了一个带有有限回溯的启发式方法，它可能无法满足 TN 赋值的特定要求（注意到，”期望“是比”需要“更弱的限制）。这个全局分配的结果是代码生成器可能找到不存在的模板匹配到存在的树，从而不得不使操作数符合给定的模板。</p>
+<p>这个不会造成模型概念化或者实现的任何特定的问题。</p>
+
     </div>
 
     
@@ -429,7 +439,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E8%A1%A5%E7%A0%81-%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E8%AF%86%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">一元补码 &#x2F; 目标路径识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">评估顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90"><span class="nav-number">4.4.</span> <span class="nav-text">流分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F%E5%88%A4%E5%AE%9A"><span class="nav-number">4.5.</span> <span class="nav-text">访问模式判定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%90%8D%E5%AD%97%E8%B5%8B%E5%80%BC"><span class="nav-number">4.6.</span> <span class="nav-text">临时名字赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">代码生成后的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E6%8A%BD%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">代码生成抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">代码生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">6.2.1.</span> <span class="nav-text">概述</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E8%A1%A5%E7%A0%81-%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E8%AF%86%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">一元补码 &#x2F; 目标路径识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">评估顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90"><span class="nav-number">4.4.</span> <span class="nav-text">流分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F%E5%88%A4%E5%AE%9A"><span class="nav-number">4.5.</span> <span class="nav-text">访问模式判定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%90%8D%E5%AD%97%E8%B5%8B%E5%80%BC"><span class="nav-number">4.6.</span> <span class="nav-text">临时名字赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">代码生成后的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E6%8A%BD%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">代码生成抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">代码生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">6.2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">6.2.2.</span> <span class="nav-text">模式匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E8%BD%AC%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.2.3.</span> <span class="nav-text">反转代码生成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90%E5%92%8C%E4%B8%B4%E6%97%B6%E5%88%86%E9%85%8D%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">6.3.</span> <span class="nav-text">流分析和临时分配信息的使用</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -506,13 +516,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">218k</span>
+    <span title="总字数">219k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:18</span>
+    <span title="总时间">3:19</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
