@@ -31,7 +31,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
 <meta property="article:published_time" content="2022-06-11T01:18:57.000Z">
-<meta property="article:modified_time" content="2022-07-16T14:57:30.815Z">
+<meta property="article:modified_time" content="2022-07-17T10:02:33.587Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-16 22:57:30" itemprop="dateModified" datetime="2022-07-16T22:57:30+08:00">2022-07-16</time>
+                <time title="修改时间：2022-07-17 18:02:33" itemprop="dateModified" datetime="2022-07-17T18:02:33+08:00">2022-07-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,14 +236,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.2k</span>
+              <span>8.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -257,6 +257,7 @@
       
         <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示，促进了表达式相关的上下文和数据依赖信息的使用。代码生成过程分成了几个阶段。这使得更简单以及能更好的理解代码生成过程，并且允许对生成代码的质量进行重大改进。讨论了初步确定寻址方式，寄存器和其它位置的分配，以及代码选择场景分析等的算法。这篇文章描述的算法已经在 PQCC 编译器中实现和使用。</p>
  <a id="more"></a>
+
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来有些关注点在构建机器独立的编译器上：依赖于目标机器（已编译的程序要运行的机器）的信息与机器无关算法相分离（以表格的形式）的编译器。已经有面向语言独立编译器的发展，特别是自动解析器生成。但是，在更难的编译器后端形式化问题上进展少得多，即在从编译器表示程序的中间表示到生成机器码的部分。以这种方式希望能为广泛的机器生成高质量的代码。这是这篇文章的主题。</p>
 <p>代码生成将会在 Carnegie-Mellon 大学的 Prodution-Quality Compiler-Compiler (PQCC) 的框架上进行讨论。虽然我们的一个目标是代码能与最好的手写编译器相比较，但 PQCC 的工作不关注优化本身：从很大程度上说，编译器技术取自 Bliss-11 优化编译器[12]。迄今为止的研究集中在：</p>
 <ol>
@@ -267,12 +268,11 @@
  
   <img src="/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png" class="" title>
 
+
 <p>在我们可以构建一个全的 PQCC 系统前，我们首先要理解目标编译器的编译过程，如 PQC，使用的模型。一个编译器结构的简单图如图 1 所示；在这篇文章中，我们将会处理标记为 DELAY，TNBIND，和 CODE 的阶段。一个源语言程序由 LEXSYN 阶段解析为一个中间类解析树的符号，我们可以称它为 TCOL。然后，FLOW 阶段做全局的数据流分析，可能会识别出能降低程序大小或者时间开销的代码转换。之后，DELAY 阶段做一组优化和分析，基本上达成最后要生成的代码的“形状”上的推测。在之后，TNBIND 使用这个推测（此处是需要临时变量的）来执行目标机器上寄存器和其它位置的分配。然后，CODE 阶段执行场景分析来实际生成符号形式的机器代码。最后，FINAL 执行窥孔优化和代码移动优化，获得实际的目标机器代码。这些阶段名都来自于 BLISS-11 编译器[12]；我们使用它们便于优化分组。但是，我们已经识别了三类特别的“阶段”，通常定义为单树或者单图的遍历，将会构成实际的编译器。</p>
 <p>这篇文章的下一节，给出了足够多的机器形式化，来理解代码生成的问题。在 3.1 ~ 3.5 节中，讨论了DELAY 阶段与猜测程序树段的最好指令和地址模式有关的部分。在 3.6 节给出了寄存器分配算法。在 5.2 和 5.3 节，我们讨论了基础的代码生成算法和它使用控制流优化，通用子表达式，和其它信息的扩展，最后，在第 6 节中，我们总结了结果，然后讨论了机器独立的编译器原型实现的现状。</p>
 <h2 id="指令集处理器形式化"><a href="#指令集处理器形式化" class="headerlink" title="指令集处理器形式化"></a>指令集处理器形式化</h2><p>我们从机器模型或者指令集处理器的概述开始。我们通过七个组件来定义一个指令集处理器：<em>机器操作</em>和<em>数据类型</em>，指定了机器上的有效操作；<em>存储基础，访问模型（AMs）</em>，和<em>操作数类</em>，指定了机器上的有效位置和它们如何作为操作数访问的；<em>指令域和格式</em>，指定了指令的二进制表示。</p>
-<p>与每条指令相关联的是一组<em>输入/输出断言</em>，其表达了指令的动作。一个<em>输出断言</em>指定了指令执行之后处理器的状态，作为指令执行前处理器状态的函数。注意到因为大部分的处理器状态保存不变，所以我们实际需要表达的只是被改变了的状态。与每个输出断言成对的是<em>输入断言</em>，它指定了处理器状态的条件函数。输出断言成立，即状态有了一个新值，当且仅当输入断言满足（如果输入断言没有满足，则状态不会改变）。断言表达为一个<em>程序树模式</em>，其对应于指令执行的操作。例如，ADD 指令表达为</p>
-<script type="math/tex; mode=display">
-A \leftarrow A+E</script><p>其中，A 是累加器，E 是一个内存操作数。将断言表示为程序树的效果是，我们可以将这些作为模式树与程序树“匹配”，这可以实现一条指令。</p>
+<p>与每条指令相关联的是一组<em>输入/输出断言</em>，其表达了指令的动作。一个<em>输出断言</em>指定了指令执行之后处理器的状态，作为指令执行前处理器状态的函数。注意到因为大部分的处理器状态保存不变，所以我们实际需要表达的只是被改变了的状态。与每个输出断言成对的是<em>输入断言</em>，它指定了处理器状态的条件函数。输出断言成立，即状态有了一个新值，当且仅当输入断言满足（如果输入断言没有满足，则状态不会改变）。断言表达为一个<em>程序树模式</em>，其对应于指令执行的操作。例如，ADD 指令表达为<br>$$<br>A \leftarrow A+E<br>$$<br>其中，A 是累加器，E 是一个内存操作数。将断言表示为程序树的效果是，我们可以将这些作为模式树与程序树“匹配”，这可以实现一条指令。</p>
 <p>处理器状态实际的位置是<em>存储基础</em>（SBs）。SBs 可能是各种大小的简单位置，如一个累加器或者条件码，或者位置的数组，如通用寄存器数组或者主存。</p>
 <p>通常有几个指令操作数的选择，根据机器上不同的地址模型：“寄存器下标”，“间接通过内存位置”，“一个累加器”，等等。这些将被称为<em>访问模型</em>（AMs）。这些对指令操作数的访问模型的一致性由<em>操作数类</em>指定。特别的，一个操作数类定义了一个指令的操作数位置：它指定了一组访问，其在上下文中是有效的。访问模式的指定集合中的任意一个可能会用于获取/存储指令的相关操作数。例如，一个 ADD 指令可能需要一个通用的寄存器作为操作数接收结果，然后允许一个立即数常量或者内存位置作为其它操作数（在更早的例子中，A 和 E 是操作数类）。</p>
 <p>随着我们下一节的处理，一个机器地址的三级描述（存储基础，访问模式，操作数类）的效果在降低机器描述的大小和帮组生成良好的代码上应该变得更明显。</p>
@@ -285,7 +285,7 @@ A \leftarrow A+E</script><p>其中，A 是累加器，E 是一个内存操作数
 <p>另一个上下文语境用于区分程序控制流。考虑一个布尔表达式 “A &lt; B”。如果它出现在一个赋值语句的右边，表示 “true” 或者 “false” 的位模式必须开发和存储。但如果它作为条件的布尔部分出现，它可能只会导致控制流条件的改变。在这个场景中，我们指派节点作为”流“的上下文。</p>
 <p>最后，表达式在 a 可能不会产生结果；这在如 Bliss 的表达式语言里是比较重要的，其没有在一些场景下是没有语法区别的，例如，一个”条件语句“和一个”条件表达式“。</p>
 <p>我们当前识别了四类结果，”void“，”real“，”address“ 和 ”flow“。注意到通用子表达式的出现让一个给定表达式存在多个（或者所有）上下文成为可能。</p>
-<h3 id="一元补码-目标路径识别"><a href="#一元补码-目标路径识别" class="headerlink" title="一元补码 / 目标路径识别"></a>一元补码 / 目标路径识别</h3><p>一元补码操作会传播一元操作符到更高的树节点直到它们被纳入其它的操作或者不能再进一步了。一个传统的例子是把 “（-A <em> -B）” 变为 “（A </em> B）”，通过向上传播负号以及在“*”节点消除它们。但是，在 PQC 中一个一元补码操作符可能也会改变父节点的操作符（如，“+” 或者 “-”）。当涉及到两个临时位置时，这也会影响到哪个位置最适合开发结果（“目标路径”）。</p>
+<h3 id="一元补码-目标路径识别"><a href="#一元补码-目标路径识别" class="headerlink" title="一元补码 / 目标路径识别"></a>一元补码 / 目标路径识别</h3><p>一元补码操作会传播一元操作符到更高的树节点直到它们被纳入其它的操作或者不能再进一步了。一个传统的例子是把 “（-A * -B）” 变为 “（A * B）”，通过向上传播负号以及在“*”节点消除它们。但是，在 PQC 中一个一元补码操作符可能也会改变父节点的操作符（如，“+” 或者 “-”）。当涉及到两个临时位置时，这也会影响到哪个位置最适合开发结果（“目标路径”）。</p>
 <p>这个阶段需要的机器依赖的信息时相对简单的。例如，在优化一元否定时，必须知道如下一些开销：</p>
 <ul>
 <li>从内存移动值到寄存器</li>
@@ -317,7 +317,20 @@ A \leftarrow A+E</script><p>其中，A 是累加器，E 是一个内存操作数
 <h2 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h2><p>代码生成的讨论有三节：我们编译器模型的代码生成的抽象理论（5.1节）；代码生成算法本身（5.2节）；这个算法扩展到使用来自我们编译器的寄存器分配和流分析阶段的信息（5.3节）。</p>
 <h3 id="代码生成抽象"><a href="#代码生成抽象" class="headerlink" title="代码生成抽象"></a>代码生成抽象</h3><p>如果我们首先给出我们如何思考代码生成的模式，则更容易理解我们关于代码生成的观点。这个模型是不现实的，因为没有“真正的”编译器会实际在编译过程中做手段目的分析和目标导向搜索。在我们的实现里，代码生成中会执行尽可能多的这种搜索。</p>
 <p>给定一个机器描述，代码生成会尝试做的是定位，对于解析树上的每个操作，有一组指令会可行地评定这个操作。这个涉及启发式搜索技术；会存在一条指令就能评估操作，只要它的操作数满足一些标准（如，它们都在寄存器里）；如果不是，则使用目标导向收缩尝试将实际的情况转为期望的情况。</p>
-
+<p>目标向导搜索涉及使用一组将树转换为对应等价树的规则。这些包含了简单的布尔和算术公理如，<br>$$<br>\urcorner \urcorner E \equiv E<br>$$</p>
+<p>$$<br>E+0 \equiv E<br>$$</p>
+<p>$$<br>E_1 * E_2 \equiv E_2 * E_1<br>$$</p>
+<p>$$<br>\urcorner (E_1 \geq E_2) \equiv (E_1 &lt; E_2)<br>$$</p>
+<p>此外，有一些处理抽象机器行为的规则。<em>获取分解</em>规则表示为：<br>$$<br>E_1(E_2)\equiv S \leftarrow E_2; E_1(S) Fetch decomposition<br>$$<br>这个规则本质上说的是机器上的存储位置可以被用于保存中间结果：一个表达式$E_1$有一个子表达式$E_2$，可以通过首先计算$E_2$ 到 S 位置上，然后用 S 替换 $E_1$ 计算式里的 $E_2$ 。</p>
+<p>排序规则描述了带有程序计数器的机器里的控制流；特别是，在我们的机器模型里假设了程序计数器（PC）的传统自动增量。这样规则的一些例子如下：<br>$$<br>goto E \equiv PC \leftarrow E  \ \ goto \ rule<br>$$</p>
+<p>$$<br>PC \leftarrow PC + n; \ \ S&lt;space \ n&gt;\equiv <nil> \ \ skip rule<br>$$</p>
+<p>$$<br>goto \ L_1 \equiv goto \ L_1 - L_2 + PC; \ \ L_2; \ \ relative\ jump\ rule<br>$$</p>
+<p>最简单的规则表明 goto 与对 PC 的分配相同。在机器描述中，一个绝对跳转的输出断言被表示为一个给 PC 的赋值，因此，因此这条规则将 goto 关联到跳转。下一条规则描述<em>跳过</em>指令，即，长度为 n 的代码块，表示为”$S<space n>$“，在 n 被加到 PC 后，会被跳过。最后的规则表示绝对和相对的控制转换可以用于相互转换。</p>
+<p>完整的规则集和它们的使用在 [3] 中描述。</p>
+<p>实际上，在编译过程中使用这些规则执行启发式搜索是不合理的。因此，我们使用一个执行大量此类搜索的程序来产生一组表，这些表涉及少量或不存在搜索策略来获得期望的代码序列。这个程序是代码生成器的生成器，或者叫 CGG。其在[3] 和 [2] 中有详细的描述。</p>
+<p>CGG 包含的选择”感兴趣的“代码生成场景（模式树）的启发式规则，代码生成器很可能遇到。如果在目标机器指令集里不存在可以解决这个场景的指令，用于生成一条或一组指令的搜索技术将会完成这个任务。如果找到了多个待选项，则最低开销的待选项会被保留。作为 CGG 这些搜索的一个结果，当前在编译时唯一应用的一个规则时获取分解，其本质是寄存器分配和模式组合（会在下一节中进一步讨论）。</p>
+<p>这里值得注意的是 CGG 策略不保证有一个优化方案，或者确实有方案被找到。例如，在一条指令或者一组指令序列被找到前，已经到达了搜索深度的极限了。可能也存在一个公理需要确定代码序列等价的目标树可能不在公理的范围里的场景。程序等价的一般场景还未解决，因为没有一组产生式可以表示正确覆盖所有程序树的完备性。但是，这一理论结果对实际影响不大；对于”真正的“机器和”真正的“程序，一组小的产生式集和限制搜索深度看起来是足够的。</p>
+<h3 id="代码生成器"><a href="#代码生成器" class="headerlink" title="代码生成器"></a>代码生成器</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4>
     </div>
 
     
@@ -416,7 +429,7 @@ A \leftarrow A+E</script><p>其中，A 是累加器，E 是一个内存操作数
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E8%A1%A5%E7%A0%81-%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E8%AF%86%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">一元补码 &#x2F; 目标路径识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">评估顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90"><span class="nav-number">4.4.</span> <span class="nav-text">流分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F%E5%88%A4%E5%AE%9A"><span class="nav-number">4.5.</span> <span class="nav-text">访问模式判定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%90%8D%E5%AD%97%E8%B5%8B%E5%80%BC"><span class="nav-number">4.6.</span> <span class="nav-text">临时名字赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">代码生成后的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E6%8A%BD%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">代码生成抽象</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E8%A1%A5%E7%A0%81-%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E8%AF%86%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">一元补码 &#x2F; 目标路径识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">评估顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90"><span class="nav-number">4.4.</span> <span class="nav-text">流分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F%E5%88%A4%E5%AE%9A"><span class="nav-number">4.5.</span> <span class="nav-text">访问模式判定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%90%8D%E5%AD%97%E8%B5%8B%E5%80%BC"><span class="nav-number">4.6.</span> <span class="nav-text">临时名字赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">代码生成后的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E6%8A%BD%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">代码生成抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">代码生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">6.2.1.</span> <span class="nav-text">概述</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -493,13 +506,13 @@ A \leftarrow A+E</script><p>其中，A 是累加器，E 是一个内存操作数
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">216k</span>
+    <span title="总字数">218k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:17</span>
+    <span title="总时间">3:18</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
