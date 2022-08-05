@@ -30,7 +30,7 @@
 <meta property="og:description" content="定义了两种关系，用于捕获LALR（1）向前看集计算问题的基本结构；以及给出了计算这个集合的高效算法，其是与关系大小相关的线性时间。特别的，对于一个 PASCAL 语法，这个算法的执行性能比通过通用编译器-编译器 YACC 执行这个集合单元小 15%。 当一个语法不是 LALR（1），显式给出的，关系，提供给面向用户的错误消息，其特别给出了向前看问题是怎样出现的。此外，由这些关系导致的有向图中的某些">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-07-31T15:41:16.296Z">
+<meta property="article:modified_time" content="2022-08-05T15:16:06.872Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-31 23:41:16" itemprop="dateModified" datetime="2022-07-31T23:41:16+08:00">2022-07-31</time>
+                <time title="修改时间：2022-08-05 23:16:06" itemprop="dateModified" datetime="2022-08-05T23:16:06+08:00">2022-08-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,14 +234,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.7k</span>
+              <span>6.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -285,7 +285,13 @@
 <p>一个三元组$(A, \alpha, \beta)\in N\times V^*$叫作一项，写为$A\rightarrow\alpha \cdot \beta$，如果$A\rightarrow \alpha \beta$ 是产生式；如果$\beta = \epsilon$ ，它是终结符。一个项集叫作一个（解析）表。对于一个 CFG 的 $LR(0)$ 解析表 $PT(G)$ 的集合是<br>$$<br>PT(G) =_s {Closure{S\rightarrow\cdot S’\perp}} \cup {Closure IS | IS \in Successors IS’ 对于IS’ \in PT(G)}<br>$$<br>其中：<br>$$<br>Closure IS = IS \cup {A \rightarrow \cdot | B \rightarrow \alpha \cdot A \beta \in IS 和 A \rightarrow \omega \in P}<br>$$</p>
 <p>$$<br>Successors IS = {Nucleus(IS, X) | X\in V}<br>$$</p>
 <p>$$<br>Nucleus(IS, X) = {A\rightarrow \alpha X\cdot\beta | A \rightarrow\alpha\cdot X\beta \in IS}.<br>$$</p>
-
+<p>一个 CFG G 的 LR（0）自动机是一个 LR 自动机 LRA（G），这样存在一个双射函数$F:K\rightarrow PT(G) - {\empty}$，其中<br>$$<br>Start = F^{-1} (Closure {S\rightarrow \cdot S’\perp})<br>$$<br>对于所有的$t \in T, X \in V$，<br>$$<br>Next(q, X) = F^{-1}(Closure(Nucleus(F q, X)))<br>$$</p>
+<p>$$<br>Reduce(q,t) = {A\rightarrow\omega | A\rightarrow \omega \cdot \in F q}.<br>$$</p>
+<p>F 简单地建立表（除了 $\empty, “陷阱表”$）和状态之间的一一对应，因此解析表和解析器之间是同构的。因此，以后我们省略$F$ 和 $F^{-1}$ 的所有事件， 因为上下文总是决定 q 是否表示一个状态，它关联的解析表。自动机的“LR（0）度“的是明显的，因为 $Reduce(q, t)$ 的定义是独立于 t 的。以后，会经常使用“解析器”而不是自动机。</p>
+<p>众所周知的，LR（0）自动机 A 是 G 的正确解析器，即，$L(A) = L(G)$；但是，由于“非连续”状态的存在，通常它是非终结的。一个状态 q 是非连续的，当且仅当，存在一个$t\in T$ ，有$Next(q, t)$ 被定义，$Reduce(q,t) \neq \empty(读-归约冲突)$，或者$|Reduece(q,t)| &gt; 1(归约-归约冲突)$，或两者都存在。</p>
+<p>对于特定的移动顺序，一个速记符号是有用的：<br>$$<br>[\alpha |]yz \vdash^*[\alpha | \beta]\ 当且仅当 （Top[\alpha], yz）\vdash^*([Top[\alpha]:\beta],z).<br>$$<br>这个描述了一个概念，解析器读到 $y$ ，然后归约它到 $\beta$，可能包含 $y$ 前面的空字符串归约。竖线是必须的，因为$[\alpha]yz \vdash^*[\alpha \beta]z$ 并不一定意味着 $y$ 归约到 $\beta$。例如，考虑到$[\gamma A]txz\vdash_{read}[\gamma At]xz \vdash_{A\rightarrow At} [\gamma A]xz \vdash^*[\gamma A \beta]z$，其中 $tx$ 不会归约到$\beta$（这里$y = tx $和 $\ \alpha = \gamma A$）。</p>
+<h3 id="图"><a href="#图" class="headerlink" title="图"></a>图</h3><p>一个有向图是一对$(V’, E)$，其中$V’$ 是一组顶点，$E$ 是 $V’ \times V’$ 的子集，它的每个成员叫作边。在本文中，$V’$ 总是有限的。一个有向图路径，或者简化一个路径当上下文是清楚的，是一串顶点$V_1, \cdots,V_n\ ,n &gt; 1$，因此有，$(V_i, V_{i + 1}) \in E, 对于 1 \leq i &lt;n $ 成立；我们说存在一条从 $v_1$ 到$v_n$ 的路径。一个根顶点是一个没有路径到达它的顶点。一个有向无环图（DAG）是一个有向图，其中每个顶点都不存在到它自己的路径。一个森林是一个 DAG，其中每个顶点到给定顶点最多只有一条路径。一颗树一个森林，它只有一个确定的根顶点。</p>
+<h2 id="LALR-向前看集"><a href="#LALR-向前看集" class="headerlink" title="LALR 向前看集"></a>LALR 向前看集</h2>
     </div>
 
     
@@ -384,7 +390,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -461,13 +467,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">226k</span>
+    <span title="总字数">227k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:25</span>
+    <span title="总时间">3:27</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
