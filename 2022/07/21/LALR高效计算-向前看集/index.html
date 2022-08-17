@@ -32,8 +32,9 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_1.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_2.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_3.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_4.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-08-07T07:58:45.938Z">
+<meta property="article:modified_time" content="2022-08-17T15:49:11.021Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -209,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-07 15:58:45" itemprop="dateModified" datetime="2022-08-07T15:58:45+08:00">2022-08-07</time>
+                <time title="修改时间：2022-08-17 23:49:11" itemprop="dateModified" datetime="2022-08-17T23:49:11+08:00">2022-08-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,14 +239,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.3k</span>
+              <span>9.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -325,7 +326,14 @@
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_3.png" class="" title>
 
 
-<p>$Read(p, A)$ </p>
+<p>$Read(p, A)$ 是任意包含 A 的短语被归约前可以读取的终结符的集合。由于空字符串的许多归约的可能性和非终结符产生的，定义是复杂的，即，$\gamma \Rightarrow^* \epsilon$，在读移动最后发生之前。$Read(p, A)$ 只是从$r_0$“直接读符号”(DR， 下面表示)，如果$\gamma = \epsilon$ 在上图中（即，n = 0）。</p>
+<p>已经考虑到所有对 Follow 集的贡献，这个结果被总结到了下面的定理中，其中前两个定理是推论：</p>
+<p>  <strong>向上定理</strong><br>$$<br>Follow(p, A) =_s Read(p, A)\cup \bigcup{Follow(p`, B) | (p, A) 包含 (p’, B)}.<br>$$<br>（证明在附录中给出。）这就是说，$Follow(p’, A)$  是确定的(1)可读的终结符集合，通过第一个读，在归约一个短语到左上下文由 p ”记录“ 的A 之后，在任意包含 A 的短语被归约之前，伴随着(2) 非终结的 Follow 集到它的一些包含 A 的短语，后面最多跟随着一些可以为空的非终结符，在读到其它符号前，可以被归约，当然，每个这样的非终结符在合适的左上下文中。图解，对于 n 个这样的终结符，$B_1$ 穿过 $B_n$。</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_4.png" class="" title>
+
+
+<p>（$B_i,B_j;\beta_i ,\beta_j;\gamma_i ,\gamma_j$ 不必要不同。）</p>
 
     </div>
 
