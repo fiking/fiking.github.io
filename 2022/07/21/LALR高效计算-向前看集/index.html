@@ -33,8 +33,9 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_2.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_3.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_4.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_5.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-08-17T15:49:11.021Z">
+<meta property="article:modified_time" content="2022-08-18T15:42:17.334Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -210,7 +211,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-17 23:49:11" itemprop="dateModified" datetime="2022-08-17T23:49:11+08:00">2022-08-17</time>
+                <time title="修改时间：2022-08-18 23:42:17" itemprop="dateModified" datetime="2022-08-18T23:42:17+08:00">2022-08-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +240,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.9k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -262,78 +263,114 @@
 <p>当一个语法不是 LALR（1），显式给出的，关系，提供给面向用户的错误消息，其特别给出了向前看问题是怎样出现的。此外，由这些关系导致的有向图中的某些循环表明对于任意 k，这个语法不是 $LR(k)$。</p>
 <p>最后，一个经常被发现和使用，但不正确的向前看集合算法同样基于这里第一次定义的另外两个关系。这个算法的形式化定义应该有助于防止重复发现它。</p>
  <a id="more"></a>
-
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>因为 DeRemer [9] 发明的 LALR（1）语法，LALR 语法分析和解析技术作为翻译书写系统和编译器-编译器的一部分变得流行开了。但是，DeRemer 没有描述如何计算所需的向前看集合。反而，LaLonde 是第一个给出算法的[20]。在这之后，LaLonde 的算法由 Anderson 等人发表，[6, pp. 21-22]，他们也给出了他们自己的算法[6, pp.21]；Aho 和 Ulman[3, p.238] 给出了 YACC 使用的算法[16]。Kristensen 和 Madsen[19] 改善了 LaLonde 的算法，将结果扩展到了 $LALR(k)$。</p>
 <p>许多人也尝试过设计这种算法，通常是实现了 LALR（1）的特定子集，我们称之为“不完全的” LALR（1）或者 NQLALR（1）[7, 11, 23, 25]。随后，Watt 尝试重复他原始的方法 [24]，和 Chaney 与 DeRemer 的方法相同 [5]。这些后来的尝试都是不正确的，虽然比起 NQLALR 方法，两者更复杂，适合更多的场景。</p>
 <p>基本没有正确的 LALR（1）算法，除了 Kristensen 和 Madsen [19, Sec. 6.2]，几乎和他们的 NQLALR（1）同行一样高效。然后我们描述简单的简化这个结果，高效的算法不是完全正确的。当前论文的目的是提供一个算法，可以高效地利用问题的本质结构。</p>
 <h3 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h3><p>当一个文法不是 LR（0），一个或多个 LR（0）解析器的状态必然是“不一致的”，有“读-下降”或者“下降-下降”冲突，或者两者都有。在前一种情况下，解析器无法决定是否是去读下一个输入的符号，或者去减少栈中的一个短语。而在后一个场景中，是两个明显的下降的困惑。在输入的第一个符号向前看可能会解决这个冲突，因此 DeRemer 定义了一个文法为 LALR（1），每个不一致的状态 q 可以通过向前看集增强，可以解决冲突，得到一个正确的，确定性的或者“一致”的解析器[9]。</p>
 <p> 更确切地说，对于每个不一致的状态 q 和 q 中可能的下降 $A\rightarrow \omega$，令 “$A \rightarrow \omega$ 的前瞻集” 表示为$LA(q, A\rightarrow \omega)$。当解析器处于状态 q，以及在输入的头的符号是在 $LA(q, A\rightarrow \omega)$，则 $\omega$ 必须下降到 A。因此，q 中的向前看集必须是不相交的，且不包含任意可以从 q 中读取的符号。</p>
-<p>Watt [24] 已经定义了$LA(q, A\rightarrow \omega)$ 作为 ${t\in T | S\Rightarrow^+\alpha Atz\ 和\ \alpha \omega 访问 q }$，其中 T 是语法中的终止符集合。直观地，当解析器处在状态 q ，$\alpha \omega$ 在栈上时，要是输入是以一些遵循$\alpha A$最右侧句子的形式的终止符 t 开始的，则$\omega$ 到 A 的归约是刚好的。这边我们的目的是调查这个定义潜在的结构，从而表明如何更高效地计算 LA。</p>
+<p>Watt [24] 已经定义了$LA(q, A\rightarrow \omega)$ 作为 $\{t\in T | S\Rightarrow^+\alpha Atz\ 和\ \alpha \omega 访问 q \}$，其中 T 是语法中的终止符集合。直观地，当解析器处在状态 q ，$\alpha \omega$ 在栈上时，要是输入是以一些遵循$\alpha A$最右侧句子的形式的终止符 t 开始的，则$\omega$ 到 A 的归约是刚好的。这边我们的目的是调查这个定义潜在的结构，从而表明如何更高效地计算 LA。</p>
 <p>这个问题可以分解为四个独立的计算式。以相反的计算顺序，它们如下：LA 计算自非终结符转换的“Follow”集；Follow 集由非终结符的“Read” 集计算；Read 集由 “Direct Read” 集计算；Direct Read 集合由检查 $LR(0)$ 解析器计算。</p>
 <p>定义了一个非终结符转换关联 Follow 集的关系 <strong>includes</strong>，伴随着关系 <strong>Reads</strong> 关联 Read 集。通过解析器的检查，Read 集初始化为 Direct Read 集。然后，他们的值由一个图转换算法完成，为了找“强连通分量”（SCCs），适用于当它搜索由 reads 关系导出的有向图时，适当地计算集合的并集。如果找到一个非平凡的 SCC，问题中的语法对于任意的 k 都不在是$LR(k)$。下一步，Read 集 作为 Follow 集的初始值使用，通过在 includes 关系的有向图上应用 SCC 算法完成。再次，如果遇到的非平凡 SCC 中有一个非空的 Read 集，则（我们推测）这个语法对于任意的 k 都不是 $LR(k)$。在任意的场景中，LALR（1）向前看集是适当 Follow 集的简化合集。</p>
 <p>现在我们定义术语，定义 LALR（1），给出向前看集计算的相关定理，给出算法，简化讨论，给出一些实际语法的统计数据，表明如何为不是 LALR（1）的语法生成调试诊断，给出结论。</p>
-<h2 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h2><p>这里假定了符号的概念和符号串。一个词汇 V 是一个符号集。$V^*$ 表示符号的字符串集合全部来自 V。$V^+$ 表示$V^* - {\epsilon}$，其中 $\epsilon$ 是空字符串。任意字符串$\alpha$ 的长度表示为$|\alpha|$。一个非空字符串 $\alpha$ 的第一个符号由 $First\ \alpha$ 表示；剩余的字符串由 $Rest\ \alpha$ 表示；最后的符号由 $Last\ \alpha$ 表示。如图所示，当意图明显的时候，给函数的参数是不带括号的。</p>
+<h2 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h2><p>这里假定了符号的概念和符号串。一个词汇 V 是一个符号集。$V^<em>$ 表示符号的字符串集合全部来自 V。$V^+$ 表示$V^</em> - {\epsilon}$，其中 $\epsilon$ 是空字符串。任意字符串$\alpha$ 的长度表示为$|\alpha|$。一个非空字符串 $\alpha$ 的第一个符号由 $First\ \alpha$ 表示；剩余的字符串由 $Rest\ \alpha$ 表示；最后的符号由 $Last\ \alpha$ 表示。如图所示，当意图明显的时候，给函数的参数是不带括号的。</p>
 <p>如果 $R$ 是关系，$R^*$ 表示 R 的自反的，传递闭包，然后 $R^+$ 表示传递闭包。我们写 $X =_s F(X)$ 意味着 X 是满足$X = F(X)$ 的最小集。$\cup{S_1, …, S_n} $，其中 $S_i$ 是集合，表示$S_1 \cup … \cup S_n$。</p>
 <h3 id="CFGs"><a href="#CFGs" class="headerlink" title="CFGs"></a>CFGs</h3><p>一个上下文无关语法（CFG）是一个四元组$G = (T, N, S, P)$，其中 T 是一个终结符的有限集，N 是一个非终结符符号的集合，$T\cap N = \empty, S\in N$ 是起始符号；P 是 $N \times V^*$ 的有限子集，其中$V = T \cup N$，每个成员称为一个产生式，写为$A\rightarrow\omega$。$A$ 称为左侧部分，$\omega$ 称为右侧部分。我们需要一个产生式$S\rightarrow S^{‘}\bot$，对于一些 $S^{‘}\in N  $ 和 $\bot \in T$，如此$\bot$ 和 $S$ 不会出现在其它产生式中。</p>
-<p>本文采用以下（通常）约定：<br>$$<br>S, A, B, C, … \in N<br>$$</p>
-<p>$$<br>X \in V<br>$$</p>
-<p>$$<br>t, a, b, c, … \in T<br>$$</p>
-<p>$$<br>…, x, y, z \in T^*<br>$$</p>
-<p>$$<br>\alpha, \beta, \gamma, … \in V^{*}<br>$$</p>
-<p>关系 $\Rightarrow_r$ 读作“直接（右）产生”以及定义在 $V^*$，有 $\alpha Ay \Rightarrow_r \alpha \omega y$  满足所有的$\alpha \in V^*, y \in T^*$，和$A\rightarrow \omega \in P$。下标 r 之后会丢弃，因为我们总是说右表达式。$\Rightarrow^*$ 和 $\Rightarrow^+$ 读作产生。一个可为空的非终结符式一个产生$\in$。如果$S \Rightarrow^* \alpha$，则 $\alpha$ 是一个句子结构；如果$\alpha \in T^*$，则它称为一个句子。由 G 生成的语言 $L（G）$ 是句子的集合，即，${x\in T^* | S \Rightarrow^+x}$。这里的语法假设都是可归约的，即对于所有的 $A\in N$和 一些$\alpha, \beta 和y\in V^*$， 有 $S\Rightarrow^+ \alpha A \beta$ 和 $A \Rightarrow^* y$ 。</p>
-<p>令 G 是 一个 CFG，$k \geq 0$。G 是$LR(k)$ 当且仅当 $S\Rightarrow^* \alpha Ay \Rightarrow \alpha \omega y$ 隐含着，如果 $S \Rightarrow ^* \gamma \Rightarrow \alpha\omega y^{‘}$ ，则对于所有的$\alpha, \gamma \in V^* 和 y, y^{‘} \in T^*$，有$\gamma = \alpha A y^{‘’}$，因此$First_k(y^{‘}) = First_k(y)$ [17]。这里 $First_k(y)$ 是 $y$ 的 $k$ 长前缀，或者只有 $y$ ，此时$|y| &lt; k$。</p>
+<p>本文采用以下（通常）约定：</p>
+<script type="math/tex; mode=display">
+S, A, B, C, ... \in N</script><script type="math/tex; mode=display">
+X \in V</script><script type="math/tex; mode=display">
+t, a, b, c, ... \in T</script><script type="math/tex; mode=display">
+..., x, y, z \in T^*</script><script type="math/tex; mode=display">
+\alpha, \beta, \gamma, ... \in V^{*}</script><p>关系 $\Rightarrow_r$ 读作“直接（右）产生”以及定义在 $V^<em>$，有 $\alpha Ay \Rightarrow_r \alpha \omega y$  满足所有的$\alpha \in V^</em>, y \in T^<em>$，和$A\rightarrow \omega \in P$。下标 r 之后会丢弃，因为我们总是说右表达式。$\Rightarrow^</em>$ 和 $\Rightarrow^+$ 读作产生。一个可为空的非终结符式一个产生$\in$。如果$S \Rightarrow^<em> \alpha$，则 $\alpha$ 是一个句子结构；如果$\alpha \in T^</em>$，则它称为一个句子。由 G 生成的语言 $L（G）$ 是句子的集合，即，$\{x\in T^<em> | S \Rightarrow^+x\}$。这里的语法假设都是可归约的，即对于所有的 $A\in N$和 一些$\alpha, \beta 和y\in V^</em>$， 有 $S\Rightarrow^+ \alpha A \beta$ 和 $A \Rightarrow^* y$ 。</p>
+<p>令 G 是 一个 CFG，$k \geq 0$。G 是$LR(k)$ 当且仅当 $S\Rightarrow^<em> \alpha Ay \Rightarrow \alpha \omega y$ 隐含着，如果 $S \Rightarrow ^</em> \gamma \Rightarrow \alpha\omega y^{‘}$ ，则对于所有的$\alpha, \gamma \in V^<em> 和 y, y^{‘} \in T^</em>$，有$\gamma = \alpha A y^{‘’}$，因此$First_k(y^{‘}) = First_k(y)$ [17]。这里 $First_k(y)$ 是 $y$ 的 $k$ 长前缀，或者只有 $y$ ，此时$|y| &lt; k$。</p>
 <h3 id="LR-解析器"><a href="#LR-解析器" class="headerlink" title="LR 解析器"></a>LR 解析器</h3><p>下一步，我们介绍一个 LR 解析器的形式化，即，一个任意单符号向前看解析器，如，SLR（1），LALR（1），或LR（1） 解析器[1]。然后扩展都多符号向前看集是比较简单的，但这里不在涉及。给出一些下面定义的“LR 自动机”表格表示，和通用的 LR 解析算法解析那些表，我们有一个“LR 解析器”。特定的状态，转换，和向前看集由问题中的语法和结构化技术定义。例如，LALR（1）技术产生一个“LALR（1）自动机”。</p>
-<p>对于 CFG $G = &lt;T, N, S, P&gt;$ 的 LR 自动机是一个六元组$LRA(G) = &lt;X, V, P, Start, Next, Reduce&gt;$，其中 K 是有限状态集，$V$ 和 $P$ 是在 G 中的，$Start \in K$ 是开始状态，Next：$K \times V \rightarrow K$ 是转换函数，Reduce：$K \times T \rightarrow 2^p$ 是归约函数。Next 可能是个局部函数。非确定性或者“不一致” LR 自动机是允许的；第三节的 LALR（1） 状态去掉了这种场景。一个转换是 $K \times V$  的一个成员；如果它是在 $K\times T$ 中，则它是一个终结转换；如果它在$K \times N$ 中，则它是非终结转换。转换$(q, X)$ 表示为$q \longrightarrow ^X p$，其中$p = Next(q, X)$；或者当 q 是无关紧要的，表示为$q \longrightarrow ^X $。我们定义接受字符$p = X$。每个状态有唯一的访问字符，除了 Start，其是没有的。</p>
+<p>对于 CFG $G = <T, N, S, P>$ 的 LR 自动机是一个六元组$LRA(G) = <X, V, P, Start, Next, Reduce>$，其中 K 是有限状态集，$V$ 和 $P$ 是在 G 中的，$Start \in K$ 是开始状态，Next：$K \times V \rightarrow K$ 是转换函数，Reduce：$K \times T \rightarrow 2^p$ 是归约函数。Next 可能是个局部函数。非确定性或者“不一致” LR 自动机是允许的；第三节的 LALR（1） 状态去掉了这种场景。一个转换是 $K \times V$  的一个成员；如果它是在 $K\times T$ 中，则它是一个终结转换；如果它在$K \times N$ 中，则它是非终结转换。转换$(q, X)$ 表示为$q \longrightarrow ^X p$，其中$p = Next(q, X)$；或者当 q 是无关紧要的，表示为$q \longrightarrow ^X $。我们定义接受字符$p = X$。每个状态有唯一的访问字符，除了 Start，其是没有的。</p>
 <p>在文本的图表中，LR 自动机由状态图表示，其中状态由转换连接。对于 Reduce 中的每个状态 q 表明了可能的归约，列出了产生式。</p>
-<p>一条路径是一系列状态 $q_0, …, q_n$ 如<br>$$<br>q_0 \longrightarrow ^ {X_1}q_1 -\cdots\rightarrow q_{n-1}\longrightarrow^{X_n}q_n.<br>$$<br>我们说 H 拼出 $\alpha = X_1 \cdots X_n$，定义 $Spelling\ H = \alpha$ 和 $Top\ H = q_n$。H 表示为$q_0 - \cdots ^\alpha \rightarrow q_n$，读作 “$在 \alpha 之下，q_0 到 q_n $”。H 的替代符是$[q : \alpha]$ 和 $[q’ : \alpha’]$，其中 Top $[q:\alpha] = q’$，写作$[q:\alpha][q’:\alpha’]$，表示为$[q:\alpha\alpha’]$。$[Start:\alpha]$ 可以缩写为$[\alpha]$；因此$[\ ]$ 单独表示 Start。如果 $Top [\alpha] = q$ ，我们说 $\alpha\ 接受\ q$。</p>
-<p>一个配置是$K^+ \times T^+$的一个成员；它的第一部分是状态检查，第二部分是输入。配置中的关系 $\vdash$  读作“直接移到”，它是$\vdash_{read}$ 和$\vdash_{A\rightarrow\omega}$ 的并集，对于所有的$A\rightarrow \omega \in P$ 成立。$\vdash_{read}$ 读作“读到”：如果定义了 $Next(Top[q:\alpha, t])$，$[q:\alpha]tz \vdash_{read}[q, \alpha t]z$。$\vdash_{A\rightarrow\omega}$ 读作“归约 $\omega$ 到 A 的移动”：$[q:\alpha\omega]tz \vdash_{A\rightarrow\omega}[q:\alpha A]tz$，当 $A\rightarrow\omega\in Reduce(Top(q:\alpha\omega), t)$（且当$[q:\alpha A]$ 在路径上；但是这个额外的限制总是在当前的 LR 自动机的考虑中）。$\vdash^*$ 和 $\vdash^+$ 读作“移到”。由$LRA(G)$ 解析的语言 $L(LRA(G))$ 必须于$L(G)$ 是相同的，是${z\in T^* | [\ ] z \vdash^+[S’]\perp}$。</p>
-<p>一个三元组$(A, \alpha, \beta)\in N\times V^*$叫作一项，写为$A\rightarrow\alpha \cdot \beta$，如果$A\rightarrow \alpha \beta$ 是产生式；如果$\beta = \epsilon$ ，它是终结符。一个项集叫作一个（解析）表。对于一个 CFG 的 $LR(0)$ 解析表 $PT(G)$ 的集合是<br>$$<br>PT(G) =_s {Closure{S\rightarrow\cdot S’\perp}} \cup {Closure IS | IS \in Successors IS’ 对于IS’ \in PT(G)}<br>$$<br>其中：<br>$$<br>Closure IS = IS \cup {A \rightarrow \cdot | B \rightarrow \alpha \cdot A \beta \in IS 和 A \rightarrow \omega \in P}<br>$$</p>
-<p>$$<br>Successors IS = {Nucleus(IS, X) | X\in V}<br>$$</p>
-<p>$$<br>Nucleus(IS, X) = {A\rightarrow \alpha X\cdot\beta | A \rightarrow\alpha\cdot X\beta \in IS}.<br>$$</p>
-<p>一个 CFG G 的 LR（0）自动机是一个 LR 自动机 LRA（G），这样存在一个双射函数$F:K\rightarrow PT(G) - {\empty}$，其中<br>$$<br>Start = F^{-1} (Closure {S\rightarrow \cdot S’\perp})<br>$$<br>对于所有的$t \in T, X \in V$，<br>$$<br>Next(q, X) = F^{-1}(Closure(Nucleus(F q, X)))<br>$$</p>
-<p>$$<br>Reduce(q,t) = {A\rightarrow\omega | A\rightarrow \omega \cdot \in F q}.<br>$$</p>
-<p>F 简单地建立表（除了 $\empty, “陷阱表”$）和状态之间的一一对应，因此解析表和解析器之间是同构的。因此，以后我们省略$F$ 和 $F^{-1}$ 的所有事件， 因为上下文总是决定 q 是否表示一个状态，它关联的解析表。自动机的“LR（0）度“的是明显的，因为 $Reduce(q, t)$ 的定义是独立于 t 的。以后，会经常使用“解析器”而不是自动机。</p>
+<p>一条路径是一系列状态 $q_0, …, q_n$ 如</p>
+<script type="math/tex; mode=display">
+q_0 \longrightarrow ^ {X_1}q_1 -\cdots\rightarrow q_{n-1}\longrightarrow^{X_n}q_n.</script><p>我们说 H 拼出 $\alpha = X_1 \cdots X_n$，定义 $Spelling\ H = \alpha$ 和 $Top\ H = q_n$。H 表示为$q_0 - \cdots ^\alpha \rightarrow q_n$，读作 “$在 \alpha 之下，q_0 到 q_n $”。H 的替代符是$[q : \alpha]$ 和 $[q’ : \alpha’]$，其中 Top $[q:\alpha] = q’$，写作$[q:\alpha][q’:\alpha’]$，表示为$[q:\alpha\alpha’]$。$[Start:\alpha]$ 可以缩写为$[\alpha]$；因此$[\ ]$ 单独表示 Start。如果 $Top [\alpha] = q$ ，我们说 $\alpha\ 接受\ q$。</p>
+<p>一个配置是$K^+ \times T^+$的一个成员；它的第一部分是状态检查，第二部分是输入。配置中的关系 $\vdash$  读作“直接移到”，它是$\vdash_{read}$ 和$\vdash_{A\rightarrow\omega}$ 的并集，对于所有的$A\rightarrow \omega \in P$ 成立。$\vdash_{read}$ 读作“读到”：如果定义了 $Next(Top[q:\alpha, t])$，$[q:\alpha]tz \vdash_{read}[q, \alpha t]z$。$\vdash_{A\rightarrow\omega}$ 读作“归约 $\omega$ 到 A 的移动”：$[q:\alpha\omega]tz \vdash_{A\rightarrow\omega}[q:\alpha A]tz$，当 $A\rightarrow\omega\in Reduce(Top(q:\alpha\omega), t)$（且当$[q:\alpha A]$ 在路径上；但是这个额外的限制总是在当前的 LR 自动机的考虑中）。$\vdash^<em>$ 和 $\vdash^+$ 读作“移到”。由$LRA(G)$ 解析的语言 $L(LRA(G))$ 必须于$L(G)$ 是相同的，是$\{z\in T^</em> | [\ ] z \vdash^+[S’]\perp\}$。</p>
+<p>一个三元组$(A, \alpha, \beta)\in N\times V^*$叫作一项，写为$A\rightarrow\alpha \cdot \beta$，如果$A\rightarrow \alpha \beta$ 是产生式；如果$\beta = \epsilon$ ，它是终结符。一个项集叫作一个（解析）表。对于一个 CFG 的 $LR(0)$ 解析表 $PT(G)$ 的集合是</p>
+<script type="math/tex; mode=display">
+PT(G) =_s \{Closure\{S\rightarrow\cdot S'\perp\}\} \cup \{Closure IS | IS \in Successors IS' 对于IS' \in PT(G)\}</script><p>其中：</p>
+<script type="math/tex; mode=display">
+Closure IS = IS \cup {A \rightarrow \cdot | B \rightarrow \alpha \cdot A \beta \in IS 和 A \rightarrow \omega \in P}</script><script type="math/tex; mode=display">
+Successors IS = \{Nucleus(IS, X) | X\in V\}</script><script type="math/tex; mode=display">
+Nucleus(IS, X) = \{A\rightarrow \alpha X\cdot\beta | A \rightarrow\alpha\cdot X\beta \in IS\}.</script><p>一个 CFG G 的 LR（0）自动机是一个 LR 自动机 LRA（G），这样存在一个双射函数$F:K\rightarrow PT(G) - \{\empty\}$，其中</p>
+<script type="math/tex; mode=display">
+Start = F^{-1} (Closure \{S\rightarrow \cdot S'\perp\})</script><p>对于所有的$t \in T, X \in V$，</p>
+<script type="math/tex; mode=display">
+Next(q, X) = F^{-1}(Closure(Nucleus(F q, X)))</script><script type="math/tex; mode=display">
+Reduce(q,t) = \{A\rightarrow\omega | A\rightarrow \omega \cdot \in F q\}.</script><p>F 简单地建立表（除了 $\empty, “陷阱表”$）和状态之间的一一对应，因此解析表和解析器之间是同构的。因此，以后我们省略$F$ 和 $F^{-1}$ 的所有事件， 因为上下文总是决定 q 是否表示一个状态，它关联的解析表。自动机的“LR（0）度“的是明显的，因为 $Reduce(q, t)$ 的定义是独立于 t 的。以后，会经常使用“解析器”而不是自动机。</p>
 <p>众所周知的，LR（0）自动机 A 是 G 的正确解析器，即，$L(A) = L(G)$；但是，由于“非连续”状态的存在，通常它是非终结的。一个状态 q 是非连续的，当且仅当，存在一个$t\in T$ ，有$Next(q, t)$ 被定义，$Reduce(q,t) \neq \empty(读-归约冲突)$，或者$|Reduece(q,t)| &gt; 1(归约-归约冲突)$，或两者都存在。</p>
-<p>对于特定的移动顺序，一个速记符号是有用的：<br>$$<br>[\alpha |]yz \vdash^*[\alpha | \beta]\ 当且仅当 （Top[\alpha], yz）\vdash^*([Top[\alpha]:\beta],z).<br>$$<br>这个描述了一个概念，解析器读到 $y$ ，然后归约它到 $\beta$，可能包含 $y$ 前面的空字符串归约。竖线是必须的，因为$[\alpha]yz \vdash^*[\alpha \beta]z$ 并不一定意味着 $y$ 归约到 $\beta$。例如，考虑到$[\gamma A]txz\vdash_{read}[\gamma At]xz \vdash_{A\rightarrow At} [\gamma A]xz \vdash^*[\gamma A \beta]z$，其中 $tx$ 不会归约到$\beta$（这里$y = tx $和 $\ \alpha = \gamma A$）。</p>
+<p>对于特定的移动顺序，一个速记符号是有用的：</p>
+<script type="math/tex; mode=display">
+[\alpha |]yz \vdash^*[\alpha | \beta]\ 当且仅当 （Top[\alpha], yz）\vdash^*([Top[\alpha]:\beta],z).</script><p>这个描述了一个概念，解析器读到 $y$ ，然后归约它到 $\beta$，可能包含 $y$ 前面的空字符串归约。竖线是必须的，因为$[\alpha]yz \vdash^<em>[\alpha \beta]z$ 并不一定意味着 $y$ 归约到 $\beta$。例如，考虑到$[\gamma A]txz\vdash_{read}[\gamma At]xz \vdash_{A\rightarrow At} [\gamma A]xz \vdash^</em>[\gamma A \beta]z$，其中 $tx$ 不会归约到$\beta$（这里$y = tx $和 $\ \alpha = \gamma A$）。</p>
 <h3 id="图"><a href="#图" class="headerlink" title="图"></a>图</h3><p>一个有向图是一对$(V’, E)$，其中$V’$ 是一组顶点，$E$ 是 $V’ \times V’$ 的子集，它的每个成员叫作边。在本文中，$V’$ 总是有限的。一个有向图路径，或者简化一个路径当上下文是清楚的，是一串顶点$V_1, \cdots,V_n\ ,n &gt; 1$，因此有，$(V_i, V_{i + 1}) \in E, 对于 1 \leq i &lt;n $ 成立；我们说存在一条从 $v_1$ 到$v_n$ 的路径。一个根顶点是一个没有路径到达它的顶点。一个有向无环图（DAG）是一个有向图，其中每个顶点都不存在到它自己的路径。一个森林是一个 DAG，其中每个顶点到给定顶点最多只有一条路径。一颗树一个森林，它只有一个确定的根顶点。</p>
 <h2 id="LALR-向前看集"><a href="#LALR-向前看集" class="headerlink" title="LALR 向前看集"></a>LALR 向前看集</h2><p>“LALR（1）解析器” 可以通过提炼 LR（0）解析器的归约定义来定义。 直观地，$Reduce(q, t)$ 应该包含 $A \rightarrow \omega$ 只要存在语法 $\alpha A tz$ 和 $\alpha \omega tz$ ，则 $\alpha \omega$ 接收 q。在 “向前看符号”（LA）的定义之后给出 LALR（1）解析器的定义：</p>
-<p><em>定义</em>. 对于一个 LR（0）解析器，<br>$$<br>LA(q, A \rightarrow \omega) = { t\in T | [\alpha \omega]tz \vdash_{a \rightarrow \omega}[\alpha A]tz\vdash^*[S’\perp], 则 \alpha\omega 接收 q}.<br>$$</p>
-<p><em>定义</em>. 一个 CFG G 的 LALR（1）解析器与 G 的 LR（0） 解析器类似，除了<br>$$<br>Reduce(q, t) = {A\rightarrow\omega | t \in LA(q, A\rightarrow \omega)}.<br>$$</p>
-<p><em>定义</em>. 一个 CFG 是 LALR（1），当且仅当它的 LALR（1）解析器没有不一致的状态。</p>
-<p>后者根据LALR（1）解析器定义了 LALR（1）语法；一个语法是LALR（1），当且仅当它的LALR（1）解析器是确定的。最好有一个LALR（1）语法的定义不涉及解析器，但我们知道没有合理的方法可以做到这点。然而，我们确实在以下定理中更接近一点了，Watt 给出它作为定义[24]。<br>$$<br>定理.LA(q, A\rightarrow \omega) = {t\in T | S \Rightarrow^* \alpha A tz\ 和\ \alpha \omega 接收 q}.<br>$$<br> 这个证明本质上依赖于LR（0）解析器的正确性，即，移动忠实地反映了推导过程；我们不会在这里证明它。</p>
+<p><em>定义</em>. 对于一个 LR（0）解析器， </p>
+<script type="math/tex; mode=display">
+LA(q, A \rightarrow \omega) = \{ t\in T | [\alpha \omega]tz \vdash_{a \rightarrow \omega}[\alpha A]tz\vdash^*[S'\perp], 则 \alpha\omega 接收 q\}.</script><p><em>定义</em>. 一个 CFG G 的 LALR（1）解析器与 G 的 LR（0） 解析器类似，除了</p>
+<script type="math/tex; mode=display">
+Reduce(q, t) = \{A\rightarrow\omega | t \in LA(q, A\rightarrow \omega)\}.</script><p><em>定义</em>. 一个 CFG 是 LALR（1），当且仅当它的 LALR（1）解析器没有不一致的状态。</p>
+<p>后者根据LALR（1）解析器定义了 LALR（1）语法；一个语法是LALR（1），当且仅当它的LALR（1）解析器是确定的。最好有一个LALR（1）语法的定义不涉及解析器，但我们知道没有合理的方法可以做到这点。然而，我们确实在以下定理中更接近一点了，Watt 给出它作为定义[24]。</p>
+<script type="math/tex; mode=display">
+定理.LA(q, A\rightarrow \omega) = \{t\in T | S \Rightarrow^* \alpha A tz\ 和\ \alpha \omega 接收 q\}.</script><p> 这个证明本质上依赖于LR（0）解析器的正确性，即，移动忠实地反映了推导过程；我们不会在这里证明它。</p>
 <p>这里主要的目标是给出了如何计算 LA 集。为此，我们主要关注在非终结符转化，定义它们的“follow sets”。</p>
-<p><em>定义.</em>  对于一个有非终结转化的 $(p, A)$ 的 LR（0）解析器，<br>$$<br>Follow(p, A) = {t\in T | [\alpha A]tz \vdash^*[S’\perp] 和\ \alpha 接收 p}.<br>$$<br>这些只是可以在句子中跟随 A 的终结符，它前缀$\alpha$，前一个是 A，接受状态 p，给定 LR（0）解析器的正确性。根据推导说明，$Follow(p, A) = { t\in T | S \Rightarrow^* \alpha Atz 和\ \alpha 接受 p}$。因此，可以容易地看到每个 LA 集只是一些相关 FoLLow 集的并集。</p>
-<p>定理 并集<br>$$<br>LA(q, A\rightarrow \omega) = \cup{Follow(p, A)\ |\ (p, A)是一个转换，p-\cdots^*\rightarrow q}.<br>$$<br>(证明在附录中给出。)就是说，处在状态 q 的产生式 $A \rightarrow \omega $ 的 LA 集是 A-转换的并集，它们的源状态 p 有一条路径为$\omega$，其终结在 q 上。直观地，当解析器在状态 q 归约 $\omega$ 到 A，在$\omega $弹出后，每个这样的 p 是一个可能的顶部状态；然后，解析器必须读 p 中的 A，都有一些终结符 t，输入的第一个。</p>
+<p><em>定义.</em>  对于一个有非终结转化的 $(p, A)$ 的 LR（0）解析器，</p>
+<script type="math/tex; mode=display">
+Follow(p, A) = \{t\in T | [\alpha A]tz \vdash^*[S'\perp] 和\ \alpha 接收 p\}.</script><p>这些只是可以在句子中跟随 A 的终结符，它前缀$\alpha$，前一个是 A，接受状态 p，给定 LR（0）解析器的正确性。根据推导说明，$Follow(p, A) = \{ t\in T | S \Rightarrow^* \alpha Atz 和\ \alpha 接受 p\}$。因此，可以容易地看到每个 LA 集只是一些相关 FoLLow 集的并集。</p>
+<p>定理 并集</p>
+<script type="math/tex; mode=display">
+LA(q, A\rightarrow \omega) = \cup\{Follow(p, A)\ |\ (p, A)是一个转换，p-\cdots^*\rightarrow q\}.</script><p>(证明在附录中给出。)就是说，处在状态 q 的产生式 $A \rightarrow \omega $ 的 LA 集是 A-转换的并集，它们的源状态 p 有一条路径为$\omega$，其终结在 q 上。直观地，当解析器在状态 q 归约 $\omega$ 到 A，在$\omega $弹出后，每个这样的 p 是一个可能的顶部状态；然后，解析器必须读 p 中的 A，都有一些终结符 t，输入的第一个。</p>
 <p>图解，</p>
  
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_1.png" class="" title>
 
-
-<p>当解析器处在状态 q，如果下一个输入符号 t 是$Follow(p_i, A)(1 \leq i \leq n)$ 中的任意一个时，它需要归约$A\rightarrow \omega $，即，如果 t 可以跟随 A 在任意被状态$p_1$到 $p_n$ “记住”的上下文左侧。关心的转换式$(p_i, A)$可以通过下面的关系获得：<br>$$<br>定义[24].(q, A\rightarrow \omega)\ 向后看(p, A)\ 当且仅当 p -\cdots^\omega\rightarrow q.<br>$$<br>因此，$LA(q, A\rightarrow\omega) = \cup{Follow(p,A) | (q, A\rightarrow\omega) 向后看(p, A)}$.</p>
+<p>当解析器处在状态 q，如果下一个输入符号 t 是$Follow(p_i, A)(1 \leq i \leq n)$ 中的任意一个时，它需要归约$A\rightarrow \omega $，即，如果 t 可以跟随 A 在任意被状态$p_1$到 $p_n$ “记住”的上下文左侧。关心的转换式$(p_i, A)$可以通过下面的关系获得：</p>
+<script type="math/tex; mode=display">
+定义[24].(q, A\rightarrow \omega)\ 向后看(p, A)\ 当且仅当 p -\cdots^\omega\rightarrow q.</script><p>因此，$LA(q, A\rightarrow\omega) = \cup\{Follow(p,A) | (q, A\rightarrow\omega) 向后看(p, A)\}$.</p>
 <p>反过来，Follow 集是相互关联的。特别是，</p>
-<p><strong>定理</strong>，$Follw(p’, B) \subseteq Follow(p, A) $ 如果<br>$$<br>B \rightarrow \beta A\gamma, \gamma \Rightarrow^* \epsilon, 且 p’ -\cdots^\beta \rightarrow p.<br>$$<br>图解，</p>
+<p><strong>定理</strong>，$Follw(p’, B) \subseteq Follow(p, A) $ 如果</p>
+<script type="math/tex; mode=display">
+B \rightarrow \beta A\gamma, \gamma \Rightarrow^* \epsilon, 且 p' -\cdots^\beta \rightarrow p.</script><p>图解，</p>
  
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_2.png" class="" title>
 
-
 <p>这很容易看到，因为，给定一些字符串 $\alpha$ 接受 $p’$，我们有$\alpha \beta$ 接受 p，在适当的右侧上下文中，$\alpha \beta A$ 可以首先归约到$\alpha \beta A \gamma$，通过$\gamma \Rightarrow^* \epsilon$，则到$\alpha B$。因此，在$p’$记住的左侧上下文可以跟随 B 的那些符号，也可以在 p 记住的左侧上下文中跟随 A。上述的包含可以通过非终结符转换的关系来获得。</p>
-<p><em>定义.</em> $(p, A) 包含(p’, B)$  当且仅当<br>$$<br>B \rightarrow \beta A \gamma,\ \gamma \Rightarrow^* \epsilon, 且 p’-\cdots^{\beta}\rightarrow p.<br>$$<br>因此，$Follow(p’, B) \subseteq Follow(p, A)$ 当 $(p, A) 包含(p’, B) $ 时成立。</p>
+<p><em>定义.</em> $(p, A) 包含(p’, B)$  当且仅当</p>
+<script type="math/tex; mode=display">
+B \rightarrow \beta A \gamma,\ \gamma \Rightarrow^* \epsilon, 且 p'-\cdots^{\beta}\rightarrow p.</script><p>因此，$Follow(p’, B) \subseteq Follow(p, A)$ 当 $(p, A) 包含(p’, B) $ 时成立。</p>
 <p>下一步，观察到标记终结转换“跟随”非终结转换$(p, A)$的符号显然在$Follow(p, a)$。</p>
 <p><strong>定理</strong>。$Read(p, A) \subseteq Follow(p, A)$。</p>
 <p>其中，</p>
-<p><em>定义</em>。对于一个 LR(0) 解析器，带有非终结转化$(p, A)$，<br>$$<br>Read(p, A) = {t\in T | \alpha 接受 p 且[\alpha A|]tz \vdash ^* [\alpha A | \gamma ]tz \vdash_{read}[\alpha A \gamma t]z \vdash^*[S’\perp]}.<br>$$<br>图解，</p>
+<p><em>定义</em>。对于一个 LR(0) 解析器，带有非终结转化$(p, A)$，</p>
+<script type="math/tex; mode=display">
+Read(p, A) = \{t\in T | \alpha 接受 p 且[\alpha A|]tz \vdash ^* [\alpha A | \gamma ]tz \vdash_{read}[\alpha A \gamma t]z \vdash^*[S'\perp]\}.</script><p>图解，</p>
  
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_3.png" class="" title>
 
-
 <p>$Read(p, A)$ 是任意包含 A 的短语被归约前可以读取的终结符的集合。由于空字符串的许多归约的可能性和非终结符产生的，定义是复杂的，即，$\gamma \Rightarrow^* \epsilon$，在读移动最后发生之前。$Read(p, A)$ 只是从$r_0$“直接读符号”(DR， 下面表示)，如果$\gamma = \epsilon$ 在上图中（即，n = 0）。</p>
 <p>已经考虑到所有对 Follow 集的贡献，这个结果被总结到了下面的定理中，其中前两个定理是推论：</p>
-<p>  <strong>向上定理</strong><br>$$<br>Follow(p, A) =_s Read(p, A)\cup \bigcup{Follow(p`, B) | (p, A) 包含 (p’, B)}.<br>$$<br>（证明在附录中给出。）这就是说，$Follow(p’, A)$  是确定的(1)可读的终结符集合，通过第一个读，在归约一个短语到左上下文由 p ”记录“ 的A 之后，在任意包含 A 的短语被归约之前，伴随着(2) 非终结的 Follow 集到它的一些包含 A 的短语，后面最多跟随着一些可以为空的非终结符，在读到其它符号前，可以被归约，当然，每个这样的非终结符在合适的左上下文中。图解，对于 n 个这样的终结符，$B_1$ 穿过 $B_n$。</p>
+<p>  <strong>向上定理</strong></p>
+<script type="math/tex; mode=display">
+Follow(p, A) =_s Read(p, A)\cup \bigcup\{Follow(p`, B) | (p, A) 包含 (p', B)\}.</script><p>（证明在附录中给出。）这就是说，$Follow(p’, A)$  是确定的(1)可读的终结符集合，通过第一个读，在归约一个短语到左上下文由 p ”记录“ 的A 之后，在任意包含 A 的短语被归约之前，伴随着(2) 非终结的 Follow 集到它的一些包含 A 的短语，后面最多跟随着一些可以为空的非终结符，在读到其它符号前，可以被归约，当然，每个这样的非终结符在合适的左上下文中。图解，对于 n 个这样的终结符，$B_1$ 穿过 $B_n$。</p>
  
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_4.png" class="" title>
 
+<p>（$B_i,B_j;\beta_i ,\beta_j;\gamma_i ,\gamma_j$ 不必要不同。）虚线箭头表示包含关系。在相似的方式下，Read 集可以被分解。</p>
+<p><strong>交叉定理</strong></p>
+<script type="math/tex; mode=display">
+Read(p, A) =_s DR(p, A) \cup \bigcup \{Read(r, C) | (p, A) 读取 (r, C)\}.</script><p>（在附录中给出证明。）</p>
+<p>其中，</p>
+<p><em>定义</em>。对于一个有非终结符转换 $(p, A)$ 的 LR（0）解析器，</p>
+<script type="math/tex; mode=display">
+DR(p, A) = \{t \in T | p \longrightarrow^A r \longrightarrow^t\}.</script><p><em>定义</em>。$(p, A)$ 读 $(r, C)$ 当且仅当 $p \longrightarrow^A r \longrightarrow^C$ 且$C \Rightarrow^* \epsilon$.</p>
+<p>“直接读符号”(DR) 就是那些标记了$(p, A)$转换的后继状态 r 的终结转换。当可以为空的非终结符可以跟随，出现“间接读符号”。图解，</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_5.png" class="" title>
 
-<p>（$B_i,B_j;\beta_i ,\beta_j;\gamma_i ,\gamma_j$ 不必要不同。）</p>
+<p>此处，</p>
 
     </div>
 
