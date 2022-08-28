@@ -49,7 +49,7 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_18.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_19.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-08-28T03:29:15.402Z">
+<meta property="article:modified_time" content="2022-08-28T05:37:53.080Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 11:29:15" itemprop="dateModified" datetime="2022-08-28T11:29:15+08:00">2022-08-28</time>
+                <time title="修改时间：2022-08-28 13:37:53" itemprop="dateModified" datetime="2022-08-28T13:37:53+08:00">2022-08-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,7 +254,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>18k</span>
+              <span>19k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -473,6 +473,18 @@
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_19.png" class="" title>
 
 
+<p>$LA(c_0, C\rightarrow c)$ 包含 c-转换的 Follow，其读取 D-，读取 E-，includes B-转换的上界，这些的 DR 包含 d，因此，一个读-归约冲突产生了$c_0$。另一方面，通过正确的方法，LA 集只包含 g。 我们看到没有人过度简化，但当我们尝试归约有向图的应用的数量，从两个到一个的时候，它在我们这发生了。</p>
+<h2 id="LALR-实现"><a href="#LALR-实现" class="headerlink" title="LALR 实现"></a>LALR 实现</h2><p>一个完整的从 LR（0）自动状态机计算 LALR（1）向前看集的过程如下：</p>
+<p>A. 计算出那些可以为空的非终结符。</p>
+<p>B. 为 DR 初始化读：每个非终结符的转换的一个集合（长度的位向量终结符数量），通过转换的后继状态的检查。</p>
+<p>C. 计算 <strong>reads</strong>：每个非终结转换的一列非终结转换，通过最后转换的后继状态的检查。</p>
+<p>D. 应用有向图算法到 reads 上来计算 Read；如果识别到环，说明对于任意的 k 语法不是非 LR（k）的。</p>
+<p>E. 计算 includes 和 lookback：重复地，每个非终结转换和归约的一列非终结转换，通过每个非终结转换的检查和相关的产生式的右侧，以及通过适当地考虑可为空非终结。</p>
+<p>F. 应用有向图算法到 includes 来计算 Follow：使用与 B 中初始化并在 D 中完成的相同集合，即作为初始值用作为工作区间。如果一个循环在 Read 集不为空的情况下识别到，则说明（如我们推测的）对于任意的 k 这个语法不是 LR（k）的。</p>
+<p>G. 根据 F 中计算的 <strong>lookback</strong> 链合并 Follow 集来形式化 LA 集。</p>
+<p>H. 检查冲突；如果没有，则说明这个语法是 LALR (1) – 我们有个解析器。</p>
+<h3 id="效率"><a href="#效率" class="headerlink" title="效率"></a>效率</h3><p>需要的位向量数量和遍历的关系边数量可能可以通过下面给出的策略最小化。</p>
+<p>首先，如果 $ x\neq Top\ of\ S $，则有向图算法中的赋值 $F(Top\ of\ S) \leftarrow F x$ 应该已经完成了。这个节省了平凡（单独的）的 SCCs 的集合拷贝开销，这实际上是占大多数的。</p>
 
     </div>
 
@@ -572,7 +584,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">LALR 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">效率</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -649,13 +661,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">239k</span>
+    <span title="总字数">240k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:37</span>
+    <span title="总时间">3:38</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
