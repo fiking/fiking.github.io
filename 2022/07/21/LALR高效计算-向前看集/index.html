@@ -48,8 +48,9 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_17.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_18.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_19.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_20.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-08-28T05:37:53.080Z">
+<meta property="article:modified_time" content="2022-08-28T15:29:26.131Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -225,7 +226,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 13:37:53" itemprop="dateModified" datetime="2022-08-28T13:37:53+08:00">2022-08-28</time>
+                <time title="修改时间：2022-08-28 23:29:26" itemprop="dateModified" datetime="2022-08-28T23:29:26+08:00">2022-08-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,14 +255,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>19k</span>
+              <span>20k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>17 分钟</span>
+              <span>19 分钟</span>
             </span>
 
         </div>
@@ -484,7 +485,17 @@
 <p>G. 根据 F 中计算的 <strong>lookback</strong> 链合并 Follow 集来形式化 LA 集。</p>
 <p>H. 检查冲突；如果没有，则说明这个语法是 LALR (1) – 我们有个解析器。</p>
 <h3 id="效率"><a href="#效率" class="headerlink" title="效率"></a>效率</h3><p>需要的位向量数量和遍历的关系边数量可能可以通过下面给出的策略最小化。</p>
-<p>首先，如果 $ x\neq Top\ of\ S $，则有向图算法中的赋值 $F(Top\ of\ S) \leftarrow F x$ 应该已经完成了。这个节省了平凡（单独的）的 SCCs 的集合拷贝开销，这实际上是占大多数的。</p>
+<p>首先，如果 $ x\neq Top\ of\ S $，则有向图算法中的赋值 $F(Top\ of\ S) \leftarrow F x$ 应该已经完成了。这个节省了平凡（单独的）的 SCCs 的集合拷贝开销，这实际上是占大多数的。避免所有的非平凡 SCCs 中的集合拷贝开销，可以通过引用赋值，即，有 F （S 的 Top）和$Fx\ point$  到相同的位向量，将不能工作；这里描述的方案使用相同的位向量来表示每个非终结转换的 Read 集和 Follow 集。因为 reads 和 includes 关系的 SCCs 是不同的，这个暗示着不同的“共享”以及实际上会使算法无效。）</p>
+<p>下一步计算上面步骤 E 里描述的 includes 和 lookback 关系。初始化，不给非终结转换分配集合。如果语法包含任意的可为空非终结符，然后仅对 reads 关系中涉及的每个非终结符转换，应用有向图（有 R = reads）来计算$Read(p, A)$。之后，只有有集合分配的转换会成为那些在 reads 关系中涉及的（通常地，很少或者根本没有）。对于每个这样的转换$(p, A)$，集合会等价于 Read（p, A）。</p>
+<p>比起特殊识别 reads 关系中涉及的转换，有向图后面的应用可以通过将它用到所有的非终结符转换来达成，这里有向图有如下的修改：删除赋值$F x \leftarrow F’ x$；插入代码来识别预取$（F，x）$或者存储$（F x \leftarrow \cdots）$，$Read(p, A)$ 当 $(p, A)$ 没有集合分配给它。在这样的场景中，有向图应该分配一个集合给$(p, A)$ ，然后用$DR(p, A)(F’x)$ 初始化它。</p>
+<p>最后，值得注意的是 reads 关系不需要预计算（上面步骤 C），因为当有向图需要它的时候，它可以简单的从 LR（0）状态机中检索到。</p>
+<p>对于每个不一致的状态 q 和 q 中最后的子项$A\rightarrow\omega \cdot$， 沿着每条 lookback 边到非终结符转换$(p, A)$。在$(p, A)$（带有 R = includes） 调用有向图来计算$Follow(p, A)$。使用 lookback 标识的 Follow 集的并集来获得$LA(q, A\rightarrow\omega)$。通过对有向图做出修改，和上面描述计算的 Read 集，任意被有向图检查的转换$(p, A)$，有当计算 Follow 时要么有个分配给它的集合带有Read(p, A)，或者有向图将会分配一个集合给它，并初始化它到$DR(p, A)$，其等于$Read(p, A)$，因为没有被分配的集合。因此，$Read(p, A)$ 或者已经被计算了，或者在有向图需要时进行计算。</p>
+<p>由于这个策略，集合只在那些 reads 关系中涉及的转换需要，或者在不一致的状态的最后一项的向前看集的计算式中需要；此外每个这样的项需要一个集合来重复它的向前看集。唯一的关系边遍历将会是 reads 边，且 includes 和 lookback 边的子集为向前看集计算所需要。因此，如表 I 所示，只需要更少的集合存储和更少的集合合并。</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_20.png" class="" title>
+
+
+<p>表 I 列出了我们的实现的合并执行的总数。这等于 includes ，lookback，和 reads 边的数量加上反生在有向图拷贝一个 SCC 根节点的 F 值到 SCC 中其它节点的值的少量合并（对于 Pascal，例如，有 4 个 SCCs 带有共 30 个节点，则 841 = 552 + 256 + 7 + （30 - 4））。在处理表中的集合之下，记录了需要的位向量的总数（Read，Follow，LA）。</p>
 
     </div>
 
@@ -661,13 +672,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">240k</span>
+    <span title="总字数">241k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:38</span>
+    <span title="总时间">3:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
