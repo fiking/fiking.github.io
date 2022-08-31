@@ -50,7 +50,7 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_19.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_20.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-08-28T15:29:26.131Z">
+<meta property="article:modified_time" content="2022-08-31T15:18:10.384Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -226,7 +226,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 23:29:26" itemprop="dateModified" datetime="2022-08-28T23:29:26+08:00">2022-08-28</time>
+                <time title="修改时间：2022-08-31 23:18:10" itemprop="dateModified" datetime="2022-08-31T23:18:10+08:00">2022-08-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,14 +255,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>20k</span>
+              <span>22k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>19 分钟</span>
+              <span>20 分钟</span>
             </span>
 
         </div>
@@ -495,7 +495,13 @@
   <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_20.png" class="" title>
 
 
-<p>表 I 列出了我们的实现的合并执行的总数。这等于 includes ，lookback，和 reads 边的数量加上反生在有向图拷贝一个 SCC 根节点的 F 值到 SCC 中其它节点的值的少量合并（对于 Pascal，例如，有 4 个 SCCs 带有共 30 个节点，则 841 = 552 + 256 + 7 + （30 - 4））。在处理表中的集合之下，记录了需要的位向量的总数（Read，Follow，LA）。</p>
+<p>表 I 列出了我们的实现的合并执行的总数。这等于 includes ，lookback，和 reads 边的数量加上反生在有向图拷贝一个 SCC 根节点的 F 值到 SCC 中其它节点的值的少量合并（对于 Pascal，例如，有 4 个 SCCs 带有共 30 个节点，则 841 = 552 + 256 + 7 + （30 - 4））。在处理表中的集合之下，记录了需要的位向量的总数（Read，Follow，LA）。通过减去来自集合行的不一致状态中的最后项（FI）的实际向前看集的数量，可以决定位非终结转换单独分配多少集合。SCC 行记录了非平凡 SCCs 中涉及的 <strong>includes</strong> 关系的节点的总数量。NTX 是非终结转换的数量。LR（0）计算和向前看（LA）计算的 CPU 时间（以秒为单位）适用于具有 $1.5\mu s$ 的内存和包含LALR（1）条件检查的 HP-3000 计算机。YACC 执行的集合合并通常是我们算法的 5 到 8 倍（YACC 行）。</p>
+<p>在 YACC 上运行 SL300 和 Ada 都太大了。它们都不能在内存受限的 HP 3000 上执行，它们能运行的机器上的时间统计信息是无效的。Ada 语法引用接近于处理这个信息的语法；后者还没有发布出来。Ada 的项目在后面的章节解释。</p>
+<p>通过只遍历必要的 <strong>reads</strong> 边，可以有轻微的时间提升。不要分离的适用有向图来计算 Read 集。只能计算 Follow 集。当计算 Follow 集，如果有向图发现一个转换 $(p, A)$ 的 $Read(p, A)$ 还没有计算出来，则它自调用来计算$Read(p, A)$。为了做这个需要分离 $Read(p, A)$ 和 $Follow(p, A)$  的分配；否则，Follow 和它的 Read 的计算混合将于 5.2 节描述的过度简化相同。因为，reads 边很少，需要的额外空间不值得节省时间。</p>
+<p>为了降低存储的开销，一种实现是只存储向前看计算需要的那些 lookback 边。从一致状态的最后项开始的 lookback 边会被丢弃。例如，对于 Ada，只需要 1388 个 lookback 边，总数的 21%。事实上，通过使用 SLR（1）向前看集来解决尽可能多的状态中的不一致，能够节省更多的空间和时间。表中的 Ada 定律表明了有这样做了之后的结果；只有 21 个最后项需要 LALR（1）向前看集，且只有 139 个 lookback 边是有用的。此外，更少 includes 边被遍历到，减少了需要的集合并集和集合的数量。当然，如果一个语法是 SLR（1），则不需要任何的 includes / lookback 计算。</p>
+<p>通过应用有向图，SLR（1）向前看集可能可以从 LR（0）解析器和 Read 集中计算出来。SLR-LA$(q, A\rightarrow\omega)$ = SLR-Follow(A) = $\bigcup{Read(p, B) | B \Rightarrow^* \beta A\gamma, \gamma \Rightarrow^* \epsilon, \beta \in V^*, 且(p, B) 是一个非终结转换}$。这个首先是 DeRemer[10] 观察到的，有一些关于可为空非终结符的小错误。换句话说，SLR-Follow(A) = $F’ A \cup \bigcup{SLR-Follow(B) | ARB}$，其中$F’A = {Read(p, A) | (p, A) 是非终结转换}$ 且 A R B，当且仅当$B \Rightarrow^* \beta A \gamma, \gamma \Rightarrow^* \epsilon$，因此，将 SLR 定义转换为一种适合有向图计算的形式。</p>
+<p>事实上，Digraph 通常能用于计算上下文无关语法中的其它功能，例如，一个非终结符时候可以从开始符号派生，或者，一个非终结符是否同时是左递归和有递归的。这本质上是因为 Digraph 的关系带有传递闭包的问题[14]。通过一个 Digraph 的变种替换标准快速位矩阵技术，在 MetaWare 的翻译书写系统的语法检查上有三倍的速度提升[12]。对于稀疏关系，Digraph 在计算传递闭包的工作上比位-矩阵技术做的更好。</p>
+<h3 id="线性度"><a href="#线性度" class="headerlink" title="线性度"></a>线性度</h3><p>Digraph 与它应用到的关系的数量是线性关系，这是由第 4 节的线性定理得到的。对于特定的语法，在一个解析器中，includes 关系的大小（边的数量）大约是非终结转换数量的两到三倍。</p>
 
     </div>
 
@@ -595,7 +601,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">LALR 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">效率</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">LALR 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%BA%A6"><span class="nav-number">6.2.</span> <span class="nav-text">线性度</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -672,13 +678,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">241k</span>
+    <span title="总字数">242k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:39</span>
+    <span title="总时间">3:40</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
