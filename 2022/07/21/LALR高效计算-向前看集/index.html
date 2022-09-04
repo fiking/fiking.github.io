@@ -60,7 +60,7 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_29.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_30.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-09-04T10:01:07.331Z">
+<meta property="article:modified_time" content="2022-09-04T11:52:33.925Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-04 18:01:07" itemprop="dateModified" datetime="2022-09-04T18:01:07+08:00">2022-09-04</time>
+                <time title="修改时间：2022-09-04 19:52:33" itemprop="dateModified" datetime="2022-09-04T19:52:33+08:00">2022-09-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -265,14 +265,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>28k</span>
+              <span>29k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>26 分钟</span>
+              <span>27 分钟</span>
             </span>
 
         </div>
@@ -593,11 +593,16 @@
 
 <p>此处，在左侧上下文 Subprogram-spec is 之后，要么另一个 Subprogram-spec 可以产生一个带有空参数列表的程序头，或者一个 Subprogram-dcln 可以产生一个通用的过程实例。很明显，轨迹可以查明这个问题。</p>
 <p><em>归约-归约冲突和 LALR 与 LR 比较</em>。对于读-归约冲突，我们主张打印相关的轨迹，能显示出读或者归约是合法的，给定一个特定的左上下文（解析栈）$<a href="(7.3">\xi</a>归约轨迹\xi = \delta_1\cdots\delta_n\alpha\alpha_1\cdots\alpha_s)$。 但是在产生式 $p_1$ 和 $p_2$ 之间的归约-归约冲突，我们的算法不需要为了$p_1$ 和 $p_2$ 打印相关的轨迹，即，共用相同左上下文的轨迹。实际上，$p_1$ 可能不存在与 $p_2$ 任意轨迹具有相同左上下文的轨迹。</p>
-<p>这里可以发生如下两种情况：（1）这个语法是LR（1），但不是LALR（1）；（2）我们的算法出现一个“意外”。在任意一种情况下，调试语法的人都会产生困惑：因为轨迹没有显示出，为什么两个不同的归约移动可能给出一个单一的左语法，他可能无法理解为什么冲突会存在。</p>
+<p>这里可以发生如下两种情况：（1）这个语法是LR（1），但不是LALR（1）；（2）我们的算法出现一个“意外”。在任意一种情况下，调试语法的人都会产生困惑：因为轨迹没有显示出，为什么两个不同的归约移动可能给出一个单一的左语法，他可能无法理解为什么冲突会存在。hua</p>
 <p>在第一个场景中，当一个归约-归约冲突同时存在于 LALR（1）和LR（1）自动机中，每个归约（在每个自动机中）存在具有相同左上下文的轨迹。这是由于 LR（k）的定义导致的。但是当冲突只存在于LALR（1）自动机中，而不在LR（1）自动机时（称这种为LALR独有冲突），则没有相关的轨迹存在。LALR 构造技术的空间节省方面，“合并”两个不同的左上下文，会导致一个冲突。</p>
 <p>在第二个场景中，因为我们建议每个贡献项只打印一个归约轨迹，然后打印从开始状态到项的最短路（这些措施减少了体积和归约轨迹的大小），可以构造一个语法，它由一个LALR-独有的冲突和一个不同的 LR 冲突，但是相对的，任意两个已打印的轨迹都没有相同左上下文。然后可能会错误的猜测冲突是 LALR-独有的。</p>
 <p>一种避免这种困惑的方式如下：当产生式$p_1,p_2,\cdots,p_n$发生归约-归约冲突时，为 $p_1$ 产生轨迹；然后，对于其它的产生式，只产生与 $p_1$ 轨迹相应的轨迹。如果没有找到相应的轨迹，则查明是 LALR-独有的冲突，就这样报告（然后没有过相应的轨迹需要打印）。但同样的，由于我们对 $p_1$ 的轨迹的有限选择，即使找到 $p_2,\cdots,p_n$ 相关的轨迹，也不一定意味着语法就没有 LALR-独有的冲突。$p_1$ 的其它轨迹（没有打印的），可能会阐明这样的冲突。</p>
-
+<p>但是，如果用户迭代地移除他语法中的轨迹冲突，然后重新提交语法给生成器，被忽略的轨迹最终还是会出现。因此，尽管生成器不一定在单次运行中给出所有的冲突，但是他最终会查明所有的冲突，然后指出它们是 LR 还是 LALR 的。这似乎是一个可以接受的方案，因为用户（和我们）通常一次只能处理少量的冲突。实际上，对于前一子节给出的算法，我们从来没有遇到 LR 归约-归约冲突，没有产生过相关的轨迹。此外，我们只见过一个实际的包含 LALR-独有的冲突的语法，被表明缺乏相关的轨迹。</p>
+<p>最好的解决方案是不产生带有 LALR-独有的冲突的自动机。这个由文章[22, p.38] 建议的状态分离的方法可以用于扩展 LALR（1）自动机，因此，它是一个局部的 LALR（1），其中会出现归约-归约冲突（因此任何的 LALR-独有的冲突可以被消除了）。然后，相关的归约轨迹会被找到。LALR 对于普通的翻译写作系统用户太复杂了，以致于要花时间了解–他需要知道 LR 项是什么，如何通过合并项集合构造状态等；所以，纠正LALR-独有的冲突通常是不容易的。</p>
+<p>与之相反的，这节给出的轨迹不需要项和项集合并的概念。用户只需要知道解析器解释的输入文本被限制在只向前看一个符号；可以生成查明相同文本（前驱）是如何有两个不同解释的轨迹。任何可以理解LR（k）定义的人都可以理解这个轨迹（假设 LALR-独有的冲突已经被状态-分离移除，能提供相应的归约轨迹）。大部分的 MetaWare翻译书写系统的用户对LR 自动机构造知之甚少或者一无所知的，也有许多不理解LR（k）的定义的；但是他们还是能从使用这些轨迹中获得信息。我们轨迹一个重要的方面是，它们是为人类精心设计的，即，它们通过推导与语法相关，而不是状态或者项。</p>
+<p>Kristensen 和 Madsen[18] 给出了，如何通过仅检查 LR（0）自动机，来判断一个语法何时是LR（kj）的（与LALR（k）相比）。他们给出了调试轨迹，可以区分出 LR 和 LALR-独有的冲突。虽然他们的结果理论上是有意思的，但是LALR-独有的轨迹实际中对于通常的翻译书写系统的使用者不是很有用，这是我们之前讨论过的。他们给出的示例轨迹严重地依赖于读者关于 LR 和 LALR 自动机的技术理论，因此，仅使用于在 LR 理论方面受过良好训练的人。</p>
+<p>综上，从这节给出的算法，我们可能产生诊断调试轨迹，其可以指出文法中的 LALR-独有 和 LA 冲突。这种轨迹有利于甚至是语法设计新手阅读，它们是任意精心设计的翻译写系统的重要组成部分。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2>
     </div>
 
     
@@ -696,7 +701,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">LALR 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%BA%A6"><span class="nav-number">6.2.</span> <span class="nav-text">线性度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E5%AE%83%E7%AE%97%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="nav-number">6.3.</span> <span class="nav-text">与其它算法对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9ELALR%EF%BC%881%EF%BC%89%E8%AF%AD%E6%B3%95%E7%9A%84%E8%B0%83%E8%AF%95"><span class="nav-number">7.</span> <span class="nav-text">非LALR（1）语法的调试</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.1.</span> <span class="nav-text">回顾</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CFGs"><span class="nav-number">2.1.</span> <span class="nav-text">CFGs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LR-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">LR 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">LALR 向前看集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E8%AE%A1%E7%AE%97%E7%9A%84%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">LALR 计算的图算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">通用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%88%B0-LALR"><span class="nav-number">4.2.</span> <span class="nav-text">应用到 LALR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text">需要有向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#includes-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.1.</span> <span class="nav-text">includes 关系中的 SCCs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reads-%E5%85%B3%E7%B3%BB%E4%B8%AD%E7%9A%84-SCCs"><span class="nav-number">4.3.2.</span> <span class="nav-text">reads 关系中的 SCCs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E5%BA%A6%E7%AE%80%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">过度简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NQLALR-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">NQLALR(1) 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-includes-%E5%92%8C-reads"><span class="nav-number">5.2.</span> <span class="nav-text">合并 includes 和 reads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LALR-%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">LALR 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%BA%A6"><span class="nav-number">6.2.</span> <span class="nav-text">线性度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E5%AE%83%E7%AE%97%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="nav-number">6.3.</span> <span class="nav-text">与其它算法对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9ELALR%EF%BC%881%EF%BC%89%E8%AF%AD%E6%B3%95%E7%9A%84%E8%B0%83%E8%AF%95"><span class="nav-number">7.</span> <span class="nav-text">非LALR（1）语法的调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">8.</span> <span class="nav-text">结论</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -773,13 +778,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">249k</span>
+    <span title="总字数">250k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:46</span>
+    <span title="总时间">3:47</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
