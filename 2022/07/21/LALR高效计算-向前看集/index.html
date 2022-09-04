@@ -49,8 +49,11 @@
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_18.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_19.png">
 <meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_20.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_21.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_22.png">
+<meta property="og:image" content="http://example.com/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_23.png">
 <meta property="article:published_time" content="2022-07-20T16:27:27.000Z">
-<meta property="article:modified_time" content="2022-09-03T01:04:19.034Z">
+<meta property="article:modified_time" content="2022-09-04T05:38:36.302Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="programming languages">
 <meta name="twitter:card" content="summary">
@@ -226,7 +229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-03 09:04:19" itemprop="dateModified" datetime="2022-09-03T09:04:19+08:00">2022-09-03</time>
+                <time title="修改时间：2022-09-04 13:38:36" itemprop="dateModified" datetime="2022-09-04T13:38:36+08:00">2022-09-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,14 +258,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>24k</span>
+              <span>26k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>22 分钟</span>
+              <span>23 分钟</span>
             </span>
 
         </div>
@@ -510,7 +513,36 @@
 <p>Kristensen 和 Madsen 高效地使用了 item-includes 和 item-lookback 关系，这些类似于 includes 和 lookback，但是它们是定义在 items 而不是非终结转换上。因此，遍历的图的顶点是项。因为，解析器中的每个非终结转换 $(p, A)$ 通常是 p 中一个或多个项 $B \rightarrow\delta\cdot A \gamma$ 的结果，Kristensen 和 Madsen 的方法产生了额外的 F 集的开销。因为 Kristensen 和 Madsen 没有给出经验数据，因此然以确定他们算法的实用性。</p>
 <p>与之相反的，我们的算法没有使用到 item 概念的地方；因此，所有的 LR 项在向前看集被被计算前都可能会被抛弃。作为结果，我们的算法可能适用于 LR 自动机以外的其它场景中。例如，它可能会定义一个使用优先级技术的自动机，如果应用了我们的算法，它将会计算一些“优先级向前看集”，因此可以确定语法是否是简单优先级的。我们将这些想法留给未来的研究中。</p>
 <p>但是，LR 项是必须的，从而能产生下一节描述的诊断调试跟踪信息。</p>
-<h2 id="非LALR（1）语法的调试"><a href="#非LALR（1）语法的调试" class="headerlink" title="非LALR（1）语法的调试"></a>非LALR（1）语法的调试</h2>
+<h2 id="非LALR（1）语法的调试"><a href="#非LALR（1）语法的调试" class="headerlink" title="非LALR（1）语法的调试"></a>非LALR（1）语法的调试</h2><p>作为我们在向前看集计算领域研究有意思的副产品，我们发现 includes 和 lookback 关系正是为非 LALR（1）语法生成有用的调试信息所需要的。这些边穿过自动机链接回来，从向前看集到冲突符号的源（CSs），特别是那些涉及到冲突的。这正是追踪语法的方式，用户通常是手动查找的。例如，MetaWare 的翻译写系统[12] 为一个解析器处在状态$C_0$ 上的冲突打印大致的跟随流程，如图（4.4），表明加入的产生式$B \rightarrow cCf$ 引入了冲突：</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_21.png" class="" title>
+
+
+<p>这个图表明在解析器已经读取了 $bcdbcC$ ，然后看到一个 f 之后，有两个行动方案：</p>
+<p>（1） 归约 cC 到 B，归约 bB 到 A，归约 dA 到 C，读取 f；或者</p>
+<p>（2）读取 f。</p>
+<p>在 Top[bcC] 状态上的项 $B \rightarrow cC\cdot f$ 贡献一个 f 给 $LA(C_0, B\rightarrow cC)$，其中利用了产生式$C\rightarrow dA$，$A\rightarrow bB$，以及$B\rightarrow cC$，跟踪一条从$p’ = Top[bc]$ 到$C_0$ 的路径。这个跟踪有两个推导组成，推导的每个右侧部分都垂直位于导出它的非终结符的下面。上面的推导中由单个垂直线组成的行表名开始状态如何跟踪一条到 $p’$ 的路径的。垂直线正上方的式一个项，它给出了向前看符号 f。在垂直线下方的是一个推导，从（非终结符 C 在的）处理中的项到不一致状态，以一个带有冲突的最终项结束。后面的推导包含 lookback 和 includes 边，从陈述$(C_0, B\rightarrow cC$ 到转换 $(p’, C)$，它们的读集包含了 f。$C_0$ 中的项$B\rightarrow cC \cdot f$ 也是使得 f 成为可读符号的原因；因此有冲突。</p>
+<p>考虑图（4.5）的下一个解析器和状态 $D_0$ 的后续跟踪：</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_22.png" class="" title>
+
+
+<p>这个解析器两个可选的动作是：</p>
+<p>（1）归约 $\epsilon$ 到 C，归约 $\epsilon$ 到 D，读取 a（在 a 被归约到 A 之后）；或者</p>
+<p>（2）读 a。</p>
+<p>在状态$Top[B]$ 的$ A\rightarrow B\cdot CDA$ 项贡献了 a 给 $LA(Start, B \rightarrow \epsilon)$，这是利用了产生式 $B\rightarrow \epsilon$ 的属性和$CDA\Rightarrow^+ A$。后一个推导出现在垂直线“塔”的右侧。关注推导中的 C 和 D 是如何消失的，因为它们可以为空；这里$C\rightarrow \epsilon$ 和$D\rightarrow \epsilon$ 是产生式。要是 C 或者 D 不能直接导出$\epsilon$，额外的推导步骤也可以打印出来；但是，我们觉得这会使得跟踪变得混乱的。</p>
+<p>轨迹的通常格式如下：</p>
+ 
+  <img src="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/figure_23.png" class="" title>
+
+
+<p>此处，$Top[\delta_1\cdots\delta_n \alpha B]$中$B_n \rightarrow \alpha B \cdot\beta_1$ 项给$A_{s-1} \rightarrow \alpha_s \cdot$ 的向前看集贡献了 t，因为如图所示的$\beta_1 \Rightarrow \beta_2 \Rightarrow\cdots\Rightarrow t\beta_m$，以及垂直线下面的 产生式链导致了$A_{s-1} \rightarrow\alpha_s\cdot$ 通过$lookback \circ include^*$ 关联到了 B-转换上；这里每个$\gamma_i \Rightarrow^* \epsilon$（但不一定对每个$v_i$都如此）。每个$A_i$ 和$B_i$ 以及 B 产生了它下面的右侧部分。</p>
+<p>轨迹的构造是以非一致状态 q 中的一个最后项 $A_{s-1} \rightarrow\alpha_s \cdot$ 为起点，遍历一个 lookback，然后是一些 includes 边直到一个非终结符转换$(p’, B)$ 被找到，它的 Read 集包含 CSs 中的一个。在$Next(p’, B)$ 中存在一个或多个项$B_n \rightarrow \alpha B \cdot \beta_1$ ，有$\beta_1 \Rightarrow^* t\beta_m$ 和 t 是一个 CS。为每一项都打印轨迹（禁止冗余的轨迹；如下）。（值得注意的是，在从 $A_{s-1} \rightarrow \alpha_s \cdot $ 遍历的期间，我们不会检查 Follow 集。虽然 Follow$(p’, B)$ 可能包含 CS，但不保证Next$(p’, B)$ 包含CS-贡献项；Follow$(p’, B)$ 可以从其它的 Follow 集中继承 CS。CSs “起源”于 Read 集，而不是 Follow 集。）</p>
+<p>轨迹由三部分组成：</p>
+<p>（a）来自 S‘ 的推导，产生了 Next(p’, B) 中的$B_n \rightarrow \alpha B \cdot \beta_1$；</p>
+<p>（b）来自$\beta_1$ 的推导$t\beta_m$；以及</p>
+<p>（c）一个归约从$(q, A_{s-1} \rightarrow\alpha_s)$ 到 $(p’, B)$ 的includes 和 lookback 边的产生式。</p>
+
     </div>
 
     
@@ -686,13 +718,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">244k</span>
+    <span title="总字数">246k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">3:42</span>
+    <span title="总时间">3:44</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
