@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_6.png">
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_2.png">
 <meta property="article:published_time" content="2022-09-04T15:44:46.000Z">
-<meta property="article:modified_time" content="2022-09-19T16:36:16.309Z">
+<meta property="article:modified_time" content="2022-09-23T15:51:22.519Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="program analysis">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-20 00:36:16" itemprop="dateModified" datetime="2022-09-20T00:36:16+08:00">2022-09-20</time>
+                <time title="修改时间：2022-09-23 23:51:22" itemprop="dateModified" datetime="2022-09-23T23:51:22+08:00">2022-09-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,14 +247,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
+              <span>15k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
+              <span>14 分钟</span>
             </span>
 
         </div>
@@ -439,6 +439,13 @@
 <p>我们的工作证明 Sharir-Pnueli 和 Knoop-Steffen 框架中的一大类子问题可以视为图可达问题。通过归约数据流分析问题到可达性问题来解决它们的相关其它工作，已经由 Kou[23] 以及 Cooper和 Kennedy [7,8] 完成了。在每个场景中，数据流分析问题的解决，首先从程序流图派生出一张图，以及解决数据流函数，然后在图上通过传播简单标记执行可达性分析。（与标准的迭代技术相比，它会在流程图上传播一组值。）</p>
 <p>Kou 的论文只解决了过程内问题。虽然他只讨论了存活变量的问题，但是他的想法可以直接用在所有分离的过程内问题。Cooper 和 Kennedy 展示了如何将某些流不敏感的过程间数据流分析问题转为可达性问题。因为他们只处理流不敏感问题，解决方法只涉及普通可达性，而不是更复杂的沿可实现路径的可达性问题。</p>
 <p>Zadeck 开发了过程里的数据流分析算法，基于将一个问题分为许多独立问题的想法（如，在可分离问题的场景下，以“每位”为基础）[32]。虽然我们的将问题“爆炸”成爆炸超图的技术，会转换局部分离问题到一些独立的“每个事件”的子问题，但是这个技术不会为 h-稀疏 和通用的分布 IFDS 问题生成独立的子问题。例如，在 2-稀疏可能未初始化变量问题，一个给定变量可能会被其它任意变量传递影响的。尽管如此，这些问题可以被制表算法高效地解决。</p>
+<p>图可达问题也可以被认为是不动点的逐点计算的实现，这个已经被 Cai 和 Paige[4] 以及 Nielson 和 Nielson[26, 25]。定理 3.3，我们将数据流分析问题转换为可达性问题的基础，类似于 Cai 和 Paige 的引理 14；但是，Cai 和 Paige 为表示分布函数定义的关系，是没有包容性的。虽然它不改变制表算法的渐进复杂度，但是，使用带有包容性的关系降低了爆炸超图中的边的数量，所以降低了制表算法的运行时间。</p>
+<p>Cai 和 Paige 表明不动点的逐点计算可以将非常高级别语言（SQ+）编写的程序编译成高效的可执行文件。这表明寻找满足所有有效路径方案的问题可能可以表达为 IFDS 问题，作为一个 SQ+ 顶点程序，然后自动编译它到达成本文中建立的边界的实现（即，进入制表算法）。</p>
+<p>Nielson 和 Nielson 调查了通用定点查找算法的开销边界，通过将成本计算为“（迭代的 #）x （每次迭代的开销）”。他们主要的贡献是给出了基于计算固定点的函数和域的属性来限制迭代次数的公式。他们的“严格和附加”函数的公式可以自适应我们的（非严格的）分布式函数的上下文，并且用来表示制表算法的迭代次数最多为 $ND^2$。单次迭代的开销是$O(Call\ D^2 + k D^2)$，其中控制流图中一个节点的最大出度。因此，这种方式给出了 $O((ND^2)\times(Call\ D^2 + k D^2))$ 这个制表算法的总成本的一个边界，这相对与我们的 $O(ED^3)$ 边界是劣势的。</p>
+<p>与之相比，我们给出的制表算法的开销边界是通过将算法开销分为三个贡献方面获得的，然后限制每个方面执行的操作总成本（见附录）。</p>
+<p>另一个逐点制表的例子是 Landi 和 Ryder 的算法，用于单级指针的过程间别名分析[24]。他们给出的算法类似于制表算法。IFDS 架构限制是 return-site 节点上的信息只能被表示为相对应 call 节点和适当 exit 节点的信息汇聚。因为在单级指针问题上，return-site 节点的合并函数不会汇聚，所以这个问题不能满足 IFDS 框架。</p>
+<p><em>流敏感副作用分析</em></p>
+<p>Callahan 调查了两种流敏感副作用问题：必定-修改 和 可能-使用[6]。</p>
 
     </div>
 
@@ -615,7 +622,7 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">264k</span>
+    <span title="总字数">265k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
