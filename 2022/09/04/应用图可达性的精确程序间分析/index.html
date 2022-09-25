@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_6.png">
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_2.png">
 <meta property="article:published_time" content="2022-09-04T15:44:46.000Z">
-<meta property="article:modified_time" content="2022-09-25T11:56:35.245Z">
+<meta property="article:modified_time" content="2022-09-25T11:58:10.375Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="program analysis">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-25 19:56:35" itemprop="dateModified" datetime="2022-09-25T19:56:35+08:00">2022-09-25</time>
+                <time title="修改时间：2022-09-25 19:58:10" itemprop="dateModified" datetime="2022-09-25T19:58:10+08:00">2022-09-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,14 +247,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
+              <span>19k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>15 分钟</span>
+              <span>17 分钟</span>
             </span>
 
         </div>
@@ -457,6 +457,25 @@
 <p><em>IDE 框架</em></p>
 <p>最近，我们将 IFDS 框架推广到了更大范围的问题，称为 IDE 框架。在 IDE 框架中，数据流事件是一些符号有限集到（可能是无限的）一些值集的映射（“环境”），并且数据流函数是分布的环境转换[30]。（“IDE”表示过程间分布环境问题。）IDE 问题是 IFDS 问题的适当超集，其中某些 IDE 问题（包括各种过程间常量传播的变种）是不能编码成 IFDS 问题的。</p>
 <p>虽然我们应用到 IDE 问题的转换类似于 IFDS 问题使用的，但转换问题的结果是一个可实现路径的总结问题，而不是一个可实现路径的可达问题。即，在一张转换图上，我们不在只考虑一个纯的可达问题，也考虑沿（可实现）路径应用函数获得的值。（转换后的 IFDS 问题和转换后的 IDE 问题之间的关系，类似于普通的图可达问题和计算路径总结的泛化问题之间的关系，这类泛化问题有，最短路径问题，封闭半环路径问题等[1]。）解决 IDE 问题的算法类似于制表算法，是一个动态规划的算法。</p>
+<h2 id="附录：制表算法的运行时间"><a href="#附录：制表算法的运行时间" class="headerlink" title="附录：制表算法的运行时间"></a>附录：制表算法的运行时间</h2><p>这节中，我们会给出表 5.2 给定的关于分布问题的制表算法上的开销边界的推导过程。</p>
+<p>比起计算图 3中的[10]-[39]行的循环的最坏场景每次迭代的开销乘以循环次数，我们将算法开销分为三方面贡献，然后限定每个方面执行的操作的总开销。尤其是，制表算法的开销可以分为</p>
+<p>（i）WorkList 中的操作的开销，</p>
+<p>（ii）在调用点安装总结边的开销（图 3 中的[21]-[32]行）</p>
+<p>（iii）“关闭”步骤的开销（图 3 的 [13]-[20] 行和[33]-[37]行）。</p>
+<p>因为一条路径边最多只被插入到 WorkList 一次，所以每个工作表操纵操作的开销都可以放入总结-边-安装步骤或者闭包步骤；因此，我们不需要提供单独的工作表操作开销统计。</p>
+<p>制表算法可以理解为 $k+1$ 同时半动态多源可达问题–每一个是程序的一个过程。对于每个过程 p，这个源–我们称之为<strong>锚点</strong>–是形如$&lt;s_p, d&gt;$ 的$N^#$ 的$D+1$ 个节点。多源可达问题的边关联的 $p$ 是<br>$$<br>\begin {align}<br>&amp;{&lt;m, d_1&gt; \rightarrow&lt;n,d_2&gt; \in E^# | m,n \in N_p 且 m\rightarrow n 是一条过程里的边或者一条call-to-return-site 边} \<br>\cup &amp;{&lt;m,d_1&gt; \rightarrow &lt;n, d_2&gt; \in SummaryEdge | m \in Call_p}.<br>\end {align}<br>$$<br>换句话说，过程 p 关联的图是过程 p 的“爆炸流图”，增加了 p 的调用点的总结边。可达问题是半动态的（只是插入），因为在算法的过程中，会添加新的总结边，但是不会删除总结边（或其它任意边）。</p>
+<p>首先，我们转向在一个调用点上计算安装总结边的开销的边界（图 [21]-[32] 行）。为了表示这个边界，引入一个表示过程间数据流传播的“带宽”的量 $B$ 是有帮助的：特别是，B 是所有的 call-to-start 边和 exit-to-return-site 边的最大值，这些边是（i）call-to-start 边的表示关系中的非-0 节点的最大出度；（ii）exit-to-return 边的表示关系中的非-0节点的最大入度。（最坏情况下，B 是 D，但它通常是一个小的常数，对于大部分问题它是 1。）</p>
+<p>对于每条总结边$&lt;c, d_4&gt; \rightarrow&lt;returnSite(c),d_5&gt;$，[24]-[29] 行上的条件语句将会执行几次（在[10]-[39]行上的循环的不同迭代上）。尤其是，每次制表算法查找形如$[&lt;c,d_4&gt;\rightarrow&lt;s_p, d_1&gt;, &lt;s_p, d_1&gt;\rightarrow&lt;e_p, d_2&gt;, &lt;e_p, d_2&gt;\rightarrow&lt;returnSite(c), d_5&gt;]$（+）的三边路径时都会执行 [24] 行，这由图 4 中的标记了“[25]行”的框图给出的。</p>
+<p>当我们考虑给定调用点 $c: {&lt;c, d_4&gt;\rightarrow&lt;returnSite(c), d_5&gt;}$ 的所有总结边的集合，[24] 行的执行可以分为三类：</p>
+<p>$d_4 \neq 0 且 d_5 \neq 0$</p>
+<p>  $(d_4, d_5)$ 对的选择最多只有$D^2$，对于每个这样的对，最多只有 $B^2$ 个可能形如（+）的三边路径。</p>
+<p>$d_4 = 0 且 d_5 \neq 0$</p>
+<p>  $d_5$ 最多只有 $D$ 个选择，然后对于每个选择最多只有$BD$ 个可能的形如（+）的三边路径。</p>
+<p>$d_4 = 0 且 d_5 = 0$</p>
+<p>  形式（+）只有一个可能的三边路径。</p>
+<p>因此，[24] 行所有执行的总开销的边界是$O(Call\ B^2D^2)$。</p>
+<p>因为，[24] 行上的测试，对于每个可能的总结边，[25]-[28] 行上的代码将只执行一次。尤其是，对于每条总结边，在 [26]-[28] 行上的循环的开销边界是 $O(D)$。因为总结边的数量边界是 $Call\ D^2$，所以[25]-[28] 行的总开销是$O(Call\ D^3)$。因此，制表算法期间的安装总结边的总开销边界是$O(Call\ B^2D^2 + Call\ D^3)$。</p>
+<p>为了限定关闭步骤的总开销，基本的观察是制表算法对“获得”一条路径 $&lt;s_p, d_1&gt;\rightarrow&lt;n,d_2&gt;$，只做一定数量的”尝试“ 。第一次尝试成功–$&lt;s_p, d_1&gt;\rightarrow&lt;n, d_2&gt;$ 被插入到 PathEdge；其它剩余的尝试都是冗余的（但似乎不可避免）。尤其是，在一个节点$n\notin Ret$ 的场景中，制表算法获得一条路径$&lt;s_p, d_1&gt;\rightarrow&lt;n,d_2&gt;$的唯一方式是，有一条或多条形如$[&lt;s_p, d_1&gt;\rightarrow&lt;m,d&gt;,&lt;m, d&gt;\rightarrow&lt;n,d_2&gt;]$的两边路径，其中$&lt;s_p, d_1&gt;\rightarrow&lt;m, d&gt;$ 在 PathEdge 中，$&lt;m,d&gt;\rightarrow&lt;n, d_2&gt;$ 在$E^#$ 中，即如下图所示：</p>
 
     </div>
 
@@ -556,7 +575,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E7%9A%84-IFDS-%E6%A1%86%E6%9E%B6"><span class="nav-number">3.</span> <span class="nav-text">分布式过程间数据流分析问题的 IFDS 框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">过程间数据流分析作为图可达问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E7%A4%BA%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">表示分配函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E5%88%B0%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.2.</span> <span class="nav-text">从数据流分析问题到可实现路径可达问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98%E7%9A%84%E9%AB%98%E6%95%88%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">一个可实现路径可达问题的高效算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E8%A1%A8%E7%AE%97%E6%B3%95%E7%9A%84%E5%BC%80%E9%94%80"><span class="nav-number">6.</span> <span class="nav-text">制表算法的开销</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">7.</span> <span class="nav-text">初步实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">8.</span> <span class="nav-text">相关工作</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E7%9A%84-IFDS-%E6%A1%86%E6%9E%B6"><span class="nav-number">3.</span> <span class="nav-text">分布式过程间数据流分析问题的 IFDS 框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">过程间数据流分析作为图可达问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E7%A4%BA%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">表示分配函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E5%88%B0%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.2.</span> <span class="nav-text">从数据流分析问题到可实现路径可达问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98%E7%9A%84%E9%AB%98%E6%95%88%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">一个可实现路径可达问题的高效算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E8%A1%A8%E7%AE%97%E6%B3%95%E7%9A%84%E5%BC%80%E9%94%80"><span class="nav-number">6.</span> <span class="nav-text">制表算法的开销</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">7.</span> <span class="nav-text">初步实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">8.</span> <span class="nav-text">相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E5%88%B6%E8%A1%A8%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="nav-number">9.</span> <span class="nav-text">附录：制表算法的运行时间</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -633,13 +652,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">266k</span>
+    <span title="总字数">269k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:02</span>
+    <span title="总时间">4:04</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
