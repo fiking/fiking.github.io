@@ -51,14 +51,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/about/index.html</loc>
+    <loc>http://example.com/categories/index.html</loc>
     
     <lastmod>2022-05-28</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/categories/index.html</loc>
+    <loc>http://example.com/about/index.html</loc>
     
     <lastmod>2022-05-28</lastmod>
     
@@ -706,6 +706,13 @@
   </url>
   
   <url>
+    <loc>http://example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <lastmod>2022-09-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/categories/dissertation-translation/compiler/</loc>
     <lastmod>2022-09-25</lastmod>
     <changefreq>daily</changefreq>
@@ -714,13 +721,6 @@
   
   <url>
     <loc>http://example.com/categories/dissertation-translation/virtual-machine/</loc>
-    <lastmod>2022-09-25</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2022-09-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
