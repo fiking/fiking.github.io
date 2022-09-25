@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_6.png">
 <meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_2.png">
 <meta property="article:published_time" content="2022-09-04T15:44:46.000Z">
-<meta property="article:modified_time" content="2022-09-23T15:51:22.519Z">
+<meta property="article:modified_time" content="2022-09-25T08:01:08.725Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="program analysis">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-23 23:51:22" itemprop="dateModified" datetime="2022-09-23T23:51:22+08:00">2022-09-23</time>
+                <time title="修改时间：2022-09-25 16:01:08" itemprop="dateModified" datetime="2022-09-25T16:01:08+08:00">2022-09-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,14 +247,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>15k</span>
+              <span>16k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
+              <span>15 分钟</span>
             </span>
 
         </div>
@@ -445,7 +445,18 @@
 <p>与之相比，我们给出的制表算法的开销边界是通过将算法开销分为三个贡献方面获得的，然后限制每个方面执行的操作总成本（见附录）。</p>
 <p>另一个逐点制表的例子是 Landi 和 Ryder 的算法，用于单级指针的过程间别名分析[24]。他们给出的算法类似于制表算法。IFDS 架构限制是 return-site 节点上的信息只能被表示为相对应 call 节点和适当 exit 节点的信息汇聚。因为在单级指针问题上，return-site 节点的合并函数不会汇聚，所以这个问题不能满足 IFDS 框架。</p>
 <p><em>流敏感副作用分析</em></p>
-<p>Callahan 调查了两种流敏感副作用问题：必定-修改 和 可能-使用[6]。</p>
+<p>Callahan 调查了两种流敏感副作用问题：必定-修改 和 可能-使用[6]。对于每个过程 p，必定-修改问题是识别 p 中的一个调用期间必定被修改的变量；可能-修改问题是识别 p 中的一个调用期间哪个变量在修改前被使用了。Callahan 的方法涉及构建一张<em>程序总结图</em>，它由一组图表组成，这些图表示过程内 start，exit，call，和 return-site 节点间的到达定值信息–伴随着过程间的链接信息。 </p>
+<p>虽然根据定义 2.4，必定-修改和可能-使用两个问题不是 IFDS 问题，但它们可以视为和 IFDS 问题十分相关的问题。基本的区别是 IFDS 问题会总结在<em>所有调用上下文</em> 中的程序点必须为真的内容，而必定-修改和可能-使用两个问题总结了独立于其调用上下文的过程的影响。即，Callahan 的问题涉及涉及从独立过程的 start 节点开始的有效路径，而不仅仅是从主程序开始的 start 节点。必定-修改问题实际是一个“同级有效路径”问题，而不是一个“有效路径”问题；每个过程必定-修改的值只涉及从这个过程开始节点到它的退出节点的同级有效路径。最后，Callahan 问题可以视为两类更一般问题中的问题：一类是分布有效路径问题，另一类是分布同级别有效路径问题。</p>
+<p>本文中利用的方法是将分布有效路径数据流分析问题转为爆炸超图中的可实现路径可达问题。通过类似于第 3 节中给出的变换，</p>
+<p>（i）分布有效路径问题可以被提取为可实现路径问题；</p>
+<p>（2）分布同级有效路径问题可以被提取为同级有效路径问题。</p>
+<p>特别是，可能-使用问题是个（i）类中的局部分离问题；必定-修改问题是（ii）类中的局部分离问题。</p>
+<p>采用这种通用观点的收益是，只要做轻微地修改，制表算法就可以用于解决上述两类问题中的所有问题（如，分布和h-稀疏问题，局部分离也是相同的一个）。修改过的算法有着和制表算法相同的渐进运行时间。尤其是，对于局部分离问题–如必定-修改和可能使用–运行时间的边界在$O(ED)$。这是对 Callahan 给出的算法的渐近改进：构建程序总结图的最坏情况开销是 $O(D\sum\limits_{p} Call_{p}E_{p})$；给定程序总结图，计算必定-修改或可能-使用的最坏情况开销是$O(D\sum\limits_{p}Call_{p}^2)$。</p>
+<p><em>过程间数据流分析的按需算法</em></p>
+<p>按需数据流分析的目标是确定一个给定的数据流事件是否在一个给定点中存在（这会最小化为其它程序点计算辅助数据流信息的数量）。IFDS 框架的一个收益是允许过程间数据流分析的按需算法可以简单的实现[27，17]。</p>
+<p><em>IDE 框架</em></p>
+<p>最近，我们将 IFDS 框架推广到了更大范围的问题，称为 IDE 框架。在 IDE 框架中，数据流事件是一些符号有限集到（可能是无限的）一些值集的映射（“环境”），并且数据流函数是分布的环境转换[30]。（“IDE”表示过程间分布环境问题。）IDE 问题是 IFDS 问题的适当超集，其中某些 IDE 问题（包括各种过程间常量传播的变种）是不能编码成 IFDS 问题的。</p>
+<p>虽然我们应用到 IDE 问题的转换类似于 IFDS 问题使用的，但转换问题的结果是一个可实现路径的总结问题，而不是一个可实现路径的可达问题。即，在一张转换图上，我们不在只考虑一个纯的可达问题，也考虑沿（可实现）路径应用函数获得的值。</p>
 
     </div>
 
@@ -622,13 +633,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">265k</span>
+    <span title="总字数">266k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:01</span>
+    <span title="总时间">4:02</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
