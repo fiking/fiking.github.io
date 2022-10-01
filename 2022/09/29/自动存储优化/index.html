@@ -30,7 +30,7 @@
 <meta property="og:description" content="简介高级语言的大部分优化技术研究关注于改善生成的程序的执行时间，通常以增加储存为代价。当解决了存储优化之后，通常也会影响到时间类的优化，例如指令减少相关的代码转换。在 Bliss 编译器（WJWHG75） ，这样一个存储优化编译器中，也会执行降低寄存器临时存储的转换，但是没有解决程序变量自动覆盖的问题。 微型计算机和微处理器的日益普及表明，到了全面检验自动存储优化问题的时候了。因为在小型系统的环境">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-28T16:15:38.000Z">
-<meta property="article:modified_time" content="2022-09-30T17:56:34.200Z">
+<meta property="article:modified_time" content="2022-10-01T09:38:01.298Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-01 01:56:34" itemprop="dateModified" datetime="2022-10-01T01:56:34+08:00">2022-10-01</time>
+                <time title="修改时间：2022-10-01 17:38:01" itemprop="dateModified" datetime="2022-10-01T17:38:01+08:00">2022-10-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,14 +234,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>406</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -255,9 +255,27 @@
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>高级语言的大部分优化技术研究关注于改善生成的程序的执行时间，通常以增加储存为代价。当解决了存储优化之后，通常也会影响到时间类的优化，例如指令减少相关的代码转换。在 Bliss 编译器（WJWHG75） ，这样一个存储优化编译器中，也会执行降低寄存器临时存储的转换，但是没有解决程序变量自动覆盖的问题。</p>
 <p>微型计算机和微处理器的日益普及表明，到了全面检验自动存储优化问题的时候了。因为在小型系统的环境下，缺少空间总会是一个问题，小型机器的普及意味着这个问题的重要性日益增加。虽然内存成本的下降会减缓这个趋势，但是墨菲定理的一个变体确保了程序大小的增长总是快于可用内存的增长。换句话说，程序员总是写不合适的程序，因此，随着时间的推移，他们会做得更多。</p>
-<p>即使小型计算机的时代没有到来，但从语言的角度来看，这样的调查还是有必要的。几乎所有的编程语言都在变量的概念中包含了存储的概念，它们的编译器将变量以一对一的方式映射到存储中。</p>
  <a id="more"></a>
 
+<p>即使小型计算机的时代没有到来，但从语言的角度来看，这样的调查还是有必要的。几乎所有的编程语言都在变量的概念中包含了存储的概念，它们的编译器将变量以一对一的方式映射到存储中。节省内存的程序员，使用没有内存等效特性的语言，需要特意将单个变量用于多种用途中。无论哪种方式，程序的明晰性和可靠性都会受到影响。一个理想的替代方案是，语言中的变量没有内存的意义，但是处理器会进行所有变脸的内存分配决策，保证变量的完整性。这是个重要的目标，因为，不像时间相关的代码优化技巧的范围是相对局部的，一个存储类的代码优化技巧通常能覆盖整个程序。</p>
+<p>PL/1 等语言的数组和字符串临时变量在编译器中的管理也需要用到自动覆盖技术。</p>
+<p>存储优化在虚拟存储系统中也有应用，其降低了程序大小可能会让对象程序需要的页更少，从而在执行时间上有一个提升。Kernighan（K71）已经处理了以最小化页间跳转的方式来组织给定大小的程序的相关问题。另一个相关的问题，是将变量分配给几个内存类之一，从而使得总变量访问开销最小，这是由 Warren（W78）解决了。</p>
+<p>本文的目标是划定一些存储优化编译器设计涉及的一些基础问题，然后介绍这种编译器中使用到的算法和技术。下一节中，将自动覆盖问题规范为扩展的图着色问题，然后讨论存储优化问题公式的影响。给出扩展颜色数量的上下边界。</p>
+<p>这个扩展着色公式有助于提出设计覆盖启发式的方案。第 3 节描述了迄今为止产生的有出色实验结果的覆盖算法。</p>
+<p>扩展着色公式为存储优化的代码变换提供了一个框架。在后续的章节中，给出了一个规范的重命名变换，其通过引入新的变量来承担旧变量的一些冲突，从而提高数据覆盖机会，不过需要精确地确定新旧变量之间移动的位置。这种变换对于寄存器优化也是重要的，因为它可以精确地确定寄存器移动操作需要插入的位置，从而降低需要的寄存器数量。</p>
+<p>许多的时间优化转换，如代码移动和冗余代码消除，以及它们的反操作，可以被用于提高自动覆盖的机会。这几个例子由第 5 节的例子展示。</p>
+<h2 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h2><p>给定一个程序流图（NDS，EDGS），以及一组变量 VARS。程序节点可能是低级别三元组，高级别语言语句，基本块，过程块，或者任意被视为当前分析的基本单元。与任意变量 V 关联的是它声明的大小 $|V|$。对于 VARS 的任意子集 SV，SV 的大小，\SV\，是 SV 中变量大小的和。</p>
+<p>一个复合类型 V 的子引用 S 被定义为 V 的标量元素的一个特殊集。一对 V 的子引用可能是不相交的（即，指向 V 的不同标量元素）或者联合的（即，不是不相交的）。编译器使用从范围分析得出的信息可以确定一个变量的子引用（Ha77）。缺失这些信息，则变量的子引用只能是它自己。</p>
+<p>我们将引用的定义和引用的修改区分开，因为前者会导致引用中的所有元素的值都发生了变化，而后者只会导致引用中的部分元素的值发生变化。范围信息可以识别出定义赋值，如当一个下标数组被赋给一个覆盖整个数组的循环。需要注意的是，除非有相反的信息，否则必须假定这样的赋值就是修改。</p>
+<p>当程序流图中有一条路径不会穿过（V，S）任意定义或者任意联合，且这条路径中的节点 I 到节点 J 会使用到（V，S）或者它联合体中的一个时，一个引用（V，S）在节点 I 退出时被认为是有效的。需要注意的是，如果缺少范围信息，一个引用必须假定总是在节点中存活的，即使事实上它已经失效了，因为之前的一些赋值被认为是修改而不是定义。</p>
+<p>如果一个变量 V 的任意引用时存活，使用或者修改（或定义），则它被称为在节点 I 中处于活动状态。节点 I 中的活跃变量的集合被表示为 ACT（I）。粗略地说，ACT（I）是必须在节点 I 中保留存储的变量最小集。LNACT（V）表示变量 V 存活的节点集。</p>
+<p>不兼容图 IG 的概念，是 Yershov（Y71）引入的，它是自动存储优化的核心概念。IG 中的节点相当于 VARS 的元素。每个节点关联一个权重，其相当于变量的大小。如果 NDS 中的一些节点 I ，有 X 在 ACT（I）中，Y 在 ACT（I）中，则边（X，Y）在 IG 中。因此，一条边连接一对节点，当且仅当变量同时处在活跃状态，因此不能共享存储。</p>
+<p>现在，我们看到着色和色彩数量的概念可以扩展，从而着色对应于存储布局，色彩数量对应于存储布局的最小数量。对于权重图中的每个变量 V，一个着色 COL 将 V 映射到一个整数区间，它的大小是 V 的重量。如果 （V，V1）是图中的一条边，则COL（V）和COL（V1）不能重叠。</p>
+<p>对于一个特定着色 COL，着色的值，VALUE，是区间中最右侧位置的所有节点的最大值。一张权重图 G 的扩展色彩数量 CHR（G）是 VALUE 的所有可能的着色 COL 的最小值。</p>
+<p>为了找到特定权重图的 CHR，必须探索所有的区间着色。附录（F79）给出了一个精确地覆盖算法。因为简单的图着色是已知的 NP-完全 问题，自动数据覆盖是明确需要一个启发式规则的。不幸地是，Garey 和 Johnson（GJ76）给出的结果表明，对于简单的图着色，任意多项式渐进算法都会在某些图上产生任意差的结果。因此，我们最大的希望是，不兼容图有一些独特的，正则的属性，可以被特定的启发式利用。</p>
+<p>这里我们会提到但不推行的，一个可能的方式是，对可能作为不兼容图出现的权重图的特定子类进行搜索。特别是，对一个直线程序的不兼容图的着色问题，等价于 Shipbuilding 问题，这个问题 Hoffman，Johnson，Stockmeyer，和 Golumbic（HJSG77/8/9，G79）已经调查过且被证明是一个 NP-完全问题。不知道一个多项式渐进算法是否可以在这种类型的图上演示，或者说 Garey/Johnson 的结果是否也适用于此。</p>
+<p>对于存储优化的兴趣，除了寻找一个有效着色启发式，我们也寻找降低 CHR（IG）的方法。因为，这似乎很困难，如果不可能，则我们可以寻找降低色彩数量下界作为替代方案，这是一种可能会减少过程中色彩数量的方法。</p>
+<p>我们将 |ACT（I）| 的所有活跃集合 ACT（I）的最大值定义为 MAXACT。MAXACT 明显是 CHR（IG）的下界。</p>
 
     </div>
 
@@ -357,7 +375,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -434,13 +452,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">272k</span>
+    <span title="总字数">274k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:07</span>
+    <span title="总时间">4:09</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
