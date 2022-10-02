@@ -29,11 +29,16 @@
 <meta property="og:site_name" content="fiking">
 <meta property="og:description" content="简介高级语言的大部分优化技术研究关注于改善生成的程序的执行时间，通常以增加储存为代价。当解决了存储优化之后，通常也会影响到时间类的优化，例如指令减少相关的代码转换。在 Bliss 编译器（WJWHG75） ，这样一个存储优化编译器中，也会执行降低寄存器临时存储的转换，但是没有解决程序变量自动覆盖的问题。 微型计算机和微处理器的日益普及表明，到了全面检验自动存储优化问题的时候了。因为在小型系统的环境">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_1.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_1.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/fo_1.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_2.png">
 <meta property="article:published_time" content="2022-09-28T16:15:38.000Z">
-<meta property="article:modified_time" content="2022-10-01T15:13:38.382Z">
+<meta property="article:modified_time" content="2022-10-02T08:29:39.650Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_1.png">
 
 <link rel="canonical" href="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/">
 
@@ -205,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-01 23:13:38" itemprop="dateModified" datetime="2022-10-01T23:13:38+08:00">2022-10-01</time>
+                <time title="修改时间：2022-10-02 16:29:39" itemprop="dateModified" datetime="2022-10-02T16:29:39+08:00">2022-10-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,14 +239,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.9k</span>
+              <span>6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -284,7 +289,54 @@
 <p>冲突图 CG 是由所有程序节点 I 的 CON（I）归约的边形成的。可以看到 CG 总是 IG 的子图。<br>$$<br>MAXLOC &lt;= MC(CG) &lt;= CHR(CG)<br>$$<br>因此，MC（CG）是所需要的覆盖存储的下界。在第 4 节中，我们将会看到程序总是可以转换，从而 MC（CG）可以被归约成 MAXLOC ，而不增加 CHR（CG）。</p>
 <p>探索扩展色彩数量上界的存在也是有用的。Brooks 证明了普通色彩数量的上限为 1 + MAXD，其中 MAXD 是图上所有节点的 DEGR（V）的最大值，其中 DEGR（V） 表示节点 V 的度。这个结果被 Szekeres 和 Wilf（SW68）进一步强化了，通过将 MAXD 替换为：G‘ 中的 V 上的 DEGR（V）的最小值的 G 的所有归约子图 G’ 上的最大值。</p>
 <p>不幸地是，这些定理不能一概而论。如果将节点的扩展度定义为相交边的权重和，就会给出一个反例。但是，Hoffman（H78，F79）使用了一个不同的定义，证明了一个最新的上界：<br>$$<br>EXTDEGR(V) = |V| + \sum\limits_{在 EDGS 中的(V,W)}(|V| + |W| - 1)<br>$$<br>Hoffman 的结果对存储优化具有重要的意义，因为现在，尝试降低扩展色彩数量的启发式可以专注于降低上下界的转换。</p>
-<h2 id="覆盖启发式"><a href="#覆盖启发式" class="headerlink" title="覆盖启发式"></a>覆盖启发式</h2>
+<h2 id="覆盖启发式"><a href="#覆盖启发式" class="headerlink" title="覆盖启发式"></a>覆盖启发式</h2><p>Yershov（Y71）将覆盖确定问题作为着色和包装问题，然后使用不兼容图来解决它。Yershov 观察到如果所有的变量都有相同的大小，覆盖确定问题则会完全等价于简单图着色问题，则剩余的工作变成寻找一个高效的着色启发式。因为涉及到不同大小的变量，执行某些打包功能的第二启发式，不得不与着色启发式结合在一起。</p>
+<p>为了证明这个方法，Yershov 假设了一个“均匀性原则”，断言大多数的程序有数据变量的同一集，因此，标量，数十个存储单元大小的数组，上百个存储单元的数组等都需要相当数量的存储。他的方法是使用着色启发式，尽可能多的覆盖近似相同权重的变量，然后用更小的数组“打包”更大的数组。</p>
+<p>Yershov 的方法有一些缺点。他的着色算法并非专门为不兼容图高效设计的，而是依赖于“两个节点距离”的启发式。如果统一原则不适用，内存利用率会相当低。而且，覆盖只会发生在一个可覆盖变量的边缘，经常浪费可用的存储。例如，Yershov 的启发式无法产生如下的覆盖结构：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_1.png" class="" title>
+
+
+<p>如果 D 可以只覆盖 A，F 可以只覆盖 B，但 E 可以覆盖 A 和 B，则 Yershov 的方案总会导致 20 个单元的浪费。</p>
+<p>Logrippo（L78）提出了一个重命名的方案来进行自动覆盖决策，它也有最后两个缺点。</p>
+<p>一个有希望的冲突图着色方法是 Ashok Chandra（CCC77） 提出的回溯着色算法。这个算法使用紧迫性测量启发式来选择要着色的节点。这个启发式在无权重冲突图上效果很好，它几乎不需要回溯重新着色节点。这表明冲突图会有些属性，让其可以满足这个启发式。在为扩展着色近似算法适配这个方法的过程中，我们观察到：</p>
+<ul>
+<li>对于一个节点 X，当前可用的区间总大小越小，能选择的区间自由度越低，因此，接下来分配 X 就越紧迫。</li>
+<li>X 当前的度越大，下次分配 X 的可能性就越大，剩余未着色的节点能实现更多区间共享的机会。</li>
+</ul>
+<p>这个方法根据测量得到的顺序来选择节点，然后使用一些存储分配策略，如首次满足，最佳满足，或者局部回溯技术，来为变量选择区间。从图中移除这个节点，然后更新相邻节点的品质因数。重复这个过程直到所有节点都被更新了。</p>
+<p>这一系列的启发式规则和首次满足策略（F29）一起被实现和测试了。132 个小图中有 82% 获得了最佳结果，其中有 97% 有 20% 的优化。</p>
+<h2 id="重命名转换"><a href="#重命名转换" class="headerlink" title="重命名转换"></a>重命名转换</h2><p>重命名是一种降低最大团大小的方案。重命名转换给程序引入新的变量，来承担旧变量的一些冲突，然后精确地确定新旧变量之间移动的位置。这会打碎冲突图中的团，因而 MC（CG）最终降低到 MAXLOC，而不会增加 CHR（CG）。事实上，CHR（CG）通常都是由这个转换降低的。重命名还会破坏不兼容图中的团，将 MC（IG）降低为 MAXACT，且通常减少 CHR（IG）。</p>
+<p>这个结果对于寄存器优化也是重要的。寄存器优化对应于简单图着色问题。规范重命名转换将 MC（CG），所需寄存器的下界，降低到 MAXLOC，任意特定节点需要的最大寄存器数量，然后精确地决定需要插入“移动-寄存器”的位置。</p>
+<p>当几个节点间的不同变量间冲突的聚合产生一个更大的变量间冲突时，重命名是适用的。例如，考虑如下的 PL/1 程序段：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_1.png" class="" title>
+
+
+<p>对于这个程序，活跃集 {ACT（I）}是：<br>{A，B}<br>{C，A}<br>{C，B}</p>
+<p>冲突对 {CON（I）}是：<br>{（A，B），（B，A）}<br>{（C，A）}<br>{（C，B）}</p>
+<p>IG 和 CG 组成团 {A，B，C}，MC(IG)  = MC(CG) = 80，MAXACT = MAXLOC = 60。</p>
+<p>重命名变换的核心，变换 R，定义为如下方式：假设 X 和 Y 同时属于 CLIQS（G）中的某些团 C，|C| = MC(G)，其中 G 是 IG 或者 CG。如果，不失一般性的，G 是 IG，我们需要 |X| &lt;= |Y|。如果 NBOTH 不为空，则 R 适用，定义如下：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/fo_1.png" class="" title>
+
+
+<p>注意到 INEDGS 和/或者 OUEDGS 可能是空的。变换 R 导致引入新的变量 X_Y，有 |X_Y| = |X|。程序以如下方式修改：</p>
+<p>步骤 1. FORALL N IN BOTH：</p>
+<p>  用 X_Y 的引用替换每个到 X 的引用。</p>
+<p>步骤 2. FORALL （M，N）IN INEDGS：</p>
+<p>  在 M 和 N 之间插入一个包含以下语句的节点：X_Y ：=  X；</p>
+<p>步骤 3. FORALL （M，N）IN OUEDGS：</p>
+<p>  在 M 和 N 之间插入一个包含以下语句的节点：X ：=  X_Y；</p>
+<p>如果在前面的示例中对（B，C）对应用了变换 R，则会构建如下的集合：<br>BOTH = {L5，L6，L7 }<br>NBOTH = {L1，L2， L4}<br>INEDGS = {（L4，L5）}<br>OUEDGS = {}</p>
+<p>以下是程序结果：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_2.png" class="" title>
+
+
+<p>新的活跃集 {ACT（I）} 是：<br>{A，B}<br>{C，A}<br>{B_C，B}<br>{C，B_C}</p>
+<p>新的冲突对集合 {CON（I）} 是：<br>{（A，B），（B，A）}<br>{（C，A）}<br>{（C，B_C）}</p>
+<p>IG 由边（A，B），（A，C），（B_C，B）和（B_C，C）组成，且 MC(IG) = MAXACT = 60。CG 由边（A，B），（A，C）和（B_C，C）组成，且 MC(CG) = MAXACT = 60。两个场景中，B_C  可以覆盖在 A 上，B 可以覆盖在 C 上，所有 CHR（IG）= CHR（CG）= 60。</p>
+
     </div>
 
     
@@ -383,7 +435,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">覆盖启发式</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">覆盖启发式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%91%BD%E5%90%8D%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">重命名转换</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -460,13 +512,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">275k</span>
+    <span title="总字数">277k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:10</span>
+    <span title="总时间">4:12</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
