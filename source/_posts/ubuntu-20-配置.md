@@ -101,23 +101,58 @@ description:
    sudo apt-get upgrade
    ````
 
-   
+
+## 环境异常解决
+
+### 网络异常
+
+虚拟机下，启动 ubuntu-20 后发现无网络连接，状态栏的网络图标也缺失，但vmware虚拟机网络配置是正常的。查找原因发现可以通过以下命令重启网络服务，修复这个问题[vmware1]：
+
+```shell
+sudo service network-manager stop
+
+sudo rm /var/lib/NetworkManager/NetworkManager.state
+
+sudo service network-manager start
+
+sudo vim /etc/NetworkManager/NetworkManager.conf    #把第四行的false改成true（managed=false改为：managed=true）注:也有可能在第五行
+
+sudo service network-manager restart
+```
+
+## 共享文件夹
+
+解决虚拟机共享文件夹看不见的问题[vmware2]：
+
+```shell
+// 查看vmware 共享是否设置成功
+vmware-hgfsclient
+// 手动挂载文件夹
+sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other
+```
+
+
 
 ## 参考
 
 ### ssh
 
-[https://linuxconfig.org/ubuntu-20-04-ssh-server](https://linuxconfig.org/ubuntu-20-04-ssh-server)
+1. [https://linuxconfig.org/ubuntu-20-04-ssh-server](https://linuxconfig.org/ubuntu-20-04-ssh-server)
 
 ### proxy
 
-[https://www.wylu.me/posts/eed37a90/](https://www.wylu.me/posts/eed37a90/)
+1. [https://www.wylu.me/posts/eed37a90/](https://www.wylu.me/posts/eed37a90/)
 
-[https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF](https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF)
+2. [https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF](https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF)
 
-[https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File](https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File)
+3. [https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File](https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File)
 
-[https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/](https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/)
+4. [https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/](https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/)
+
+### vmware
+
+1. [VMware Workstation Ubuntu 20.04 无法连接网络问题](https://blog.51cto.com/u_15346769/3688228)
+2. [VMware共享文件夹——Ubuntu20.04](https://blog.csdn.net/weixin_44126785/article/details/120585921)
 
 ### 下载源配置
 
