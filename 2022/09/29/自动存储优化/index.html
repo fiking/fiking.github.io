@@ -33,8 +33,19 @@
 <meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_1.png">
 <meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/fo_1.png">
 <meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_2.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_3.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_2.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_4.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_3.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_5.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_4.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_6.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_5.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_7.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_8.png">
+<meta property="og:image" content="http://example.com/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_9.png">
 <meta property="article:published_time" content="2022-09-28T16:15:38.000Z">
-<meta property="article:modified_time" content="2022-10-02T09:17:37.260Z">
+<meta property="article:modified_time" content="2022-10-03T04:47:56.624Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -210,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-02 17:17:37" itemprop="dateModified" datetime="2022-10-02T17:17:37+08:00">2022-10-02</time>
+                <time title="修改时间：2022-10-03 12:47:56" itemprop="dateModified" datetime="2022-10-03T12:47:56+08:00">2022-10-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,14 +250,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.4k</span>
+              <span>8.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>7 分钟</span>
             </span>
 
         </div>
@@ -340,6 +351,82 @@
 <p>重命名也可以用于分开冲突图中的其它团。变换 R 能应用到一个团上，只要团中的一些元素对的 NBOTH 是非空的。</p>
 <h2 id="其它变换和技术"><a href="#其它变换和技术" class="headerlink" title="其它变换和技术"></a>其它变换和技术</h2><p>在编译器中，在应用自动覆盖技术的前后，都可以尝试存储优化代码变换。在前一个场景中，通过消除一条边或者降低节点的大小，目标是为了降低最大大小的团或者扩展特定节点的度。在覆盖之后，覆盖的结果可以用于查明哪些变量的大小降低了，或者消除了哪些冲突的变量对。</p>
 <p>Allen 和 Cocke （AC72）编写了一个时间类优化代码的目录。根据情况，许多这样的变换可以提高或者禁止自动覆盖的机会。在这节中，我们考虑一些例子。</p>
+<p>某些情况下，比起适用存储来保留不相邻使用间的值，如果重新计算一组值，可以更有效地共享存储。下面的例子解释了这个观点：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_3.png" class="" title>
+
+
+<p>冲突对集合：<br>{（B，A）}<br>{（C，A），（C，B）}<br>{（D，A），（D，B），（D，C）}<br>{（E，A），（E，C），（E，D）}<br>{（G，A），（G，C）}<br>{（H，G）}</p>
+<p>下面的存储布局是这个程序最好的：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_2.png" class="" title>
+
+
+<p>共：330</p>
+<p>在 C 第二次使用的时候，重新计算 C ，放入重命名的变量中，我们获得了如下程序：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_4.png" class="" title>
+
+
+<p>冲突对集合是：<br>{（B，A）}<br>{（C，A），（C，B）}<br>{（D，A），（D，B）}<br>{（E，A），（E，C），（E，D）}<br>{（C1，A）}<br>{（G，A），（G，C1）}<br>{（H，G）}</p>
+<p>现在，可以实现下面的赋值，节约了 70 个对象存储单元，代价是指令存储和程序执行时间。</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_3.png" class="" title>
+
+
+<p>共：260</p>
+<p>虽然这个例子中插入冗余代码增加了覆盖机会，但是在其它情况下，消除冗余代码也会产生这种效果。代码移动也可以提高利用率。考虑如下的例子：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_5.png" class="" title>
+
+
+<p>冲突对集合如下：<br>{（B，A），（C，A），（C，B）}<br>{（D，A），（D，B），（D，C）}<br>{（K，A），（K，B），（K，C），（K，D）}<br>{（E，B），（E，C），（E，D），（E，K）}<br>{（G，C），（G，D），（G，K）}<br>{（H，G）}</p>
+<p>就目前而言，如下存储赋值时当前程序能做到的最好的情况了：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_4.png" class="" title>
+
+
+<p>共：650</p>
+<p>如果语句 6 向上移动了两个语句，就会有如下的存储覆盖改进的可能，它产生了 20个单元的节省：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_6.png" class="" title>
+
+
+<p>新的冲突对是：</p>
+<p>{（B，A），（C，A），（C，B）}<br>{（D，A），（D，B），（D，C）}<br>{（K，A），（K，B），（K，C），（K，D）}<br>{（H，A），（H，B），（H，D），（H，K）}<br>{（E，B），（E，H），（E，K）}<br>{（G，H）}</p>
+<p>对应的新的存储布局是：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/storage_5.png" class="" title>
+
+
+<p>共：630</p>
+<p>存储优化线性代码排序问题，在线性代码段中寻找一个语句顺序可以最小化 CHR（CG）的问题，可以被视为寄存器优化线性代码顺序问题的带权重泛化，这个问题 Sethi （S75）已经证明是 NP-完全的了。Aho，Johnson，和 Ullman（AJU76）已经研究了非权重问题的启发式。</p>
+<p>循环拆分，在 Allen-Cocke 目录中（AC72）讨论了逆“循环融合”变换，对于暴露冗余代码插入和代码移动机会是有帮助的。进一步的改进通常可以通过循环融合和降级来实现。考虑如下的例子：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_7.png" class="" title>
+
+
+<p>这个程序需要 203 个单元，且没有覆盖的可能。但是，如果循环和前两个节点拆分开，代码就可以重新排序，从而需要的储存就减半了：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_8.png" class="" title>
+
+
+<p>现在，A 和 B，SUMA 和 SUMB，I 和I1都可以共享村粗。下一步通过循环融合和降级可以实现更多的存储节省。如果每个隐式的输入循环都可以和后继计算循环融合，每个数组的秩都可以降低，则有如下程序：</p>
+ 
+  <img src="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/program_9.png" class="" title>
+
+
+<p>现在只需要三个字的数据存储。</p>
+<p>数据溢出是冗余代码插入的替代方案。虽然它经常用于寄存器优化中，其寄存器内容溢出到存储的开销是可以接受的；但是，它也可以用于存储优化，虽然将变量放入两个使用之间的辅助存储，和在需要的时候恢复到重命名的变量的开销，会更高。这个技术的自动化关键在于时间和空间的平衡。</p>
+<p>数据碎片化是另一个优化技术。比起连贯的变量，覆盖启发式通常可以更优化地分配碎片化的变量。变量不相交的子引用和覆盖启发式的结果可以用于确定一个分段。</p>
+<p>存储优化不局限于数据存储。覆盖启发式也可以用于管理指令存储。代码可以分割成块，然后每个块可以被覆盖启发式视为一个变量。</p>
+<p>当合并分离的过程时，可以执行过程间覆盖。一种方式是当一个过程被编译时，为局部变量执行覆盖；当过程被融合的时候，覆盖结果段。对于非递归的过程，另一种方式是，为整个程序产生一个巨大的冲突图，在每个调用点将局部变量作为重命名变量。中间的方法也是可行的。</p>
+<p>在引文（F79）中，会更细致地讨论存储优化代码变换和它的实现。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>本文中，描述了自动存储优化的基本问题。数据覆盖被设定成扩展图着色问题。提出了扩展色彩数的上界和下界，因此存储优化变换的目标就是降低它们。然后引入了一个有效且高效的覆盖启发式。</p>
+<p>一个规范的重命名变换已经被证明可以尽可能地降低冲突图的扩展色彩数。也通过例子图解了一些其它的存储优化变换。</p>
+<p>一个名为 SOCRATES 的实验研究，即存储优化，代码重组织和变换实验系统，已经初始化了，调查了本文中描述的变换和技术对于实际程序的适用性。引文（F79）讨论了实现细节和初始结果。</p>
+<p>自动存储优化是编译器技术中一个相对未开发的领域。其中一些算法的实际实现仍然有待研究，特别是对于在小型机器上运行的编译器。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>略。</p>
 
     </div>
 
@@ -439,7 +526,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">覆盖启发式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%91%BD%E5%90%8D%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">重命名转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%8F%98%E6%8D%A2%E5%92%8C%E6%8A%80%E6%9C%AF"><span class="nav-number">5.</span> <span class="nav-text">其它变换和技术</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">覆盖启发式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%91%BD%E5%90%8D%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">重命名转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%8F%98%E6%8D%A2%E5%92%8C%E6%8A%80%E6%9C%AF"><span class="nav-number">5.</span> <span class="nav-text">其它变换和技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">6.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">引用</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -516,13 +603,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">277k</span>
+    <span title="总字数">279k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:12</span>
+    <span title="总时间">4:14</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
