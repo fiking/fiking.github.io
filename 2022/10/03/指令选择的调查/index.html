@@ -31,7 +31,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_1_1.png">
 <meta property="article:published_time" content="2022-10-03T06:54:48.000Z">
-<meta property="article:modified_time" content="2022-10-04T16:37:02.270Z">
+<meta property="article:modified_time" content="2022-10-07T04:46:37.369Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-05 00:37:02" itemprop="dateModified" datetime="2022-10-05T00:37:02+08:00">2022-10-05</time>
+                <time title="修改时间：2022-10-07 12:46:37" itemprop="dateModified" datetime="2022-10-07T12:46:37+08:00">2022-10-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,14 +236,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.2k</span>
+              <span>6.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -290,7 +290,18 @@
 <p><em>内部循环指令</em></p>
 <p>内部循环指令表示行为是执行一些内部循环的机器指令。例如，TI TMS320C55x [247] 处理器提供了一条 RPT k 指令，重复执行后面的指令 k 次，k 是立即数作为机器指令的一部分给出。这些指令是最难利用的指令之一，今天要利用它们要么通过客制化优化路径，要么通过编译器特殊的支持。</p>
 <p><em>相互依赖的指令</em></p>
-<p>最后一类是相互依赖的指令。</p>
+<p>最后一类是相互依赖的指令。这是指那些携带额外限制的指令，这些限制会在指令以特定的方式组合的时候出现。一个包含 ADD 指令的例子，这条指令来自 TMS320C55x 指令集，如果 ADD 使用特定的寻址模式，则它不能与 RPT k 指令组合在一起。如同我们将在这个报告里看到的，这是另一类大多数指令选择器都难以处理的机器指令，因为它们通常不满足基础技术所作的一组假设。此外，它们只在某些场景下出现。</p>
+<h4 id="最优指令选择"><a href="#最优指令选择" class="headerlink" title="最优指令选择"></a>最优指令选择</h4><p>当使用最佳指令选择这个术语时，大部分文献都假设 – 通常是隐式的 – 有如下的定义：</p>
+<p>定义. *一个指令选择器，能够以开销 $c_i$ 建模一组机器指令 I，是最优的，只要对任意给定输入程序 P，它选出了一个集合$S\subseteq I$ s.t. S 实现了 P，且不存在其它的集合 $S’$ 也实现了 P，其中 $\sum_{s’\in S^{‘C}s’} &lt; \sum_{s\in S^Cs}$*。</p>
+<p>换句话说，通过这个指令选择器处理和利用相同的机器指令，无法实现更低成本的汇编代码，则认为这个指令选择器是最优的。</p>
+<p>这个定义有两个缺陷。首先，“可以被建模的机器指令”的条文限制了最优性的讨论，即指令选择器是否已经极致地利用了指令的讨论限制在它能处理的指令集上。其它的，不支持的机器指令，就算能产生更高效的汇编，也被简单的忽略了。尽管这个定义使得支持相同机器指令的指令选择器可以相互比较，但是它也允许将处理不同指令集的两个指令选择器识别成都是最优的，即使其中一个比另一个明显能产生更高效的代码。忽略违规条文可以移除这个问题，但也会使得现有的所有指令选择技术都变成是次优的。除了最简单的 ISAs，对于特定的输入程序，似乎总是存在一些机器指令可以提高代码质量，但是不能被指令选择器处理。</p>
+<p>更要紧的是另一个问题，两个可比较的指令选择器可能会选择不同的指令，从指令选择的角度来看两个都可以被认为是最优的，却最终产生指令不成比例的汇编代码。例如，其中一组指令可能会使得后续的指令调度和寄存器分配能更好的运行，而另一组则不行。这强调了代码生成的一个众所周知的特性：指令选择，指令调和寄存器分配是相互关联在一起，形成一个复杂系统，来影响最终编译后的汇编代码的质量，且经常出现的是反直觉的方式。因此，为了产生真正最优的代码，三项任务需要协同解决。有许多的研究已经开始设计这样的系统了（有些本报告覆盖到了）。</p>
+<p>因此，将最优指令选择作为一个孤立概念的想法是徒劳的，然后如果一个指令选择方法宣称是“最优的”，则明智的做法是密切关注它支持的机器指令集。不幸地是，这个概念已经在编译器社区中牢牢地确立了，并且渗透到文献中了。由于这个原因 – 且没有更好的选择 – 我将在本报告中遵守这个定义，但尽量少使用它。</p>
+<h3 id="指令选择的史前史"><a href="#指令选择的史前史" class="headerlink" title="指令选择的史前史"></a>指令选择的史前史</h3><p>代码生成的早期论文是从 1960 年代早期开始出现的 [13，99，193，214]，它们主要关注基于累加寄存器的目标机器上如何计算算术表达式。对于一条指令而言，一个累加寄存器是可以同时作为输入值和目的的寄存器的（如，$a \leftarrow a + b$），在早期的机器中很流行，因为它可以用比较少的寄存器来构建处理器。虽然这个简化了硬件制造过程，但是，不容易自动生成表达式的累加寄存器和内存间的最小传输数量的汇编代码。</p>
+<p>在 1970 年代，Sethi 和 Ullman [228] 将这些想法扩展到了带有 n 个通用寄存器的目标机器上，然后给出了一个评估带有通用子表达式的算术语句的算法，可以生成尽可能少语句的代码。后来，Aho 和 Johnson[3] 扩展了这个工作，应用动态规划开发了一个代码生成的算法，可以处理带有类似间接地址等更复杂地址模式的目标机器。本报告后面将会在重新给出这个方法，因为后续许多指令选择的方法都受到这个技术的影响。</p>
+<p>这些早期技术的共同点是指令选择的问题被有效的忽略和规避。例如，Sethi 和 Ullman 以及 Aho 和 Johnson 的方法都假设了目标机器具有简洁的数学性质，没有任何的奇异机器指令和多个寄存器分类。由于没有或者很少有机器具有这样的特性，所有这些算法在实际设置中都无法直接应用。</p>
+<p>由于缺乏正式的方法，第一个指令选择器通常都是手工写的，基于临时的算法完成的。这意味着高效和可移植性之间的权衡：如果指令选择器太通用，则生成的汇编代码可能无法执行；如果它过于紧密地针对特定目标机器量身定制，则会限制编译器支持其它的目标机器。因此，移植这样的指令选择器涉及到手工修改和基础算法的重写。对于特殊的机器，带有多有个寄存器类且需要不同的指令来访问不同的类，原始的指令选择器甚至可能根本不能用。</p>
+<p>但即使指令选择器是要以有助于编译器移植的方式来构建，也不是很清楚如何实现这一目标。下一章中，我们将研究解决这个问题的第一种方法。</p>
 
     </div>
 
@@ -390,7 +401,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9-%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是指令选择 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%86%85%E9%83%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">编译器内部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">目标机器的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">编译不同方法的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E6%8C%87%E4%BB%A4%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器指令属性</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9-%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是指令选择 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%86%85%E9%83%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">编译器内部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">目标机器的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">编译不同方法的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E6%8C%87%E4%BB%A4%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器指令属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.2.</span> <span class="nav-text">最优指令选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E5%8F%B2%E5%89%8D%E5%8F%B2"><span class="nav-number">2.3.</span> <span class="nav-text">指令选择的史前史</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -467,13 +478,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">283k</span>
+    <span title="总字数">285k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:18</span>
+    <span title="总时间">4:19</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
