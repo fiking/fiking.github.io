@@ -43,7 +43,7 @@
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_6.png">
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_5.png">
 <meta property="article:published_time" content="2022-10-03T06:54:48.000Z">
-<meta property="article:modified_time" content="2022-11-12T15:13:37.323Z">
+<meta property="article:modified_time" content="2022-11-12T15:19:19.551Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -219,7 +219,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-12 23:13:37" itemprop="dateModified" datetime="2022-11-12T23:13:37+08:00">2022-11-12</time>
+                <time title="修改时间：2022-11-12 23:19:19" itemprop="dateModified" datetime="2022-11-12T23:19:19+08:00">2022-11-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -416,7 +416,7 @@
 <p>机器指令被建模成<em>T-operators</em>，其基本上是附带了成本和属性的树模式。这个属性描述了各种限制，如哪个寄存器可以用于操作数上。也有一组指令选择器用于执行输入程序必要的转换的 T-operators – 随着我们的进一步讨论这个需求会变得清晰。使用这个工具集，该方案将 AST 作为期望的输入，然后按之前说的自顶向下的方法转换它：指令选择器尝试为 AST 的根节点找到所有匹配的模式，然后进一步递归地覆盖每个匹配剩余的子树。模式匹配是使用我们以前知道的一种直接技术完成的（见 25 页图 3.2），然后为了高效，所有的模式都根据它们的根节点类型进行标注。因此，这个过程的结果是一组模式序列，其中每个都覆盖了整个 AST。然后，检查每个序列是否每个模式的属性都是等于<em>首选属性集</em>（PAS），其因此对应于目标。否则，指令选择器将尝试使用 T-operators 转换重写子树直到属性匹配上。为了指导这个过程，Newcomer 应用了一个启发式规则称为<em>手段目的分析</em>，它是 Newell 和 Simon [195] 在 1959 年介绍的。 手段-目的分析背后直观上是递归地最小化数量差异 – 如何计算的没有在 [45] 中提到 – 在当前状态（即，子树现在的样子）和目标状态（它应该成为的样子）之间的。为了避免无限循环，当转换过程到达搜索空间中的特定深度，它就会停止。如果成功，则应用的转化会被插入到模式序列中；否则丢弃掉序列。从被找到的模式序列中，选出总开销最低的，随后是代码输出。</p>
 <p>作为手段-目的分析的应用，Newcomer 的方法是开创性的，让它可以指导输入程序的修改过程直到它可以在特定目标机器上实现，而不需要特地采用特定目标机制。但是，这个设计并非没有缺陷的。首先，这个设计几乎没有实际的应用，因为它只能处理算术表达式。第二，用于建模机器指令的 T-operators 和转换相同，也不得不手动构造，这是非平凡的，阻碍了编译器的可移植性。第三，由于搜索空间的截断，转换输入程序的过程可能会过早地结束，导致指令选择器无法生成任何的汇编代码。最后，事实证明除了最小的输入树外，搜索策略的代价太高因而无法在实践中使用它。</p>
 <p><em>让手段-目标分析在实际中可用</em></p>
-<p>Cattel 等人[44，47，176]后来提高和扩展了 Newcomer 的工作，使之成为一个更实用的框架，被实现在产生质量编译器-编译器（PQCC）中，Bliss-11 编译器的衍生版本，最初是由 Wulf 等人实现的 [264]。</p>
+<p>Cattel 等人[44，47，176]后来提高和扩展了 Newcomer 的工作，使之成为一个更实用的框架，被实现在产生质量编译器-编译器（PQCC）中，Bliss-11 编译器的衍生版本，最初是由 Wulf 等人实现的 [264]。他们的方法不是在编译输入程序的时候执行手段-目的分析，而是在生成编译器本身的时候将其作为预处理步骤 – 更类似于 Glanville-Graham 方法。</p>
 
     </div>
 
