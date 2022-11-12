@@ -41,8 +41,9 @@
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_3.png">
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_5.png">
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_6.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_5.png">
 <meta property="article:published_time" content="2022-10-03T06:54:48.000Z">
-<meta property="article:modified_time" content="2022-11-12T08:15:51.444Z">
+<meta property="article:modified_time" content="2022-11-12T15:13:37.323Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -218,7 +219,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-12 16:15:51" itemprop="dateModified" datetime="2022-11-12T16:15:51+08:00">2022-11-12</time>
+                <time title="修改时间：2022-11-12 23:13:37" itemprop="dateModified" datetime="2022-11-12T23:13:37+08:00">2022-11-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,14 +248,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
+              <span>17k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
+              <span>16 分钟</span>
             </span>
 
         </div>
@@ -405,7 +406,17 @@
 <h4 id="维护多个解析树而获得更好的代码质量"><a href="#维护多个解析树而获得更好的代码质量" class="headerlink" title="维护多个解析树而获得更好的代码质量"></a>维护多个解析树而获得更好的代码质量</h4><p>因为 LR 解析器只对表达式树进行了一次遍历 – 因此只产生了许多可能的解析树中的一个 – 产生的汇编代码严重地依赖于指令集语法来指导解析器寻找到 “好的” 解析树。</p>
 <p>Christopher 等人[52] 尝试解决这个问题，通过使用 Glanville-Graham 方法的概念，但是扩展了解析器以生成所有的解析树，然后选择能生成最好汇编代码的那个。这是通过将原来的 LR（1）解析器替换为 Earley 的算法 [74] 来达成的，虽然这个方法某种程度上提高了代码质量 – 至少理论上 – 但它是以枚举出所有解析树为代价的，这在实际中是非常昂贵的。</p>
 <p>在 2000 年，Madhavan 等人[181] 扩展了 Glanville-Graham 方法来获得一个最优的模式选择，同时据称保留了 LR 解析的线性时间复杂度。通过引入一个新版本的 LR 解析[230]，之前在找到一条匹配规则会直接执行的归约，现在允许推迟任意的步数。因此，指令选择器本质上还是追踪了多个解析树，允许它在做出可能证明是次优决定之前，可以收集足够多的关于输入程序的信息。换句话说，类似于 Christopher 等人的，Madhavan 等人的设计也会覆盖所有的解析树，但会立即丢弃掉被确实是产生低效汇编代码的解析树。为了有效地做到这点，该方法还引入了离线开销分析，我们将在后面的 3.6.3 节中讨论到这个。最近，Yang [266] 提出了一个相似的技术，涉及到<em>解析树仙人掌</em>[sic]的使用，其中偏离的解析树从公共主干分支出来，从而减少了需要的空间。但是，两种的基本原则仍然禁止建模许多典型的目标机器特性，如多输出指令。</p>
-<h3 id="使用递归自顶向下覆盖树"><a href="#使用递归自顶向下覆盖树" class="headerlink" title="使用递归自顶向下覆盖树"></a>使用递归自顶向下覆盖树</h3><p>到目前为止检查过的树覆盖方法 – 特别是那些基于 LR 解析的 – 都是自底向上操作的：指令选择器从覆盖表达式树的叶子节点开始，然后基于这些决策，它随后覆盖了剩余的子树直到它到达根，沿途不断匹配和选择适用的模式。这绝不是唯一的覆盖方法，因为它也可以自上而下地完成。有这样一种方法，指令选择器从根节点开始覆盖表达式树，然后递归向下进行匹配。</p>
+<h3 id="使用递归自顶向下覆盖树"><a href="#使用递归自顶向下覆盖树" class="headerlink" title="使用递归自顶向下覆盖树"></a>使用递归自顶向下覆盖树</h3><p>到目前为止检查过的树覆盖方法 – 特别是那些基于 LR 解析的 – 都是自底向上操作的：指令选择器从覆盖表达式树的叶子节点开始，然后基于这些决策，它随后覆盖了剩余的子树直到它到达根，沿途不断匹配和选择适用的模式。这绝不是唯一的覆盖方法，因为它也可以自上而下地完成。有这样一种方法，指令选择器从根节点开始覆盖表达式树，然后递归向下进行匹配。最后，语义信息的流动（如，会存储结果的特定寄存器）也是不同的：自底向上的指令选择器让这些信息沿着表达式树向上扩散 – 通过辅助的数据结构或者树重写 – 而自顶向下的实现会实现决定这个并向下推进。因此，后者被认为是目标驱动的，因为模式选择是由一组额外的需求引导的，而这些需求必须由所选的模式满足。因为，这反过来会对子树产生新的需求，所以大部分的自顶向下的技术都是使用带有回溯的递归实现的。这是必须的，因为某些模式的选择可能会导致低级别的表达式树变得无法被覆盖。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_5.png" class="" title>
+
+
+<h4 id="第一个方法"><a href="#第一个方法" class="headerlink" title="第一个方法"></a>第一个方法</h4><p><em>手段-目的分析指导指令选择</em></p>
+<p>据我所知，Newcomer[194] 是第一个开发了使用自顶向下覆盖的方法来解决指令选择问题的人。在他 1975 的博士论文中，Newcomer 提出了一个设计，能详细地找出所有覆盖给定表达式树的模式的组合，然后选出一个最小开销的。Cattell[45] 也在他的调查文章中描述了这些，这是本次讨论的主要来源。</p>
+<p>机器指令被建模成<em>T-operators</em>，其基本上是附带了成本和属性的树模式。这个属性描述了各种限制，如哪个寄存器可以用于操作数上。也有一组指令选择器用于执行输入程序必要的转换的 T-operators – 随着我们的进一步讨论这个需求会变得清晰。使用这个工具集，该方案将 AST 作为期望的输入，然后按之前说的自顶向下的方法转换它：指令选择器尝试为 AST 的根节点找到所有匹配的模式，然后进一步递归地覆盖每个匹配剩余的子树。模式匹配是使用我们以前知道的一种直接技术完成的（见 25 页图 3.2），然后为了高效，所有的模式都根据它们的根节点类型进行标注。因此，这个过程的结果是一组模式序列，其中每个都覆盖了整个 AST。然后，检查每个序列是否每个模式的属性都是等于<em>首选属性集</em>（PAS），其因此对应于目标。否则，指令选择器将尝试使用 T-operators 转换重写子树直到属性匹配上。为了指导这个过程，Newcomer 应用了一个启发式规则称为<em>手段目的分析</em>，它是 Newell 和 Simon [195] 在 1959 年介绍的。 手段-目的分析背后直观上是递归地最小化数量差异 – 如何计算的没有在 [45] 中提到 – 在当前状态（即，子树现在的样子）和目标状态（它应该成为的样子）之间的。为了避免无限循环，当转换过程到达搜索空间中的特定深度，它就会停止。如果成功，则应用的转化会被插入到模式序列中；否则丢弃掉序列。从被找到的模式序列中，选出总开销最低的，随后是代码输出。</p>
+<p>作为手段-目的分析的应用，Newcomer 的方法是开创性的，让它可以指导输入程序的修改过程直到它可以在特定目标机器上实现，而不需要特地采用特定目标机制。但是，这个设计并非没有缺陷的。首先，这个设计几乎没有实际的应用，因为它只能处理算术表达式。第二，用于建模机器指令的 T-operators 和转换相同，也不得不手动构造，这是非平凡的，阻碍了编译器的可移植性。第三，由于搜索空间的截断，转换输入程序的过程可能会过早地结束，导致指令选择器无法生成任何的汇编代码。最后，事实证明除了最小的输入树外，搜索策略的代价太高因而无法在实践中使用它。</p>
+<p><em>让手段-目标分析在实际中可用</em></p>
+<p>Cattel 等人[44，47，176]后来提高和扩展了 Newcomer 的工作，使之成为一个更实用的框架，被实现在产生质量编译器-编译器（PQCC）中，Bliss-11 编译器的衍生版本，最初是由 Wulf 等人实现的 [264]。</p>
 
     </div>
 
@@ -505,7 +516,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9-%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是指令选择 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%86%85%E9%83%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">编译器内部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">目标机器的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">编译不同方法的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E6%8C%87%E4%BB%A4%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器指令属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.2.</span> <span class="nav-text">最优指令选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E5%8F%B2%E5%89%8D%E5%8F%B2"><span class="nav-number">2.3.</span> <span class="nav-text">指令选择的史前史</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.</span> <span class="nav-text">宏展开</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%B4%E7%B4%A0%E7%9A%84%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.1.</span> <span class="nav-text">朴素的宏展开</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E8%A6%86%E7%9B%96"><span class="nav-number">4.</span> <span class="nav-text">树覆盖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%A0%91%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">第一种使用树模式匹配的技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LR-%E8%A7%A3%E6%9E%90%E8%87%AA%E4%B8%8B%E8%80%8C%E4%B8%8A%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.3.</span> <span class="nav-text">使用 LR 解析自下而上覆盖树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Glanville-Graham-%E6%96%B9%E6%B3%95"><span class="nav-number">4.3.1.</span> <span class="nav-text">Glanville-Graham 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%AD%E4%B9%89%E5%A4%84%E7%90%86%E6%89%A9%E5%B1%95%E8%AF%AD%E6%B3%95"><span class="nav-number">4.3.2.</span> <span class="nav-text">使用语义处理扩展语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%B4%E6%8A%A4%E5%A4%9A%E4%B8%AA%E8%A7%A3%E6%9E%90%E6%A0%91%E8%80%8C%E8%8E%B7%E5%BE%97%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F"><span class="nav-number">4.3.3.</span> <span class="nav-text">维护多个解析树而获得更好的代码质量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%80%92%E5%BD%92%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.4.</span> <span class="nav-text">使用递归自顶向下覆盖树</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9-%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是指令选择 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%86%85%E9%83%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">编译器内部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">目标机器的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">编译不同方法的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E6%8C%87%E4%BB%A4%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器指令属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.2.</span> <span class="nav-text">最优指令选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E5%8F%B2%E5%89%8D%E5%8F%B2"><span class="nav-number">2.3.</span> <span class="nav-text">指令选择的史前史</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.</span> <span class="nav-text">宏展开</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%B4%E7%B4%A0%E7%9A%84%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.1.</span> <span class="nav-text">朴素的宏展开</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E8%A6%86%E7%9B%96"><span class="nav-number">4.</span> <span class="nav-text">树覆盖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%A0%91%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">第一种使用树模式匹配的技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LR-%E8%A7%A3%E6%9E%90%E8%87%AA%E4%B8%8B%E8%80%8C%E4%B8%8A%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.3.</span> <span class="nav-text">使用 LR 解析自下而上覆盖树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Glanville-Graham-%E6%96%B9%E6%B3%95"><span class="nav-number">4.3.1.</span> <span class="nav-text">Glanville-Graham 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%AD%E4%B9%89%E5%A4%84%E7%90%86%E6%89%A9%E5%B1%95%E8%AF%AD%E6%B3%95"><span class="nav-number">4.3.2.</span> <span class="nav-text">使用语义处理扩展语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%B4%E6%8A%A4%E5%A4%9A%E4%B8%AA%E8%A7%A3%E6%9E%90%E6%A0%91%E8%80%8C%E8%8E%B7%E5%BE%97%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F"><span class="nav-number">4.3.3.</span> <span class="nav-text">维护多个解析树而获得更好的代码质量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%80%92%E5%BD%92%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.4.</span> <span class="nav-text">使用递归自顶向下覆盖树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95"><span class="nav-number">4.4.1.</span> <span class="nav-text">第一个方法</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -582,13 +593,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">295k</span>
+    <span title="总字数">297k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:28</span>
+    <span title="总时间">4:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
