@@ -30,7 +30,7 @@
 <meta property="og:description" content="摘要应用特定指令集处理器（ASIPs）是架构和指令集都针对特定应用领域优化过的现场或掩码可编程处理器。ASIPs 具有较高的自由度，因此越来越多地用于电信等竞争激烈的市场。但是，迄今为止，缺少适合于 ASIPs 设计和编程的 CAD 技术。在这篇文章中，提出了一种定义 ASIPs 优化微指令集的交互式方法。第二个问题是一个为预定义的ASIP 生成代码的指令选择方法。生成了一个指令集和数据路径模型的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-11-17T15:31:03.000Z">
-<meta property="article:modified_time" content="2022-11-17T16:57:20.738Z">
+<meta property="article:modified_time" content="2022-11-17T19:50:48.770Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-18 00:57:20" itemprop="dateModified" datetime="2022-11-18T00:57:20+08:00">2022-11-18</time>
+                <time title="修改时间：2022-11-18 03:50:48" itemprop="dateModified" datetime="2022-11-18T03:50:48+08:00">2022-11-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,7 +234,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>503</span>
+              <span>1.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -258,8 +258,16 @@
 
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>应用特定指令集处理器（ASIP）是处在客制化架构和商用可编程 DSP 处理器之间的。他们允许现场和掩模可编程性，但是只针对某类特定的应用，从而能限制所需的硬件数量（面积和功率）。最后，ASIPs 通常是嵌入式应用的最佳选择。为了增强这类 ASIP 的性能，会添加客制化的硬件加速器数据路径，这使得 ASIP 是一个异构的 IC 架构。</p>
 <p>为了映射少量的算法到 ASIP 这个理由，是无法证明为每个目标体系结构编写编译器的工作量是合理的。因此，实际上汇编代码经常是手写的，这样子的开销太高了。所以解决方法是需要一个可重定向的编译器，它带有另一个优点，即能支持指令集的后期修改。</p>
-<p>这篇论文集中于可重定向编译器的指令选择任务。</p>
-
+<p>这篇论文集中于可重定向编译器的指令选择任务。论文的第二部分展示了我们的指令选择方法如何与应用程序分析工具一起用于微指令集定义的。这个技术是作为合成和代码生成系统 “CHESS” 的一部分实现的。</p>
+<h2 id="传统的指令选择"><a href="#传统的指令选择" class="headerlink" title="传统的指令选择"></a>传统的指令选择</h2><p>一个 ASIP 通常由其指令集和数据路径的抽象描述来指定。通常所有连接的数据路径的详细描述是没有的，控制器和微序列逻辑的描述也是不可用的。传统的指令选择技术使用模式匹配[1，第9章]。模板模式集是（手动）提取自指令集的，然后表示应用的中间代码的图会由这些模式覆盖。对于有一组可互换的通用寄存器的机器，基于动态规划方法的树模式匹配保证了最优代码。给定一个模板模式的枚举，会有几个可以用于执行这个树模式匹配的工具（如[5]）。</p>
+<p>与早期的每条指令产生一个模板模式的处理器相比，水平的微码处理器和最近的处理器（RISC）都有更多的指令间并行的正交指令集。在这个场景中，使用每个模板模式覆盖一条完整指令的方式会有几个缺点。产生的模式会相当的大，这降低了匹配的可能性；可能的模式的数量也会变得更多，这会降低模式匹配的速度。因此，微代码处理器的传统方法是去为每个处理器行为创建一个模板模式。然后树模式匹配会产生垂直的微代码（没有并行度），然后代码中的并行度通过压实（调度）算法引入，从而产生所谓的水平微代码。</p>
+<p>但是直接应用这些技术到 ASIPs 会有几个问题：</p>
+<ul>
+<li>大部分的 ASIPs是指令中有并行度的微代码处理器。但是，如何决定一个处理器活动的正确粒度，从而可以允许有高效的模式匹配和高效的压实（不是太小的模式）？为一个目标架构手工推导一个好的模式太费力了，只能用于映射少数的算法。</li>
+<li>动态规划方法（和其它传统的代码生成方法）只能为有通用寄存器的架构生成通用的最优代码。而且，用于模式匹配的模式必须是树。对于 ASIP 来说，特别是应用领域是实时 DSP ，通常都不是这样子的。ASIP 通常只有很少的寄存器，分布在整个架构中。重新收敛路径（甚至包含流水线寄存器的循环，如乘加）在 ASIP 中也不例外。这意味着事实上是需要的是图模式匹配而不是树模式匹配。对于高效的代码生成，必须考虑寄存器和功能单元之间的连接。</li>
+</ul>
+<p>最近，BNR [11] 扩展模式匹配技术以适用于 ASIP 等工作已经完成了。但是，我们提出了另一个技术。</p>
+<h2 id="通过打包的指令选择"><a href="#通过打包的指令选择" class="headerlink" title="通过打包的指令选择"></a>通过打包的指令选择</h2>
     </div>
 
     
@@ -358,7 +366,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">传统的指令选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%89%93%E5%8C%85%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">4.</span> <span class="nav-text">通过打包的指令选择</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -435,13 +443,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">300k</span>
+    <span title="总字数">301k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:32</span>
+    <span title="总时间">4:33</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
