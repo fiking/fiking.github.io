@@ -29,11 +29,16 @@
 <meta property="og:site_name" content="fiking">
 <meta property="og:description" content="摘要应用特定指令集处理器（ASIPs）是架构和指令集都针对特定应用领域优化过的现场或掩码可编程处理器。ASIPs 具有较高的自由度，因此越来越多地用于电信等竞争激烈的市场。但是，迄今为止，缺少适合于 ASIPs 设计和编程的 CAD 技术。在这篇文章中，提出了一种定义 ASIPs 优化微指令集的交互式方法。第二个问题是一个为预定义的ASIP 生成代码的指令选择方法。生成了一个指令集和数据路径模型的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_1.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_2.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_3.png">
 <meta property="article:published_time" content="2022-11-17T15:31:03.000Z">
-<meta property="article:modified_time" content="2022-11-17T19:50:48.770Z">
+<meta property="article:modified_time" content="2022-11-19T10:03:22.978Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png">
 
 <link rel="canonical" href="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/">
 
@@ -205,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-18 03:50:48" itemprop="dateModified" datetime="2022-11-18T03:50:48+08:00">2022-11-18</time>
+                <time title="修改时间：2022-11-19 18:03:22" itemprop="dateModified" datetime="2022-11-19T18:03:22+08:00">2022-11-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,14 +239,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -267,7 +272,51 @@
 <li>动态规划方法（和其它传统的代码生成方法）只能为有通用寄存器的架构生成通用的最优代码。而且，用于模式匹配的模式必须是树。对于 ASIP 来说，特别是应用领域是实时 DSP ，通常都不是这样子的。ASIP 通常只有很少的寄存器，分布在整个架构中。重新收敛路径（甚至包含流水线寄存器的循环，如乘加）在 ASIP 中也不例外。这意味着事实上是需要的是图模式匹配而不是树模式匹配。对于高效的代码生成，必须考虑寄存器和功能单元之间的连接。</li>
 </ul>
 <p>最近，BNR [11] 扩展模式匹配技术以适用于 ASIP 等工作已经完成了。但是，我们提出了另一个技术。</p>
-<h2 id="通过打包的指令选择"><a href="#通过打包的指令选择" class="headerlink" title="通过打包的指令选择"></a>通过打包的指令选择</h2>
+<h2 id="通过打包的指令选择"><a href="#通过打包的指令选择" class="headerlink" title="通过打包的指令选择"></a>通过打包的指令选择</h2><p>我们将会使用如下的术语（在[7]中有更广泛的定义）：<em>直接耦合</em>的微操作是原始处理器活动，其通过临时数据存储资源相互传递数据，如，通过线和锁存器。一个<em>包</em> 是一串微操作的最大序列，其中每个微操作直接与它的邻居耦合。因此（见 3.1 节），一个包必须匹配一组完整的功能单元（FUs），其直接与可寻址的寄存器相连（通过直线，总线，三态门，多路复用器）。3.2 节会给出包概念的例子演示。要注意的是，一个包可以包含一个流水线寄存器，其是不可寻址的，因此是个临时数据存储资源。</p>
+<p>我们认为包具有合适的粒度来拆分指令选择问题。</p>
+<ul>
+<li>第一个子任务，称为打包，主要是将一个完整应用程序的所有数据流操作分组到最小数量的包中。每个生成的包之后都必须是处理器指令的一部分，因此符合指令格式。然后数据路由（寄存器分配），通过多路复用器设置，总线驱动器设置和寄存器地址来标注，将包转为寄存器转换[10]。</li>
+<li>指令选择的第二个子任务，主要是把控制流操作和包放在一起形成微指令。这会在调度期间完成，意味着调度器必须知道指令格式和一些流水线方面的信息，其会限制指令的顺序。</li>
+</ul>
+<h3 id="指令集和数据路径模型的结合"><a href="#指令集和数据路径模型的结合" class="headerlink" title="指令集和数据路径模型的结合"></a>指令集和数据路径模型的结合</h3><p>本文采用的指令选择方法是使用 ASIP 的数据路径模型和指令集的结合，而不是使用模板模式集。这个模型不需要对应于真实的 ASIP 数据路径。</p>
+<p>图 1 给出了一个 ASIP 数据路径的示例规格，它的算术指令操作的指令集由表 1 给出。一个更完整的指令集也会包含（条件）跳转操作和加载/存储操作，分别用于实现控制流和内存中数据存储。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png" class="" title>
+
+
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_1.png" class="" title>
+
+
+<p>数据路径允许 ALU，移位器，乘法器和加减法器上的所有操作组合，但是使用三种指令格式只能编码他们中少数的部分。因为<em>编码限制</em>剩余的组合是不被允许的。引入编码约束来限制指令字的位数，当前包含寄存器地址是 7 位。允许 ALU 和乘加结构的并行会花费掉许多的位数，并且因为需要互联（总线冲突）的原因，所以基本都不支持两者的并行。一个或者两个加载/存储操作通常可以和算术操作发生并行。</p>
+<p>用户使用 nML 语言[4，2]设定指令集。在 nML 中，一个指令集是用属性语法分层描述的。属性属于指令描述的一部分，如它关联动作（在我们的场景中还会是使用的硬件资源），它的二进制编码，它的汇编助记符，…</p>
+<p>根据 nML 描述，生成组合的指令集和数据路径模型。如图 2 中描绘的例子。它根据如下方式生成：</p>
+<ul>
+<li>为数据路径中的每个 FU 生成一个节点。每个寄存器生成两个节点；一个是读动作一个是写动作。在图 2 中这些节点是实心矩形的。</li>
+<li>添加 FU 之间的直接互联。</li>
+<li>每个 FU 节点标注着他们可以执行的操作和相关的指令设置。这些信息可以在指令集描述中找到。</li>
+<li>抽象 FUs 和 寄存器之间的连接的物理实现。这些连接由简单的点对点连接建模，这些连接会通过“寄存器选择块”（虚线矩阵）。这样的块包含能够使能连接的指令设置。这个例子中缺失了许多的寄存器连接，因为省略了加载/存储指令。</li>
+</ul>
+<p>一个包只是寄存器选择块之间的一条路径。一个寄存器转换是模型顶部的寄存器到底部的寄存器之间的一条路径，因此包含寄存器选择块。但是，当搜索模型中的路径时，必须检查路径上指令设置的适配性（见 3.2 节的例子）。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_2.png" class="" title>
+
+
+<h3 id="打包技术"><a href="#打包技术" class="headerlink" title="打包技术"></a>打包技术</h3><p>我们的打包技术是 [8，9] 中描述的映射技术的扩展。在打包之前，应用程序被转换为控制数据流图（CDFG）– 见第 4 节。在 CDFG 中每个操作节点都标注了所有它可以在上面执行的 FUs，这些 FUs 来自指令集和数据路径组合模型。如果这个模型允许两个节点直接耦合（它们之间由一条路径且没有指令设置的冲突），连接这些节点的边被标注为合并。图 3 显示了一个小的数据流图。图 3 给出了一个小的数据流图。第一个加法操作可以在 ALU 或者加减法器执行， 每个都有两种可能的指令设置。$&gt;&gt; 1$-操作可以映射到移位器上，也有两个可能的指令设置。在指令集和数据路径组合模型里，可以看到 add - $&gt;&gt;1$ 包可以被映射到 ALU 和 移位 FUs 中。确实，两个 FUs 之间存在着连接，包的两个操作需要的指令设置的交集不为空。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_3.png" class="" title>
+
+
+<p>在一个较大的例子中，有些边可能会用几个可能的耦合方案进行标注。在选择一个耦合方案时，可以删除相邻边上的其它备选方案。因此，必须应用巧妙的启发式来选择正确的替代方案。这些启发式是 [8，9] 中描述的启发式的扩展版。在这种方式下，算法增量地组合操作节点成耦合微操作组，直到获得最终的包。</p>
+<p>对于我们的例子，形成的包是：[+, &gt;&gt;1 : alu-shift(0100xxx)]，[- : alu(0001xxx, 011xxx)] 和 [&gt;&gt;2 : shift(11xx010)]。然后这些包通过数据路由工具扩展成完整的寄存器传输。在我们的例子中，寄存器传输是：[AR = (AX + AY) &gt;&gt; 1 : (0100000)]，[AR = AR - AY : (0001010)] 和 [AR = AR &gt;&gt; 2 : (1101010)]。</p>
+<h3 id="我们方法的优势"><a href="#我们方法的优势" class="headerlink" title="我们方法的优势"></a>我们方法的优势</h3><p>使用带有指令集和数据路径组合模型的打包技术，替代使用更传统的模式匹配技术，有如下优势：</p>
+<ul>
+<li>不是提前枚举模式，而是在打包的时候生成的。</li>
+<li>匹配的模式不需要是树，所有的图模式都是可能的。见 [8，9]。</li>
+<li>打包算法允许匹配模式跨过基本块边界（循环和条件边界），然后执行必要的操作复制 [8, 9]。</li>
+<li>该模型反映了指令编码和 FUs 与寄存器之间的连接。因此，它可以被可重定目标代码生成器中的所有工具采用，不只是打包工具，也包括数据路由[10] 和调度工具。</li>
+</ul>
+<h3 id="相似的方法"><a href="#相似的方法" class="headerlink" title="相似的方法"></a>相似的方法</h3>
     </div>
 
     
@@ -366,7 +415,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">传统的指令选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%89%93%E5%8C%85%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">4.</span> <span class="nav-text">通过打包的指令选择</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">传统的指令选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%89%93%E5%8C%85%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">4.</span> <span class="nav-text">通过打包的指令选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%93%E5%90%88"><span class="nav-number">4.1.</span> <span class="nav-text">指令集和数据路径模型的结合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%8C%85%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">打包技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%96%B9%E6%B3%95%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">4.3.</span> <span class="nav-text">我们方法的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">相似的方法</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -443,13 +492,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">301k</span>
+    <span title="总字数">303k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:33</span>
+    <span title="总时间">4:35</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
