@@ -36,8 +36,10 @@
 <meta property="og:image" content="http://example.com/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_5.png">
 <meta property="og:image" content="http://example.com/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_6.png">
 <meta property="og:image" content="http://example.com/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_7.png">
+<meta property="og:image" content="http://example.com/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_8.png">
+<meta property="og:image" content="http://example.com/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_9.png">
 <meta property="article:published_time" content="2022-11-27T04:45:30.000Z">
-<meta property="article:modified_time" content="2022-12-03T12:45:43.822Z">
+<meta property="article:modified_time" content="2022-12-03T15:36:28.540Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="computer architecture">
 <meta name="twitter:card" content="summary">
@@ -213,7 +215,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-12-03 20:45:43" itemprop="dateModified" datetime="2022-12-03T20:45:43+08:00">2022-12-03</time>
+                <time title="修改时间：2022-12-03 23:36:28" itemprop="dateModified" datetime="2022-12-03T23:36:28+08:00">2022-12-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -242,14 +244,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.8k</span>
+              <span>8.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -366,6 +368,20 @@
 
 
 <p>在这个方案中，我们不会自增程序计数器来获得下一条指令。但是如果特定硬件实现的速度有优势的话，则可以使用它。</p>
+<p>如果我们在一个周期里打包的测试少于 n 会发生什么呢？根据上面的例子，在 n == 3 时，看起来对于每组目标地址，我们都需要花费四个程序内存位置。但如果我们有直连的代码，或者想要在某些周期里只做一到两个测试（我们肯定会的），会发生什么呢？我们不得不浪费没用到的 slots 吗？如果我们包含一个测试总是 SUCCEEDs，另一个总是 FAILs 的，则我们可以避免浪费 slots。有这些测试，我们可以让两条都要打包一个测试的指令共享一个地址片，或者我们也可以打包一条会做两个测试的指令，和一条不做测试的指令。例如，取两条指令，INSTR1，其想要做 TEST1，和 INSTR2，其想要做 TEST2。我们可以安排让它们都跳转到一个标签上，这个标签在地址切片 00000011里（因此同时都有 00000011 作为它们的下一个地址域）如下：</p>
+<p>在 INSTR1 之后，我们要么跳转到 00 00000011，要么到 01 00000011。作为一个结果，INSTR1 的下一个地址域是 00000011，然后这个测试域填充如下。</p>
+ 
+  <img src="/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_8.png" class="" title>
+
+
+<p>在 INSTR2 之后，我们要么跳转到 10 00000011，要么到 11 00000011。所以它看起来是：</p>
+ 
+  <img src="/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/figure_9.png" class="" title>
+
+
+<p>因为我们没有自增的程序计数器，且可以随意重新安排地址，所以这些分配可以在 postpass 程序中直接完成。代码重新加入时可能会浪费一点空间，但不会太多。</p>
+<p>我们之前在 $2^n$ 路跳转上的工作也可以应用到 n+1 路跳转上，包含了这些想法的一个更完整的解释 [Fisher 80]。</p>
+<h2 id="ELI-512-上的跳转机制"><a href="#ELI-512-上的跳转机制" class="headerlink" title="ELI-512 上的跳转机制"></a>ELI-512 上的跳转机制</h2><p>ELI-512 上有一个类似上面描述的 n+1 路跳转机制。</p>
 
     </div>
 
@@ -465,7 +481,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-VLIW%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是 VLIW？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8%E5%90%91%E9%87%8F%E6%9C%BA%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">为什么不用向量机？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">轨迹调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BULLDOG%EF%BC%8C%E4%B8%80%E4%B8%AA%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">BULLDOG，一个轨迹调度编译器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BULLDOG-%E4%B8%8A%E7%9A%84%E5%86%85%E5%AD%98%E5%8F%8D%E6%B7%B7%E6%B7%86"><span class="nav-number">6.</span> <span class="nav-text">BULLDOG 上的内存反混淆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6%E7%9A%84%E6%9C%BA%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">运行轨迹调度的机器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">8.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VLIWs-%E9%9C%80%E8%A6%81%E5%B7%A7%E5%A6%99%E7%9A%84%E8%B7%B3%E8%B7%83%E6%9C%BA%E5%88%B6"><span class="nav-number">9.</span> <span class="nav-text">VLIWs 需要巧妙的跳跃机制</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-VLIW%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是 VLIW？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8%E5%90%91%E9%87%8F%E6%9C%BA%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">为什么不用向量机？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">轨迹调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BULLDOG%EF%BC%8C%E4%B8%80%E4%B8%AA%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">BULLDOG，一个轨迹调度编译器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BULLDOG-%E4%B8%8A%E7%9A%84%E5%86%85%E5%AD%98%E5%8F%8D%E6%B7%B7%E6%B7%86"><span class="nav-number">6.</span> <span class="nav-text">BULLDOG 上的内存反混淆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E8%BD%A8%E8%BF%B9%E8%B0%83%E5%BA%A6%E7%9A%84%E6%9C%BA%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">运行轨迹调度的机器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">8.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VLIWs-%E9%9C%80%E8%A6%81%E5%B7%A7%E5%A6%99%E7%9A%84%E8%B7%B3%E8%B7%83%E6%9C%BA%E5%88%B6"><span class="nav-number">9.</span> <span class="nav-text">VLIWs 需要巧妙的跳跃机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ELI-512-%E4%B8%8A%E7%9A%84%E8%B7%B3%E8%BD%AC%E6%9C%BA%E5%88%B6"><span class="nav-number">10.</span> <span class="nav-text">ELI-512 上的跳转机制</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -542,13 +558,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">313k</span>
+    <span title="总字数">314k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:44</span>
+    <span title="总时间">4:45</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
