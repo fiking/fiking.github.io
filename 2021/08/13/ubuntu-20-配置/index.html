@@ -30,7 +30,7 @@
 <meta property="og:description" content="背景  ubuntu 20 初始使用的一些配置和安装命令。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-13T13:37:13.000Z">
-<meta property="article:modified_time" content="2022-09-28T15:18:02.867Z">
+<meta property="article:modified_time" content="2022-12-19T14:34:51.103Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="ubuntu">
 <meta name="twitter:card" content="summary">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-28 23:18:02" itemprop="dateModified" datetime="2022-09-28T23:18:02+08:00">2022-09-28</time>
+                <time title="修改时间：2022-12-19 22:34:51" itemprop="dateModified" datetime="2022-12-19T22:34:51+08:00">2022-12-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,7 +230,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.9k</span>
+              <span>3.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -270,6 +270,12 @@
 <p>参考 <a target="_blank" rel="noopener" href="https://www.wylu.me/posts/eed37a90/">https://www.wylu.me/posts/eed37a90/</a> 的 “配置 Ubuntu 使用 Global 模式”。</p>
 </li>
 </ol>
+<h3 id="Samba-配置"><a href="#Samba-配置" class="headerlink" title="Samba 配置"></a>Samba 配置</h3><p>为了实现 Win10 和 Ubuntu 20  的文件共享，设置了 Samba 服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装软件</span></span><br><span class="line">sudo apt isntall samba samba-common</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加用户密码</span></span><br><span class="line">sudo smbpasswd -a &#123;username&#125;</span><br></pre></td></tr></table></figure>
+<p>编写配置文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 打开配置文件</span></span><br><span class="line">sudo vim /etc/samba/smb.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在配置文件smb.conf最后添加下面的内容（[]中是待共享目录的文件名，path是带共享目录的绝对路径）</span></span><br><span class="line">[share]</span><br><span class="line">comment = share folder</span><br><span class="line">browseable = yes</span><br><span class="line">path = /home/&#123;username&#125;/share</span><br><span class="line">create mask = 0700</span><br><span class="line">directory mask = 0700</span><br><span class="line">valid users = &#123;username&#125;</span><br><span class="line">public = yes</span><br><span class="line">available = yes</span><br><span class="line">writable = yes</span><br></pre></td></tr></table></figure>
+<p>重启</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service smbd restart</span><br></pre></td></tr></table></figure>
 <h2 id="配置下载源"><a href="#配置下载源" class="headerlink" title="配置下载源"></a>配置下载源</h2><ol>
 <li><p>编辑 /etc/apt/sources.list</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span></span></span><br><span class="line"></span><br><span class="line"># 预发布软件源，不建议启用</span><br><span class="line"><span class="meta"># deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span></span><br></pre></td></tr></table></figure></li>
@@ -279,6 +285,8 @@
 </ol>
 <h2 id="环境异常解决"><a href="#环境异常解决" class="headerlink" title="环境异常解决"></a>环境异常解决</h2><h3 id="网络异常"><a href="#网络异常" class="headerlink" title="网络异常"></a>网络异常</h3><p>虚拟机下，启动 ubuntu-20 后发现无网络连接，状态栏的网络图标也缺失，但vmware虚拟机网络配置是正常的。查找原因发现可以通过以下命令重启网络服务，修复这个问题[vmware1]：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo service network-manager stop</span><br><span class="line"></span><br><span class="line">sudo rm /var/lib/NetworkManager/NetworkManager.state</span><br><span class="line"></span><br><span class="line">sudo service network-manager start</span><br><span class="line"></span><br><span class="line">sudo vim /etc/NetworkManager/NetworkManager.conf    #把第四行的false改成true（managed=false改为：managed=true）注:也有可能在第五行</span><br><span class="line"></span><br><span class="line">sudo service network-manager restart</span><br></pre></td></tr></table></figure>
+<h3 id="下载证书错误问题"><a href="#下载证书错误问题" class="headerlink" title="下载证书错误问题"></a>下载证书错误问题</h3><p>通过如下 -o 选项可以临时关闭证书验证。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-<span class="built_in">get</span> -o Acquire::https::Verify-Peer=<span class="literal">false</span> update</span><br></pre></td></tr></table></figure>
 <h2 id="共享文件夹"><a href="#共享文件夹" class="headerlink" title="共享文件夹"></a>共享文件夹</h2><p>解决虚拟机共享文件夹看不见的问题[vmware2]：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 查看vmware 共享是否设置成功</span><br><span class="line">vmware-hgfsclient</span><br><span class="line">// 手动挂载文件夹</span><br><span class="line">sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other</span><br></pre></td></tr></table></figure>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><h3 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h3><ol>
@@ -299,6 +307,9 @@
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44126785/article/details/120585921">VMware共享文件夹——Ubuntu20.04</a></li>
 </ol>
 <h3 id="下载源配置"><a href="#下载源配置" class="headerlink" title="下载源配置"></a>下载源配置</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/xiangxianghehe/article/details/105688062">https://blog.csdn.net/xiangxianghehe/article/details/105688062</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7033412379727626247">https://juejin.cn/post/7033412379727626247</a></p>
+<h3 id="下载证书错误"><a href="#下载证书错误" class="headerlink" title="下载证书错误"></a>下载证书错误</h3><p><a target="_blank" rel="noopener" href="https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516">https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516</a></p>
+<h3 id="samba-挂载"><a href="#samba-挂载" class="headerlink" title="samba 挂载"></a>samba 挂载</h3><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=0103702273237520029">https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=0103702273237520029</a></p>
 
     </div>
 
@@ -401,7 +412,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">软件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-Server"><span class="nav-number">2.1.</span> <span class="nav-text">SSH Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">proxy 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8B%E8%BD%BD%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">配置下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3"><span class="nav-number">4.</span> <span class="nav-text">环境异常解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BC%82%E5%B8%B8"><span class="nav-number">4.1.</span> <span class="nav-text">网络异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">6.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy"><span class="nav-number">6.2.</span> <span class="nav-text">proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vmware"><span class="nav-number">6.3.</span> <span class="nav-text">vmware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="nav-number">6.4.</span> <span class="nav-text">下载源配置</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">软件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-Server"><span class="nav-number">2.1.</span> <span class="nav-text">SSH Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">proxy 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Samba-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">Samba 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8B%E8%BD%BD%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">配置下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3"><span class="nav-number">4.</span> <span class="nav-text">环境异常解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BC%82%E5%B8%B8"><span class="nav-number">4.1.</span> <span class="nav-text">网络异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98"><span class="nav-number">4.2.</span> <span class="nav-text">下载证书错误问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">6.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy"><span class="nav-number">6.2.</span> <span class="nav-text">proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vmware"><span class="nav-number">6.3.</span> <span class="nav-text">vmware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="nav-number">6.4.</span> <span class="nav-text">下载源配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF"><span class="nav-number">6.5.</span> <span class="nav-text">下载证书错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#samba-%E6%8C%82%E8%BD%BD"><span class="nav-number">6.6.</span> <span class="nav-text">samba 挂载</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -478,13 +489,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">319k</span>
+    <span title="总字数">320k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:50</span>
+    <span title="总时间">4:51</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
