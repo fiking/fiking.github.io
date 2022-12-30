@@ -74,6 +74,71 @@ description:
 
    参考 [https://www.wylu.me/posts/eed37a90/](https://www.wylu.me/posts/eed37a90/) 的 “配置 Ubuntu 使用 Global 模式”。
 
+### Samba 配置
+
+为了实现 Win10 和 Ubuntu 20  的文件共享，设置了 Samba 服务。
+
+```shell
+# 安装软件
+sudo apt isntall samba samba-common
+
+# 添加用户密码
+sudo smbpasswd -a {username}
+```
+
+编写配置文件
+
+```shell
+# 打开配置文件
+sudo vim /etc/samba/smb.conf
+# 在配置文件smb.conf最后添加下面的内容（[]中是待共享目录的文件名，path是带共享目录的绝对路径）
+[share]
+comment = share folder
+browseable = yes
+path = /home/{username}/share
+create mask = 0700
+directory mask = 0700
+valid users = {username}
+public = yes
+available = yes
+writable = yes
+```
+
+重启
+
+```shell
+sudo service smbd restart
+```
+
+## 内存配置
+
+### 扩大 swap 分区
+
+```c++
+# 将现有swap移动到主内存，可能需要几分钟
+sudo swapoff -a
+
+# 创建新的swap文件，bs×count=最后生成的swap大小，这里设置8G
+sudo dd if=/dev/zero of=/swapfile bs=1G count=8
+
+# 设置权限
+sudo chmod 0600 /swapfile
+
+# 设置swap
+sudo mkswap /swapfile
+
+# 打开swap
+sudo swapon /swapfile
+
+# 检查设置是否有效
+grep Swap /proc/meminfo # 或者htop看一下
+
+# 设置永久有效
+sudo gedit /etc/fstab
+# 在末尾行加上 
+# /swapfile swap swap sw 0 0
+```
+
 ## 配置下载源
 
 1. 编辑 /etc/apt/sources.list
@@ -102,6 +167,7 @@ description:
    ````
 
 
+
 ## 环境异常解决
 
 ### 网络异常
@@ -119,6 +185,16 @@ sudo vim /etc/NetworkManager/NetworkManager.conf    #把第四行的false改成t
 
 sudo service network-manager restart
 ```
+
+### 下载证书错误问题
+
+通过如下 -o 选项可以临时关闭证书验证。
+
+```
+apt-get -o Acquire::https::Verify-Peer=false update
+```
+
+
 
 ## 共享文件夹
 
@@ -157,4 +233,32 @@ sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other
 ### 下载源配置
 
 [https://blog.csdn.net/xiangxianghehe/article/details/105688062](https://blog.csdn.net/xiangxianghehe/article/details/105688062)
+
+[https://juejin.cn/post/7033412379727626247](https://juejin.cn/post/7033412379727626247)
+
+### 下载证书错误
+
+[https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516](https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516)
+
+### samba 挂载
+
+https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=0103702273237520029
+
+### 扩大 swap 分区
+
+[https://zhuanlan.zhihu.com/p/480903179](https://zhuanlan.zhihu.com/p/480903179)
+
+### VSCode 跳转配置
+
+[https://blog.csdn.net/weixin_43083491/article/details/119573501](https://blog.csdn.net/weixin_43083491/article/details/119573501)
+
+### 命令行配置
+
+[https://forum.ubuntu.com.cn/viewtopic.php?t=466064](https://forum.ubuntu.com.cn/viewtopic.php?t=466064)
+
+
+
+
+
+
 

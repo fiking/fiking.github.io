@@ -55,7 +55,7 @@ if [ ! -f bin/llvm-lto ]; then
   cmake /mnt/Compiler/llvm-project/llvm \
     -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE="Debug" \
-    -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips;Sparc" \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64;BPF;Hexagon" \
     -DLLVM_ENABLE_PROJECTS="clang" \
     -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi"
 
