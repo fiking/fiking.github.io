@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。">
+  <meta name="description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="生产环境中生命周期敏感的模调度">
 <meta property="og:url" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。">
+<meta property="og:description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-02T12:19:45.000Z">
-<meta property="article:modified_time" content="2023-01-02T12:26:01.746Z">
+<meta property="article:modified_time" content="2023-01-07T00:36:32.354Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -198,10 +198,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-01-02 20:19:45 / 修改时间：20:26:01" itemprop="dateCreated datePublished" datetime="2023-01-02T20:19:45+08:00">2023-01-02</time>
+              <time title="创建时间：2023-01-02 20:19:45" itemprop="dateCreated datePublished" datetime="2023-01-02T20:19:45+08:00">2023-01-02</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-07 08:36:32" itemprop="dateModified" datetime="2023-01-07T08:36:32+08:00">2023-01-07</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -229,7 +235,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>34</span>
+              <span>1.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -248,9 +254,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。</p>
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS    的效果，描述了为 Equator MAP1000 处理器的生产质量编译器添加这个优化的一些经验；讨论了实现的问题，以及原始算法的修改和提高。最后，使用一组工业多媒体应用给出了一个实验结果。</p>
  <a id="more"></a>
 
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>软流水[5] 是一种利用循环外的指令级并行的技术，通过重复循环的连续迭代，然后并行地执行它们来实现的。关键的思路是寻找一个操作符的模式（称为核心代码），如此，当重复迭代这个模式的时候，它产生的效果是一个迭代会在上一个完成之前就启动好了。</p>
+<p>激进的调度技术，如软流水等的缺点是高的寄存器压力。寄存器的需求会随着并行度的增加而增加[27]，[22]，因为机器要么有较深的流水线，要么有较宽的发射窗口，或者两者都有。寄存器，和功能单元一样，是有限的资源。因此，如果调度需要的寄存器比可用的更多，就不得不执行一些动作了，如添加溢出代码。溢出代码的添加会降低性能[22]，因为调度器额外的周期，或者因为内存内存干扰。</p>
+<p>一些研究组已经将他们的目标放到寻找问题最佳解法的明确方法上了。例如，[16] 中的提案，搜索整个调度空间来寻找最小内存需求的资源限制下的约束，而 [2]，[7]，[13] 中的提案是寻找实际寄存器需求最小的调度。为循环生成一个最优（吞吐量和寄存器需求）的资源约束的调度的任务是一个已知的 NP 难的问题。所有这些已知的方法都需要一个令人望而却步的时间来构造调度，因此，它们的可用性只能被限制在很小的循环里。故而，实际的算法会使用一些启发式来引导调度的过程。文献中的一些提案只关心是否达成高吞吐量 [11]，[19]，[20]，[31]，[32]，[37]，而另一些提案的目标是最小化寄存器需求[9]，[12]，[18]，[24]，产生更高效的调度。</p>
+<p>多级调度[12] 本身不是一个完全的模调度器，而是一组降低任意给定模调度的寄存器需求的启发式。它是通过在调度中移动操作达成目标的。生成的调度具有相同的吞吐量，但只需要更少的寄存器需求。不幸地是，在操作符移动中的限制可能会产生次优的寄存器需求降低。相似的启发式已经包含在 IRIS[9] 调度器里了，其是基于迭代模调度 [11]，[13] 的，为了在调度执行的同时降低寄存器压力。</p>
 
     </div>
 
@@ -351,7 +361,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -428,13 +438,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">328k</span>
+    <span title="总字数">329k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">4:58</span>
+    <span title="总时间">4:59</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
