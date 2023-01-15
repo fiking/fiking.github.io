@@ -256,6 +256,16 @@ https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=010
 
 [https://forum.ubuntu.com.cn/viewtopic.php?t=466064](https://forum.ubuntu.com.cn/viewtopic.php?t=466064)
 
+### wsl 配置
+
+https://alessandrococco.com/2021/01/wsl-how-to-resolve-operation-not-permitted-error-on-cloning-a-git-repository
+
+https://zhuanlan.zhihu.com/p/466001838
+
+
+
+
+
 
 
 
