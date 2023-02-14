@@ -30,7 +30,7 @@
 <meta property="og:description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-02T12:19:45.000Z">
-<meta property="article:modified_time" content="2023-02-10T15:27:03.659Z">
+<meta property="article:modified_time" content="2023-02-14T15:21:05.275Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-10 23:27:03" itemprop="dateModified" datetime="2023-02-10T23:27:03+08:00">2023-02-10</time>
+                <time title="修改时间：2023-02-14 23:21:05" itemprop="dateModified" datetime="2023-02-14T23:21:05+08:00">2023-02-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -235,14 +235,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
+              <span>11k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
+              <span>10 分钟</span>
             </span>
 
         </div>
@@ -370,7 +370,11 @@
 <li>最后，考虑 S3 中的节点。遍历了 S1 和 S2 的前驱，执行自底想上的扫描，产生了$O = &lt;F, C, D, A, G, I, J, M, H, E, B&gt;$ 的局部顺序。然后，变成自顶向下的遍历所有的后继生成最后的顺序：$O = &lt;F, C, D, A, G, I, J, M, H, E, B, L, K&gt;$。</li>
 </ul>
 <p>调度过程中生成的调度如图 9 所示。</p>
-<h2 id="性能评估"><a href="#性能评估" class="headerlink" title="性能评估"></a>性能评估</h2><h3 id="实验架构"><a href="#实验架构" class="headerlink" title="实验架构"></a>实验架构</h3>
+<h2 id="性能评估"><a href="#性能评估" class="headerlink" title="性能评估"></a>性能评估</h2><h3 id="实验架构"><a href="#实验架构" class="headerlink" title="实验架构"></a>实验架构</h3><p>在这节中，我们给出我们实验研究的一些实验结果。我们将 SMS 和其它两种调度方法进行比较：HRMS 和 Top-Down。两种方法都使用了 LEDA 库[29] 以 C++ 的方式进行实现。对于这个评估，我们使用了 Perfect Club 测试用例集 [4] 中所有的即没有子例程调用，又没有条件退出的最内层循环。子例程调用会阻止循环被软流水化（除非它们被内联了）。虽然带有条件退出的循环可以被软流水化[36]，但是这个实验特性没有被添加到我们的调度器中，它超出了本工作的范围。循环体中带有条件结构的循环可以被 IF-转换[1]，从而它们可以表现为单基本块循环。循环的依赖图已经在 [3] 中描述的编译器中获得了。</p>
+<p>总共 1258 个循环被调度了，它们代表了 Perfect Club 78% 的总执行时间（在 HP-PA 735 上测量的）。对于这些循环，438 （34.8%）个是有递归回路，18（1.4%）个是有条件的，还有 67 个（5.4%）两个都有的，然后剩余的 735（58.4）个循环是既没有递归又没有条件的。同时，有 152 （12%）个循环有不能并行的操作（即，模操作，除法，和平方根），这使得调度任务变得复杂化。已调度的循环最多有 376 个节点和 530 条依赖边，即使平均下来每个图也有略大于 16 个节点和 20 条边。</p>
+<p>我们假设每个 store 指令是 1 个延迟，load 指令是 2 个延迟，加法和乘法指令是 4 个延迟，除法指令是 17 个延迟，平方根是 30 个延迟。循环基于一个带有两个 load/store 单元，两个地址器，两个乘法器，和两个 Div/Sqrt 单元的机器配置进行调度。基本所有的单元都是全流水化的，除了 Div/Sqrt 单元，它们本来就不是流水化的。</p>
+<h3 id="性能结果"><a href="#性能结果" class="headerlink" title="性能结果"></a>性能结果</h3><p>表 2 给出了三个调度器的一些性能数据。注意，比起其它方法，SMS 可以在更多的循环上获得与 <em>MII</em> 相等的 <em>II</em>。同时，比起其它方法，它只需要更少的寄存器和更少的调度阶段。通常，它可以产生比 Top-Down 调度器好很多的结果，在某些方面比 HRMS 好一些的结果，并且非常接近于最优的结果（SMS 只在 18 个循环上不能获得 $II = MII$ 的调度结果；换句话说，它在 98.6% 的循环上都能获得最优的结果）。只有一个性能参数（阶段数，SC），它在上面的结果比 Top-Down 调度器的结果坏，但这是因为 Top-Down 会有更大的启动间隔导致的。越大的启动间隔，意味着更少的并行被利用到，以及迭代间的重叠更少，这通常只需要更少的阶段，但是需要更高的执行时间。尽管如此，还是要注意到，虽然 SMS 的启动间隔比 HRMS 的小，但是它需要的阶段数反而略少。这是因为 SMS 的设计是同时优化三个参数的：<em>II</em>，寄存器需求，SC。</p>
+
     </div>
 
     
@@ -470,7 +474,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E6%B5%81%E6%B0%B4%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">软流水的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">动机例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%EF%BC%88SMS%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">摇摆模调度（SMS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%9B%BE%E7%9A%84%E8%AE%A1%E7%AE%97%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">依赖图的计算和分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85%E6%A8%A1%E9%A2%84%E7%95%99%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">填充模预留表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">实验架构</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E6%B5%81%E6%B0%B4%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">软流水的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">动机例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%EF%BC%88SMS%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">摇摆模调度（SMS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%9B%BE%E7%9A%84%E8%AE%A1%E7%AE%97%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">依赖图的计算和分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85%E6%A8%A1%E9%A2%84%E7%95%99%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">填充模预留表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">实验架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E7%BB%93%E6%9E%9C"><span class="nav-number">6.2.</span> <span class="nav-text">性能结果</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -547,13 +551,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">341k</span>
+    <span title="总字数">342k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:10</span>
+    <span title="总时间">5:11</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
