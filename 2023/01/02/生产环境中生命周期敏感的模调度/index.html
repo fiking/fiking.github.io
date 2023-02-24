@@ -30,7 +30,7 @@
 <meta property="og:description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-02T12:19:45.000Z">
-<meta property="article:modified_time" content="2023-02-23T15:01:56.230Z">
+<meta property="article:modified_time" content="2023-02-24T15:02:16.221Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-23 23:01:56" itemprop="dateModified" datetime="2023-02-23T23:01:56+08:00">2023-02-23</time>
+                <time title="修改时间：2023-02-24 23:02:16" itemprop="dateModified" datetime="2023-02-24T23:02:16+08:00">2023-02-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -242,7 +242,7 @@
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>11 分钟</span>
+              <span>12 分钟</span>
             </span>
 
         </div>
@@ -256,7 +256,6 @@
       
         <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS    的效果，描述了为 Equator MAP1000 处理器的生产质量编译器添加这个优化的一些经验；讨论了实现的问题，以及原始算法的修改和提高。最后，使用一组工业多媒体应用给出了一个实验结果。</p>
  <a id="more"></a>
-
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>软流水[5] 是一种利用循环外的指令级并行的技术，通过重复循环的连续迭代，然后并行地执行它们来实现的。关键的思路是寻找一个操作符的模式（称为核心代码），如此，当重复迭代这个模式的时候，它产生的效果是一个迭代会在上一个完成之前就启动好了。</p>
 <p>激进的调度技术，如软流水等的缺点是高的寄存器压力。寄存器的需求会随着并行度的增加而增加[27]，[22]，因为机器要么有较深的流水线，要么有较宽的发射窗口，或者两者都有。寄存器，和功能单元一样，是有限的资源。因此，如果调度需要的寄存器比可用的更多，就不得不执行一些动作了，如添加溢出代码。溢出代码的添加会降低性能[22]，因为调度器额外的周期，或者因为内存内存干扰。</p>
 <p>一些研究组已经将他们的目标放到寻找问题最佳解法的明确方法上了。例如，[16] 中的提案，搜索整个调度空间来寻找最小内存需求的资源限制下的约束，而 [2]，[7]，[13] 中的提案是寻找实际寄存器需求最小的调度。为循环生成一个最优（吞吐量和寄存器需求）的资源约束的调度的任务是一个已知的 NP 难的问题。所有这些已知的方法都需要一个令人望而却步的时间来构造调度，因此，它们的可用性只能被限制在很小的循环里。故而，实际的算法会使用一些启发式来引导调度的过程。文献中的一些提案只关心是否达成高吞吐量 [11]，[19]，[20]，[31]，[32]，[37]，而另一些提案的目标是最小化寄存器需求[9]，[12]，[18]，[24]，产生更高效的调度。</p>
@@ -271,10 +270,10 @@
 <p>对于循环变量，它的值会在每次循环迭代中都生成，因此，对于每次迭代都对应一个不同的生命周期。因为软流水的特性，一个迭代中定义的值的生命周期可以和下一个迭代中定义的值的生命周期重叠。这就是为什么寄存器需求会增加的主要原因。此外，对于生命周期大于 <em>II</em> 的值，新值在前一个值被使用前就生成了。为了修复这个问题，提出了软件解决方案（模变量展开[21]）和硬件解决方案（循环寄存器文件 [10]，[17]）。</p>
 <p>一些软件流水方法都可以视为有两个两个连续的独立步骤：节点排序和节点调度。假设 <em>MII</em> 作为 <em>II</em> 的初始值，执行这两个步骤。如果根据这个 <em>II</em> 无法获得调度，则增加 <em>II</em> 然后在执行调度步骤。下一节会给出排序步骤是如何影响循环的寄存器需求的。</p>
 <h2 id="动机例子"><a href="#动机例子" class="headerlink" title="动机例子"></a>动机例子</h2><p>考虑图 2 中的依赖图，以及具有相同图片中设定的流水线功能单元和延时的架构配置。因为图 2 中没有重用的循环，它的启动间隔只被有效的资源限制；在这个场景下，最可能被限制的资源是乘法器，它使得 $MII = 4/1 = 4$ 。</p>
-<p>将操作排列成调度的一个可能的方法是使用自上而下的方法，它会优先处理关键路径上的操作；在这个排序的情况下，节点按如下顺序优先调度：&lt;n1, n2, n5, n8, n9, n3, n10, n6, n4, n11, n12, n7&gt;。图 3a 给出了一个迭代自顶向下的调度，图 3c 是核心代码（括号中的数字表示操作所属的阶段）。图 3b 给出了循环变量的声明周期。循环变量开始于生产者被发射，结束于最后一个消费者被发射。图 3d 给出了这个调度的寄存器需求；对于每个周期，它给出了调度的需要的存活变量。在任意周期中同时存在的存活变量的最大数量可以近似为所需的寄存器数量，它称为<em>MaxLive</em>（对于巨大数量的循环，[33] 表明寄存器分配需要的不会超过<em>MaxLive + 1</em>）。图 3d 中，$MaxLive = 11$。需要注意的是，在这个方法中，节点 <em>n2</em>  和 <em>n9</em> 有个没必要的巨长的生命周期，是由于调度中相关的操作被过早防止导致的；因此，循环的寄存器需求增加了。</p>
-<p>在 HRMS [24] 中，排序的目标是所有的操作（除了第一个）都有前一个已调度完成的依赖操作。例如，对于前一个例子，它们建议的是如下的调度节点顺序&lt;n1, n3, n5, n6, n4, n7, n8, n10, n11, n9, n2, n12&gt;。注意到，对于这个调度顺序，在 n2 和 n9 需要在局部调度中放置时，它们都有一个依赖操作（分别是 n8 和 n10）已经放置好了。</p>
+<p>将操作排列成调度的一个可能的方法是使用自上而下的方法，它会优先处理关键路径上的操作；在这个排序的情况下，节点按如下顺序优先调度：<n1, n2, n5, n8, n9, n3, n10, n6, n4, n11, n12, n7>。图 3a 给出了一个迭代自顶向下的调度，图 3c 是核心代码（括号中的数字表示操作所属的阶段）。图 3b 给出了循环变量的声明周期。循环变量开始于生产者被发射，结束于最后一个消费者被发射。图 3d 给出了这个调度的寄存器需求；对于每个周期，它给出了调度的需要的存活变量。在任意周期中同时存在的存活变量的最大数量可以近似为所需的寄存器数量，它称为<em>MaxLive</em>（对于巨大数量的循环，[33] 表明寄存器分配需要的不会超过<em>MaxLive + 1</em>）。图 3d 中，$MaxLive = 11$。需要注意的是，在这个方法中，节点 <em>n2</em>  和 <em>n9</em> 有个没必要的巨长的生命周期，是由于调度中相关的操作被过早防止导致的；因此，循环的寄存器需求增加了。</p>
+<p>在 HRMS [24] 中，排序的目标是所有的操作（除了第一个）都有前一个已调度完成的依赖操作。例如，对于前一个例子，它们建议的是如下的调度节点顺序<n1, n3, n5, n6, n4, n7, n8, n10, n11, n9, n2, n12>。注意到，对于这个调度顺序，在 n2 和 n9 需要在局部调度中放置时，它们都有一个依赖操作（分别是 n8 和 n10）已经放置好了。</p>
 <p>图 4a 给出了每遍迭代最后的调度。例如，当操作 n9 被调度时，则操作 n10 已经在调度中放置好了（在第 8 个周期），所以它会尽可能第被调度得靠近它（在第 6 个周期），因此降低了 n9 生成的值的生命周期。类似的情况也发生在操作 n2 上了，在它的后继被调度的时候，它也已经被放在了调度中了。图 4b 给出了循环变量的生命周期，图 4d 给出了调度的寄存器需求。在这个场景中，<em>MaxLive = 9</em>。</p>
-<p>HRMS 建议的顺序没有提高关键路径上的优先权。例如，操作 n5 需要在操作 n1 初始化之后两个周期调度；但是，它却没有，因为在这个周期中，地址器正在繁忙地执行操作 n3，因为它在之前已经被调度了。因为这个，一个在更关键路径（n5）上的操作被前一个在不太关键的路径（n3）上的操作给延迟了。操作 n11 也发生了类似的事情，它与属于非关键路径的操作 n6 的位置冲突了，但是在选择它之前顺序已经确定了。图 5a 和图 5c 给出了我们的想法获得的调度，图 5b 和图 5d 给出了变量的生命周期和寄存器的需求量。这个调度的 <em>MaxLive</em> 是 8。这个调度是使用如下顺序&lt;n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7&gt;获得的。需要注意的是，关键路径上的节点，相比其它节点，是具有一定的调度优先级的。下一节详细的介绍了基于这些想法和调度步骤排序节点的算法。</p>
+<p>HRMS 建议的顺序没有提高关键路径上的优先权。例如，操作 n5 需要在操作 n1 初始化之后两个周期调度；但是，它却没有，因为在这个周期中，地址器正在繁忙地执行操作 n3，因为它在之前已经被调度了。因为这个，一个在更关键路径（n5）上的操作被前一个在不太关键的路径（n3）上的操作给延迟了。操作 n11 也发生了类似的事情，它与属于非关键路径的操作 n6 的位置冲突了，但是在选择它之前顺序已经确定了。图 5a 和图 5c 给出了我们的想法获得的调度，图 5b 和图 5d 给出了变量的生命周期和寄存器的需求量。这个调度的 <em>MaxLive</em> 是 8。这个调度是使用如下顺序<n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7>获得的。需要注意的是，关键路径上的节点，相比其它节点，是具有一定的调度优先级的。下一节详细的介绍了基于这些想法和调度步骤排序节点的算法。</p>
 <h2 id="摇摆模调度（SMS）"><a href="#摇摆模调度（SMS）" class="headerlink" title="摇摆模调度（SMS）"></a>摇摆模调度（SMS）</h2><p>大部分模调度方法由两步组成。首先，它们计算一个尝试缩小 <em>II</em> 的调度，但不关心寄存器压力，然后将变量分配到寄存器上。软流水循环的执行时间依赖于 <em>II</em>，存活变量的最大数量（<em>MaxLive</em>）和阶段数量。<em>II</em> 决定了循环迭代的发射率。对于第二个因素，如果 <em>MaxLive</em> 不高于可用的寄存器数量，则计算好的调度是有效的，它不会影响到执行时间。否则，需要采取一些动作来降低寄存器压力。[33] 概述了一些可能的方法，并在 [22] 中给出了效果评估：</p>
 <ul>
 <li>根据增加后的 <em>II</em> 重新调度循环。通常，增加 <em>II</em> 将会降低 <em>MaxLive</em>，但它会降低发射率。</li>
@@ -301,17 +300,22 @@
 <p>给定图中的一个节点$v \in V$，$Pred(v)$ 是 v 的所有前驱的集合。即，$ Pred(v) = {u | u \in V 且 (u, v) \in E}$。类似的，$Succ(v)$ 是 v 的所有后继的集合。即，$Succ(v) = {u | u \in V 且 (v, u) \in E}$。</p>
 <p>只要依赖图被计算好了，则调度器使用的一些额外的函数也被计算好了。为了比秒循环，执行这些计算都会把每个迭代的回边忽略掉。这些函数如下：</p>
 <ul>
-<li><p>$ASAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最早可以被调度的时间。它的计算如下：<br>$$<br>如果 Pred(u) = \empty 则 ASAP_u= 0<br>$$</p>
-<p>$$<br>否则 ASAP_u = max(ASAP_v + \lambda_v - \gamma_{v, u} \times MII) \ \forall \in Pred(u)<br>$$</p>
-</li>
-<li><p>$ALAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最晚必须执行的时间。它的计算如下：<br>$$<br>如果 Succ(u) = \empty\ 则 ALAP_u = max(ASAP_v)\forall v\in V 否则 ALAP_u = min(ALAP_v - \lambda_u + \gamma_{u, v} \times MII) \forall \in Succ(u)。<br>$$</p>
-</li>
-<li><p>$MOB_u$ 称为灵活（松弛）函数。对于图中的每个节点，它表示对应的操作可以被调度的时间槽数量。在最关键路径上的节点的灵活性为零，然后随着操作所在路径越不关键，灵活性就越会增加。它的计算如下：<br>$$<br>MOB_u = ALAP_u - ASAP_u<br>$$</p>
-</li>
-<li><p>$D_u$ 被称为每个节点的深度。它定义为到没有前驱的节点的最大距离。它的计算方式如下：<br>$$<br>如果 Pred(u) = \empty 则 D_u = 0 否则 D_u = max(D_v + \lambda_v)\forall v \in Pred(u)。<br>$$</p>
-</li>
-<li><p>$H_u$ 称为节点的高度。它定义为到没有后继的节点的最大距离。计算方式如下：<br>$$<br>如果 Succ(u) = \empty 则 H_u = 0 否则 H_u = max(H_v + \lambda_u) \forall v \in Succ(u)。<br>$$</p>
-</li>
+<li><p>$ASAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最早可以被调度的时间。它的计算如下：</p>
+<script type="math/tex; mode=display">
+如果 Pred(u) = \empty 则 ASAP_u= 0</script><script type="math/tex; mode=display">
+否则 ASAP_u = max(ASAP_v + \lambda_v - \gamma_{v, u} \times MII) \ \forall \in Pred(u)</script></li>
+<li><p>$ALAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最晚必须执行的时间。它的计算如下：</p>
+<script type="math/tex; mode=display">
+如果 Succ(u) = \empty\ 则 ALAP_u = max(ASAP_v)\forall v\in V 否则 ALAP_u = min(ALAP_v - \lambda_u + \gamma_{u, v} \times MII) \forall \in Succ(u)。</script></li>
+<li><p>$MOB_u$ 称为灵活（松弛）函数。对于图中的每个节点，它表示对应的操作可以被调度的时间槽数量。在最关键路径上的节点的灵活性为零，然后随着操作所在路径越不关键，灵活性就越会增加。它的计算如下：</p>
+<script type="math/tex; mode=display">
+MOB_u = ALAP_u - ASAP_u</script></li>
+<li><p>$D_u$ 被称为每个节点的深度。它定义为到没有前驱的节点的最大距离。它的计算方式如下：</p>
+<script type="math/tex; mode=display">
+如果 Pred(u) = \empty 则 D_u = 0 否则 D_u = max(D_v + \lambda_v)\forall v \in Pred(u)。</script></li>
+<li><p>$H_u$ 称为节点的高度。它定义为到没有后继的节点的最大距离。计算方式如下：</p>
+<script type="math/tex; mode=display">
+如果 Succ(u) = \empty 则 H_u = 0 否则 H_u = max(H_v + \lambda_u) \forall v \in Succ(u)。</script></li>
 </ul>
 <h3 id="节点排序"><a href="#节点排序" class="headerlink" title="节点排序"></a>节点排序</h3><p>排序阶段将前面计算好的依赖图作为输入，生成一个包含图中所有节点的排序列表。这个列表声明了图中节点在调度阶段的分析顺序。就是说，调度阶段先为列表中排序在第一个的节点分配时间槽，然后在为列表中第二个节点寻找合适的时间槽，以此类推。需要注意的是，随着局部调度已经放置好的节点数量的增加，剩余的节点遇到的约束会越多，因此，越难以为它们找到合适的位置。</p>
 <p>就像之前概述的，排序阶段的目的有两个：</p>
@@ -327,18 +331,24 @@
 <p>具体来说，这个排序阶段是个两级的算法。首先，计算排序。这个偏序由一个排好序的集合列表组成。虽然这些集合间是按最高到最低优先级顺序进行排序的，但是每个集合里是没有顺序的。图中的每个节点都只属于一个集合。</p>
 <p>最高优先级的集合由带有最高 <em>RecMII</em> 的循环中的所有节点组成。通常，第 i 个集合由第 i 高 <em>RecMII</em> 循环中的节点组成，消除了那些属于任意之前集合（如果任意）的节点，添加那些在连接任意前一个集合的节点和当前集合的循环的节点的路径上的所有节点。最后，剩余的节点组成相同优先级的集合，但是这个优先级低于包含循环的集合。这些集合中的每一个都是由图的连接部分中的节点组成，这些节点都不属于任意之前的集合。</p>
 <p>一旦这个偏序已经计算好了，则排序每个集合中的节点，从而获得最后的完整的顺序。这一步以之前的集合列表和完整的依赖图作为输入。集合按之前计算的顺序进行处理。对于图的每一个循环，会忽略回边从而获得没有循环的图。排序阶段的最终结果是一列有顺序的节点 O，它包含了图的所有节点。</p>
-<p>图 7 给出了排序算法，其中 | 表示列表追加操作，$Succ_L(O)$ 和 $Pred_L(O)$ 分别是一系列节点的前驱和后继集合，其定义如下：<br>$$<br>Pred_L(O) = {v | \exists u \in O, 其中 v\in Pred(u) 且 v\notin O}<br>$$</p>
-<p>$$<br>Succ_L(O) = {v | \exists u \in O ，其中 v \in Succ(u) 且 v \notin O}。<br>$$</p>
-<h3 id="填充模预留表"><a href="#填充模预留表" class="headerlink" title="填充模预留表"></a>填充模预留表</h3><p>这一步按排序步骤给出的顺序分析每个操作。这个调度步骤尝试将操作尽可能地调度靠近它的已经调度好的邻近节点。当一个节点被调度时，它可以有不同的调度方式，这取决于特定调度中的操作的邻居。</p>
+<p>图 7 给出了排序算法，其中 | 表示列表追加操作，$Succ_L(O)$ 和 $Pred_L(O)$ 分别是一系列节点的前驱和后继集合，其定义如下：</p>
+<script type="math/tex; mode=display">
+Pred\_L(O) = \{v | \exists u \in O, 其中 v\in Pred(u) 且 v\notin O\}</script><script type="math/tex; mode=display">
+Succ\_L(O) = \{v | \exists u \in O ，其中 v \in Succ(u) 且 v \notin O\}。</script><h3 id="填充模预留表"><a href="#填充模预留表" class="headerlink" title="填充模预留表"></a>填充模预留表</h3><p>这一步按排序步骤给出的顺序分析每个操作。这个调度步骤尝试将操作尽可能地调度靠近它的已经调度好的邻近节点。当一个节点被调度时，它可以有不同的调度方式，这取决于特定调度中的操作的邻居。</p>
 <ul>
-<li><p>如果操作 u 在局部调度中只有前驱，则 u 需要尽可能快地被调度到。在这个场景下，调度器将 u 的 <em>Early_Start</em> 计算为：<br>$$<br>Early_Start_u = max_{v\in PSP(u)}(t_v + \lambda_v - \delta_{v, u} \times II),<br>$$<br>其中，$t_v$  是已经调度好的 v 的周期，$\lambda_v$ 的延迟，$\delta_{v, u} $ 是从 v 到 u 的依赖距离，$PSP(u)$ 是之前已经调度好的 u 的前驱集合。然后，调度器在周期$Early_Start_u$ 到周期$Early_Start_u + II - 1$  之间扫描局部调度，为节点 u 查找一个空闲的槽。需要注意的是，由于模的约束，扫描超过 II 周期是没有意义。</p>
+<li><p>如果操作 u 在局部调度中只有前驱，则 u 需要尽可能快地被调度到。在这个场景下，调度器将 u 的 <em>Early_Start</em> 计算为：</p>
+<script type="math/tex; mode=display">
+Early\_Start_u = max_{v\in PSP(u)}(t_v + \lambda_v - \delta_{v, u} \times II),</script><p>其中，$t_v$  是已经调度好的 v 的周期，$\lambda_v$ 的延迟，$\delta_{v, u} $ 是从 v 到 u 的依赖距离，$PSP(u)$ 是之前已经调度好的 u 的前驱集合。然后，调度器在周期$Early_Start_u$ 到周期$Early_Start_u + II - 1$  之间扫描局部调度，为节点 u 查找一个空闲的槽。需要注意的是，由于模的约束，扫描超过 II 周期是没有意义。</p>
 </li>
-<li><p>如果操作 u 在局部调度中只有后继，则 u 会被尽可能地往后调度。在这个场景中，调度器将 u 的 <em>Late_Start</em> 计算为：<br>$$<br>Late_Start_u = min_{v\in PSS(u)}(t_v - \lambda_u + \delta_{u, v} \times II),<br>$$<br>其中，$PSS(u)$ 是之前已经调度好的 u 后继。然后，调度器在周期 $Late_Start_u$ 和周期 $Late_Start_u -II + 1$ 之间扫描局部调度，为节点 u 查找一个空闲的槽。</p>
+<li><p>如果操作 u 在局部调度中只有后继，则 u 会被尽可能地往后调度。在这个场景中，调度器将 u 的 <em>Late_Start</em> 计算为：</p>
+<script type="math/tex; mode=display">
+Late\_Start_u = min_{v\in PSS(u)}(t_v - \lambda_u + \delta_{u, v} \times II),</script><p>其中，$PSS(u)$ 是之前已经调度好的 u 后继。然后，调度器在周期 $Late_Start_u$ 和周期 $Late_Start_u -II + 1$ 之间扫描局部调度，为节点 u 查找一个空闲的槽。</p>
 </li>
 <li><p>如果操作 u 同时有前驱和后继，则调度器需要计算上面描述的$Early_Start_u$ 和 $Late_Start_u$，然后在周期 $Early_Start_u$ 和周期$min(Late_Start_u, Early_Start_u + II - 1)$ 之前扫描局部调度。每个循环只会有一个节点发生这个情况。</p>
 </li>
-<li><p>最后，如果一个操作 u 即没有前驱也没有后继，调度器会将u 的 $Earty_Start$ 计算为：<br>$$<br>Early_Start_u = ASAP_u<br>$$</p>
-</li>
+<li><p>最后，如果一个操作 u 即没有前驱也没有后继，调度器会将u 的 $Earty_Start$ 计算为：</p>
+<script type="math/tex; mode=display">
+Early\_Start_u = ASAP_u</script></li>
 </ul>
 <p>  然后在周期$Early_Start_u$和周期$Early_Start_u + II - 1$之间扫描局部调度，为节点 u 寻找空闲的槽。</p>
 <p>如果一个节点没有找到空闲的槽，则 II 增加 1。调度步骤会随着增加的 II 而重复，其会为寻找空闲槽提供更多的机会。我们提议的一个优势之一是节点只需要排序一次，即使调度步骤会尝试多次。</p>
@@ -347,9 +357,9 @@
 <p>调度的第一步是计算 <em>MII</em> 和 <em>ASAP，ALAP，mobility，depth</em>，以及图中每个节点的 <em>height</em>。<em>MII</em> 等于 4。表 1 给出了每个节点其余的值。</p>
 <p>然后排序节点。因为没有循环，所以排序算法的第一层会将所有的节点放入到相同的集合中。然后，这个集合的元素会按如下方式排序：</p>
 <ul>
-<li>初始化阶段，$R = {n12}$ 且 $order = bottom-up$。</li>
-<li>然后，$n12$ 的所有祖先按照它们的深度进行排序，并将流动性作为第二个因素。这得到了一个偏序$O = &lt;n12, n11, n10, n8, n5, n6, n1, n2, n9&gt;$。</li>
-<li>然后，排序变成自上而下，所有的后代都基于它们的高度和流动性进行排序。这给出了最后的顺序$O = &lt;n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7&gt;$。</li>
+<li>初始化阶段，$R = \{n12\}$ 且 $order = bottom-up$。</li>
+<li>然后，$n12$ 的所有祖先按照它们的深度进行排序，并将流动性作为第二个因素。这得到了一个偏序$O = <n12, n11, n10, n8, n5, n6, n1, n2, n9>$。</li>
+<li>然后，排序变成自上而下，所有的后代都基于它们的高度和流动性进行排序。这给出了最后的顺序$O = <n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7>$。</li>
 </ul>
 <p>下一步是根据之前的顺序，调度这些操作。II 初始化为 MII，然后调度操作，如图 5 所示：</p>
 <ul>
@@ -359,15 +369,15 @@
 <p>第二个例子由带有递归的更复杂依赖图的循环组成，如图 8 描述的。我们将会假设一个四发射的机器，带有四个全流水的通用目的的功能单元，然后有两个周期的延迟。</p>
 <p>在这个例子中，MII 等于 6。排序的第一步是将节点分组到一个排序集合表中。从而，可以获得如下三个集合列表：</p>
 <ul>
-<li>$S1 = {A, C, D, F}$。这是第一个集合，因为它包含了带有最高 <em>RecMII</em> 的循环（即，(3 个节点 x 2 个周期)/(1 个距离) = 6）。</li>
-<li>$S2 = {G, J, M, I}$。这是包含第二循环$(RecMII = (3 个节点 x 2 个周期)/(2 个距离) = 3)$，和所有 S1 到这个循环（即，节点 I）的路径上的节点的集合。</li>
-<li>$S3 = {B, E, H, K, L}$。这是所有剩余节点的集合。</li>
+<li>$S1 = \{A, C, D, F\}$。这是第一个集合，因为它包含了带有最高 <em>RecMII</em> 的循环（即，(3 个节点 x 2 个周期)/(1 个距离) = 6）。</li>
+<li>$S2 = \{G, J, M, I\}$。这是包含第二循环$(RecMII = (3 个节点 x 2 个周期)/(2 个距离) = 3)$，和所有 S1 到这个循环（即，节点 I）的路径上的节点的集合。</li>
+<li>$S3 = \{B, E, H, K, L\}$。这是所有剩余节点的集合。</li>
 </ul>
 <p>然后，节点按如下方式排序：</p>
 <ul>
-<li>首先，排序 S1 的节点生成偏序$O = &lt;F, C, D, A&gt;$。</li>
-<li>然后，排序算法计算这四个节点的前驱，但没找到属于 S2 的。然后计算后继，找到 I 和 G 是属于 S2 的，所以它进行了自上而下的扫描。这产生了如下的局部顺序：$O = &lt;F, C, D, A, G, I, J, M&gt;$。</li>
-<li>最后，考虑 S3 中的节点。遍历了 S1 和 S2 的前驱，执行自底想上的扫描，产生了$O = &lt;F, C, D, A, G, I, J, M, H, E, B&gt;$ 的局部顺序。然后，变成自顶向下的遍历所有的后继生成最后的顺序：$O = &lt;F, C, D, A, G, I, J, M, H, E, B, L, K&gt;$。</li>
+<li>首先，排序 S1 的节点生成偏序$O = <F, C, D, A>$。</li>
+<li>然后，排序算法计算这四个节点的前驱，但没找到属于 S2 的。然后计算后继，找到 I 和 G 是属于 S2 的，所以它进行了自上而下的扫描。这产生了如下的局部顺序：$O = <F, C, D, A, G, I, J, M>$。</li>
+<li>最后，考虑 S3 中的节点。遍历了 S1 和 S2 的前驱，执行自底想上的扫描，产生了$O = <F, C, D, A, G, I, J, M, H, E, B>$ 的局部顺序。然后，变成自顶向下的遍历所有的后继生成最后的顺序：$O = <F, C, D, A, G, I, J, M, H, E, B, L, K>$。</li>
 </ul>
 <p>调度过程中生成的调度如图 9 所示。</p>
 <h2 id="性能评估"><a href="#性能评估" class="headerlink" title="性能评估"></a>性能评估</h2><h3 id="实验架构"><a href="#实验架构" class="headerlink" title="实验架构"></a>实验架构</h3><p>在这节中，我们给出我们实验研究的一些实验结果。我们将 SMS 和其它两种调度方法进行比较：HRMS 和 Top-Down。两种方法都使用了 LEDA 库[29] 以 C++ 的方式进行实现。对于这个评估，我们使用了 Perfect Club 测试用例集 [4] 中所有的即没有子例程调用，又没有条件退出的最内层循环。子例程调用会阻止循环被软流水化（除非它们被内联了）。虽然带有条件退出的循环可以被软流水化[36]，但是这个实验特性没有被添加到我们的调度器中，它超出了本工作的范围。循环体中带有条件结构的循环可以被 IF-转换[1]，从而它们可以表现为单基本块循环。循环的依赖图已经在 [3] 中描述的编译器中获得了。</p>
@@ -390,8 +400,17 @@
 <li>特殊目的 PLC 寄存器（1 x 128位）。</li>
 </ul>
 <p>一个指令字是 136 位长，由四条驱动两个簇的操作组成。大部分的操作只在 I-ALU 或者 IFG-ALU 上执行。但是，一些操作，如单整型操作，可以在两个单元上执行，这给了软件流水更大的自由度来放置它们。除了除法器之外的所有的功能单元都可以全流水，因此可以在每个周期都接受一个操作。</p>
-<p>分支指令会有延迟的 – 分支指令在周期$ i $发出，但直到周期 $i + 2$才提交。因此，“延迟槽”有 11 个操作需要填充（包含分支的指令字中有三个操作，加上两个后续的指令字中的八个操作）。</p>
-
+<p>分支指令会有延迟的 — 分支指令在周期$ i $发出，但直到周期 $i + 2$才提交。因此，“延迟槽”有 11 个操作需要填充（包含分支的指令字中有三个操作，加上两个后续的指令字中的八个操作）。这对于模调度是很重要的，因为它强制 <em>MinII</em> 至少是三个周期，那些具有三个工作周期或者更少的内核可以完全在延迟槽中执行。当然，有些时候需要取展开小的循环，从而可以产生足够多的工作来填充这些周期。</p>
+<p>架构具有一些对软件流水循环有限支持的功能，即包含了一套全可预测指令集（例如，支持 if-转换 ）和投机的内存操作。进一步地提供了 <em>select</em> 指令，它基于一个谓词输入，从两个通用寄存器输入中选择一个。没有其它硬件支持重叠循环的了 — 具体而言，没有循环寄存器文件或者相关的循环指令。因此，对于每个流水化的循环，我们都必须为它们生成导言和结语两个多出的部分，以及压缩的 kernel 的一个拷贝（如果有任意相互重叠的生命周期会更多）。</p>
+<p>编译器必须精确地管理处理器资源，它们不能有硬件互锁（除了 bank stalls 和缓存未命中的情况）。此外，由于簇功能单元和寄存器文件，编译器必须关心簇之间的数据移动的开销。跨簇移动可以通过一个简单的寄存器拷贝操作或者结果广播来完成。广播指的是一个操作到目的的能力，即到局部寄存器文件和远端簇寄存器文件。</p>
+<p>每个通用寄存器都能保存整型，浮点和多媒体数据。寄存器可以看作是一组重叠类，根据用于读写它们的指令分类。这些类使得软件流水和寄存器分配变得复杂化。例如，带有受限寄存器操作数的指令必须从 r0 到 r7 或者 r16 到 r23 读取操作数。此外，指令的广播只能写目的寄存器 r0 到 r15。最后，64 位指令会读写寄存器组 rN:rN+1（其中 N 是偶数，指令引用 N）。</p>
+<p>操作中的一类，<em>sigma</em> 操作，需要特别提出来，因为它们会显著地影响 SMS 的实现。考虑到其中一个操作</p>
+<script type="math/tex; mode=display">
+srshinprod.ps64.ps16 rd, rs, iw, ip</script><p>其中，rd 和 rs 是通用寄存器对，iw 和 ip 是立即数操作数：</p>
+<script type="math/tex; mode=display">
+PLV = rs[8 \times (ip + iw) - 1:8 \times ip] | PLV[127:8 \times iw]</script><script type="math/tex; mode=display">
+rd = \sum^7_{i = 0}PLC.16i \times PLV.16i</script><p>$[x : y]$ 符号表示位的一个范围，$x | y$ 表示位的并列。第一个更新 PLV 寄存器的操作是通过将它往右移动，最左边的位被替换成来自 rs 的位。然后，一个内积计算给了 rd，通过将 128 位 PLC 和 PLV寄存器相乘，每个寄存器都是八个有符号 16 位整型向量。由于每个簇只有一个 PLV 寄存器的原因，所以在任意给定的周期里，都不可能有相关的生命周期相交的情况发生（相同的簇里）。这对于尝试重叠操作的软件流水来说是会造成问题的。6.2 节会详细地解决这个问题，有一个方法来处理这类操作。</p>
+<h3 id="SMS-的提高和修改"><a href="#SMS-的提高和修改" class="headerlink" title="SMS 的提高和修改"></a>SMS 的提高和修改</h3>
     </div>
 
     
@@ -491,7 +510,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E6%B5%81%E6%B0%B4%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">软流水的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">动机例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%EF%BC%88SMS%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">摇摆模调度（SMS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%9B%BE%E7%9A%84%E8%AE%A1%E7%AE%97%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">依赖图的计算和分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85%E6%A8%A1%E9%A2%84%E7%95%99%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">填充模预留表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">实验架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E7%BB%93%E6%9E%9C"><span class="nav-number">6.2.</span> <span class="nav-text">性能结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4"><span class="nav-number">6.3.</span> <span class="nav-text">编译时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E7%94%9F%E4%BA%A7%E7%BC%96%E8%AF%91%E4%B8%AD%E7%9A%84-SMS"><span class="nav-number">7.</span> <span class="nav-text">在生产编译中的 SMS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9E%B6%E6%9E%84"><span class="nav-number">7.1.</span> <span class="nav-text">目标架构</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E6%B5%81%E6%B0%B4%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">软流水的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">动机例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%EF%BC%88SMS%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">摇摆模调度（SMS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%9B%BE%E7%9A%84%E8%AE%A1%E7%AE%97%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">依赖图的计算和分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85%E6%A8%A1%E9%A2%84%E7%95%99%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">填充模预留表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">实验架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E7%BB%93%E6%9E%9C"><span class="nav-number">6.2.</span> <span class="nav-text">性能结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4"><span class="nav-number">6.3.</span> <span class="nav-text">编译时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E7%94%9F%E4%BA%A7%E7%BC%96%E8%AF%91%E4%B8%AD%E7%9A%84-SMS"><span class="nav-number">7.</span> <span class="nav-text">在生产编译中的 SMS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9E%B6%E6%9E%84"><span class="nav-number">7.1.</span> <span class="nav-text">目标架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SMS-%E7%9A%84%E6%8F%90%E9%AB%98%E5%92%8C%E4%BF%AE%E6%94%B9"><span class="nav-number">7.2.</span> <span class="nav-text">SMS 的提高和修改</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -568,13 +587,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">343k</span>
+    <span title="总字数">344k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:12</span>
+    <span title="总时间">5:13</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
