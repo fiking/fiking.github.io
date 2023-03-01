@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。">
+  <meta name="description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
 <meta property="og:type" content="article">
 <meta property="og:title" content="扩展到超级块的摇摆模调度的实现">
 <meta property="og:url" content="http://example.com/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="fiking">
-<meta property="og:description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。">
+<meta property="og:description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-27T16:08:19.000Z">
-<meta property="article:modified_time" content="2023-02-27T16:14:23.052Z">
+<meta property="article:modified_time" content="2023-03-01T14:59:56.546Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -198,10 +198,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-02-28 00:08:19 / 修改时间：00:14:23" itemprop="dateCreated datePublished" datetime="2023-02-28T00:08:19+08:00">2023-02-28</time>
+              <time title="创建时间：2023-02-28 00:08:19" itemprop="dateCreated datePublished" datetime="2023-02-28T00:08:19+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-01 22:59:56" itemprop="dateModified" datetime="2023-03-01T22:59:56+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -229,7 +235,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>89</span>
+              <span>1.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -249,8 +255,24 @@
 
       
         <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。</p>
+<p>模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。</p>
+<p>摇摆模调度的一个缺点，（以及所有的模调度算法）是只处理单基本块循环会导致失去更多指令级平行度的优化机会。这篇论文详细介绍了将摇摆模调度算法扩展成以超级块的方式处理多个基本块循环。超级块是一组基本块，其单入口多出口的。将摇摆模调度扩展成能处理这种类型的循环，可以增加摇摆模调度可以应用的循环的数量。此外，它允许模调度应用到热点路径上（也是单入多出的），根据 profile 信息可以离线或者在运行时进行优化。</p>
+<p>我们的摇摆模调度实现以及扩展到超级块循环的算法都进行了评估，发现它们是既有效又高效。对于原始算法，测试集被转换了有 10-33% 的性能收益，同时扩展的算法增加了测试集 7-22% 的性能收益。</p>
  <a id="more"></a>
-
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>现代编译器实现了多个优化，以获取程序的并行度，从而可以加速程序执行，或者更高效地利用多处理器机器。许多这样的优化都应用于循环中。这样的优化有循环分布，循环互换，倾斜，平铺，循环反转，和循环碰撞[36]。其它的技术会展开循环来增加循环体的大小从而增加潜在的调度。虽然这可以产生更高效的调度，但是却忽略了循环迭代间的并行性[31]。</p>
+<p>通常，因为指令间和循环迭代间的依赖，这些技术是不会成功的。一个更复杂的方法，<em>软件流水</em>，重构了循环，从而循环的每次迭代都以一个恒定的间隔执行，进而产生一个最优的调度。这个方法目的是使得处理器满流水运行，最终加速程序的执行时间。</p>
+<p>软件流水存在了许多年了，已经被证明了是 VLIW （超长指令字）和超标量处理器的有效调度方法。随着越来越多为软件流水提供支持的架构出现[20, 24, 37]，优化了已经存在的算法，开发了新的技术。</p>
+<p>在软件流水的早期，这个技术会调度来自几个迭代的指令，然后寻找一个模式[36]。<em>模调度</em>是一系列软件流水技术，它们使用“模”技术（而不是最大展开）在调度中放置指令，这样子当迭代重叠时没有资源或数据冲突。本文描述了这样一个算法的实现和它的扩展，即<em>摇摆模调度</em>。</p>
+<h3 id="模调度"><a href="#模调度" class="headerlink" title="模调度"></a>模调度</h3><p>模调度里的想法可以简单地用如下的例子进行说明。图 1.1 给出了一段表示循环体的指令。假设这段指令从一个数组读取一个值，给这个值加上一个常量，然后存储这个值。对于这个简单的例子，只有迭代中有数据依赖，因为后续的迭代都访问一个数组中不同的元素。</p>
+<p>假设加法指令是花费两个周期的单阶段流水化操作，同时 load 和 store 都只有一个周期。因此，你可以看到原来的循环在每次迭代启动之前都需要 4 个周期。</p>
+<p>模调度尝试最小化循环迭代启动间隔，然后降低循环的总执行时间。它通过修改循环，从而没有资源和数据冲突而可以保持处理器不断填满（即没有 stall），来完成这个。图 1.2 显示了代码是如何分为三部分的，上升阶段开始填充流水线，然后达成流水线满的稳定状态，最后下降阶段排空流水线，结束流水。这个目标是保证主要的时间花费在稳定阶段。</p>
+<p>循环被重构为与图 1.2 中描述相关的 3 个组件[31]：</p>
+<ul>
+<li>导言：达成稳定状态的指令序列。</li>
+<li>内核：它是一旦循环达成稳定状态，每个周期执行的指令。</li>
+<li>结语：结束循环的指令。</li>
+</ul>
+<p>使用图 1.1 的例子，如果我们查看循环的 4 个迭代，从每个迭代中选择一条指令，我们可以形成内核。</p>
 
     </div>
 
@@ -351,7 +373,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -428,13 +450,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">350k</span>
+    <span title="总字数">351k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:18</span>
+    <span title="总时间">5:19</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
