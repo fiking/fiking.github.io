@@ -30,7 +30,7 @@
 <meta property="og:description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-27T16:08:19.000Z">
-<meta property="article:modified_time" content="2023-03-01T15:53:20.175Z">
+<meta property="article:modified_time" content="2023-03-02T16:27:10.276Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-01 23:53:20" itemprop="dateModified" datetime="2023-03-01T23:53:20+08:00">2023-03-01</time>
+                <time title="修改时间：2023-03-03 00:27:10" itemprop="dateModified" datetime="2023-03-03T00:27:10+08:00">2023-03-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -235,14 +235,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>3.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -277,6 +277,28 @@
 <p>图 1.3(a) 给出迭代和为内核选出的指令。对于我们简单的循环，它的导言由内核之前的所有指令组成，而结语由内核之下的所有指令组成。对于这个重构后的循环，内核（图 1.3(b)）现在的循环迭代启动是三个周期，代替了原本循环的四个周期。如果循环有大的迭代次数，则主要的时间用于执行最优调度的内核，加速了程序总时间 1.3 倍。</p>
 <p>模调度算法通常将一组启发式和表调度结合起来用于创建内核。这些技术在章节 3 会进一步讨论。表调度和其它调度术语会在章节 2 中解释。</p>
 <h2 id="调度背景"><a href="#调度背景" class="headerlink" title="调度背景"></a>调度背景</h2><p><em>指令调度</em>致力于重排指令来填充间隙，即指令依赖导致的延迟。如果其它指令不能在这个间隙被调度，则处理器会暂停而浪费了周期数。指令调度通常是在机器无关的优化之后做的，要么是寄存器分配前，要么是寄存器分配后。根据编译器基础设施，调度是在目标机器汇编上完成的，或者是在一个低级别的中间表示上完成，其详细地建模了汇编。</p>
+<p>所有的指令调度技术都致力于产生一个<em>最优调度</em>，即一个最短长度的调度。调度长度是以周期为单位的总执行时间来衡量的。此外，最优的调度必须在一个合理的时间里被找到。</p>
+<p>当创建一个调度的时候，指令调度算法必须同时满足依赖和资源约束。依赖约束通过构造一个数据依赖图确定，它是一个有向图，节点表示指令，边表示指令间的依赖。当两个指令有个公用的操作数，其中一个指令定义了这个操作数，则这两个指令间需要构造个依赖。</p>
+<p>如果满足资源约束，则调度不在需要更多的架构可用的资源。指令调度必须有个资源使用模型（即，加载，整型算术，浮点算术等），它为每类指令分解了每个流水线阶段的资源。使用这个资源模型，调度器可以填充一张<em>资源预留表</em>。一张资源预留表是一个 $r \times c$ 的矩阵形式的，其中 $r$ 是资源，$c$ 是调度的周期。表中的每一项是指令每个周期使用的资源。</p>
+<p>尽管找到一个最优的调度是主要的目标，但是指令调度也必须关心因为指令重排导致的潜在的<em>寄存器压力</em>增加的问题。寄存器压力是程序中一个给定点位置的存活变量数量的一个衡量值。一个<em>生命周期</em>是指一个变量被定义到它在程序中最后使用的范围。在一个给定点，如果它的最后使用还没有出现，则这个值是存活的。因为架构只有有限的寄存器，所以存活变量的数量不能超过可用寄存器的总数。如果值超过了，则寄存器会被溢出到内存中，在需要的时候才会被加载回来。读写内存是比较昂贵的。</p>
+<p>指令调度可以分为三类：<em>局部调度</em>，<em>全局调度</em>，<em>循环调度</em>[36]。局部调度处理单基本块，其是单入单出的直线代码区域。全局调度可以处理多个没有循环控制流的基本块，然后循环调度可以处理当个或多个有循环控制流的基本块。软件流水是在最后一个分类中的。</p>
+<p>局部调度通常使用<em>表调度</em>的形式。表调度在周期 0 开始调度指令，直到所有的指令被调度完结束。在每个周期中，它都会维护一张预备指令表（它们没有资源和依赖冲突），然后按启发式给的顺序调度这个列表。这里有些经典使用的启发式：</p>
+<ul>
+<li>从一个节点到没有后继的节点的最大距离（延迟）。也被称为<em>基于高度</em>的优先级。</li>
+<li>子节点，直接或所有后代的数量。</li>
+<li>最小 ESTART 值，其中 ESTART 等于节点前驱的总延迟。</li>
+<li>最小 LSTART 值，其中 LSTART 等于节点后继的总延迟。</li>
+<li>更低的移动性，其中移动性是 LSTART 和 ESTART 的差值。</li>
+<li>关键路径上的节点，这意味着它们的移动性为 0 。</li>
+</ul>
+<p>局部约束是有局限性的，因为它只在单基本块中进行，这通常不会太大。因此，尽管在这些小区间里可以找到最优的调度，但是总的性能影响会比较小。全局调度从多个基本块中调度指令，重叠来自不同基本块的指令的执行。存在多个全局调度算法 [36] 如：</p>
+<ul>
+<li>轨迹调度：它识别程序中频繁执行的轨迹，然后将这个轨迹作为扩展基本块，在上面使用表调度的方法进行调度。</li>
+<li>超级块调度：超级块是有单入多出属性的轨迹子集（因此它们是没有旁路退出的轨迹）。表调度通常用于调度超级块。</li>
+<li>Hyperblock 调度：过多的控制流会使得调度复杂化，所以这个方法会用到称为 If-转换[3] 的技术来移除条件分支。3.2.2 节中会讨论 If-转换。</li>
+</ul>
+<p>根据这些指令调度背景，软件流水，是一种循环调度的形式，会在第三章中详细讨论它。</p>
+<h2 id="前面的工作"><a href="#前面的工作" class="headerlink" title="前面的工作"></a>前面的工作</h2><p>软件流水 [9] 是一组致力于通过重叠循环连续迭代来利用指令间并行度（ILP）的技术。</p>
 
     </div>
 
@@ -377,7 +399,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">调度背景</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">调度背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E9%9D%A2%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">前面的工作</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -454,13 +476,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">352k</span>
+    <span title="总字数">353k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:20</span>
+    <span title="总时间">5:21</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
