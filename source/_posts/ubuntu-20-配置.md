@@ -262,6 +262,10 @@ https://alessandrococco.com/2021/01/wsl-how-to-resolve-operation-not-permitted-e
 
 https://zhuanlan.zhihu.com/p/466001838
 
+### 挂载磁盘
+
+https://juejin.cn/post/6844903730068865038
+
 
 
 
