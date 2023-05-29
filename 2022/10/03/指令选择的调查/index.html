@@ -46,7 +46,7 @@
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_2.png">
 <meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_3.png">
 <meta property="article:published_time" content="2022-10-03T06:54:48.000Z">
-<meta property="article:modified_time" content="2023-05-28T14:40:51.364Z">
+<meta property="article:modified_time" content="2023-05-29T15:38:04.374Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-05-28 22:40:51" itemprop="dateModified" datetime="2023-05-28T22:40:51+08:00">2023-05-28</time>
+                <time title="修改时间：2023-05-29 23:38:04" itemprop="dateModified" datetime="2023-05-29T23:38:04+08:00">2023-05-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,7 +251,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>25k</span>
+              <span>26k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -474,8 +474,9 @@
 <h4 id="将动态规划扩展到-DAG"><a href="#将动态规划扩展到-DAG" class="headerlink" title="将动态规划扩展到 DAG"></a>将动态规划扩展到 DAG</h4><p>在 1999 年的论文中，Ertl [85] 给出了一个方法，不需要将 DAGs 分解成树，就可以在 DAGs 上应用传统的树覆盖方法。这个想法首先是在 DAG 上做一个自底向上地遍历，就像它是一棵树一样。然后使用我们在前一章的 3.6.2 节中讨论的传统的动态规划方法计算成本。因此，每个节点会被标记上与 DAG 通过节点复制先被归约成树时的节点相同的成本。但是，Ertl 意识到，如果几个模式都将相同的节点归约到相同的非终结符，则到这个非终结符的归约可以在规则中共享，其中的符号出现在产生式的右手边。然后可以在代码输出期间利用这个，对于每个非终结符都只生成一次汇编代码。这可以降低代码大小同时提升性能，因为降低了冗余操作的数量。图 4.3 给出了这个场景的一个示例图。</p>
 <h2 id="基于图的方法"><a href="#基于图的方法" class="headerlink" title="基于图的方法"></a>基于图的方法</h2><p>即使是我们上一章研究的 DAG 覆盖，比起树覆盖有更通用和更强大的形式，它仍然不足以处输入程序和机器指令的所有方面。例如，for 循环语句导致的控制流无法建模成表达式的一部分，因为它需要循环，这违背了 DAGs 的定义。通过移除这个限制，我们最终得到最通用的形式，即图覆盖。</p>
 <h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p>就像 DAG 覆盖是树覆盖更通用的形式一样，图覆盖也是 DAG 覆盖更通用的形式。通过允许输入程序的两个语句采用任何通用的形状，指令选择可以从之前的局部范围扩展开 – 即，从覆盖一个表达式树或 DAG – 到一个全局范围，它包含了整个函数中的所有表达式，因为图形能够建模控制流。这被称为<em>全局指令选择</em>，理论上它使得指令选择器可以跨基本块边界移动操作，从而可以更好地利用具有大模式的复杂机器指令，否则这些指令是无法用上的。对于现代机器，功耗和热辐射是变得越来越重要的因素，解决这些问题的一个关键方法是使用更少的，且更大的指令，它们比起使用更多更小的指令的功耗会更小。</p>
-<p>但是，</p>
-<h3 id="使用子图同构的模式匹配"><a href="#使用子图同构的模式匹配" class="headerlink" title="使用子图同构的模式匹配"></a>使用子图同构的模式匹配</h3><h3 id="基于图的模式选择技术"><a href="#基于图的模式选择技术" class="headerlink" title="基于图的模式选择技术"></a>基于图的模式选择技术</h3><h4 id="一元和二元覆盖"><a href="#一元和二元覆盖" class="headerlink" title="一元和二元覆盖"></a>一元和二元覆盖</h4><h4 id="基于-CP-的技术"><a href="#基于-CP-的技术" class="headerlink" title="基于 CP 的技术"></a>基于 CP 的技术</h4><h4 id="基于-PBQP-的技术"><a href="#基于-PBQP-的技术" class="headerlink" title="基于 PBQP 的技术"></a>基于 PBQP 的技术</h4><h3 id="基于处理器建模的方法"><a href="#基于处理器建模的方法" class="headerlink" title="基于处理器建模的方法"></a>基于处理器建模的方法</h3><p>在前一章中，我们看到了一种微代码生成的方法，其建模了目标处理器的整个数据链路，而不仅仅只是可用的指令集。这里我们将会关注依赖于相同建模方案但解决了指令选择更传统的问题的技术。</p>
+<p>但是，从 DAG 模式到图模式的转变，由于模式匹配变成了 NP-完全的问题，我们不能够再采用树和 DAG 的模式匹配技术；图 5.1 给出了在使用不同图形时的模式匹配和最优模式选择的不同时间复杂度。此外，我们需要应用到通用子图同构算法，因此从研究一些这样的算法开始。</p>
+<h3 id="使用子图同构的模式匹配"><a href="#使用子图同构的模式匹配" class="headerlink" title="使用子图同构的模式匹配"></a>使用子图同构的模式匹配</h3><p>子图同构的问题是去识别一个任意的图$G_a$ 是否可以通过反转，扭曲或者镜像变成另一个图 $G_b$ 的子图。在这个场景中，我们说$G_a$ 是 $G_b$ 的<em>同构子图</em>，并且确定它是个已知的 NP-完全问题[58]。因为同构子图在许多其它的领域都可以找到，所以对这个问题进行了大量的研究（见例子[60， 87，88，109，129，139，163，234，248]）。在这节中，我们会专注于 Ullman 算法和另一个常用算法 VF2。</p>
+<h3 id="基于图的模式选择技术"><a href="#基于图的模式选择技术" class="headerlink" title="基于图的模式选择技术"></a>基于图的模式选择技术</h3><h4 id="一元和二元覆盖"><a href="#一元和二元覆盖" class="headerlink" title="一元和二元覆盖"></a>一元和二元覆盖</h4><h4 id="基于-CP-的技术"><a href="#基于-CP-的技术" class="headerlink" title="基于 CP 的技术"></a>基于 CP 的技术</h4><h4 id="基于-PBQP-的技术"><a href="#基于-PBQP-的技术" class="headerlink" title="基于 PBQP 的技术"></a>基于 PBQP 的技术</h4><h3 id="基于处理器建模的方法"><a href="#基于处理器建模的方法" class="headerlink" title="基于处理器建模的方法"></a>基于处理器建模的方法</h3><p>在前一章中，我们看到了一种微代码生成的方法，其建模了目标处理器的整个数据链路，而不仅仅只是可用的指令集。这里我们将会关注依赖于相同建模方案但解决了指令选择更传统的问题的技术。</p>
 <h4 id="CHESS"><a href="#CHESS" class="headerlink" title="CHESS"></a>CHESS</h4><p>在 1990 年，Lanneer 等人[166] 开发了一个方案，其在后来被 Van Praet 等人[249, 250]用在了他们实现的 CHESS 上，这是一个知名的针对 DSPs 和 ASIPs 的编译器，是一个欧洲项目的成果。</p>
 <p>将 CHESS 和 MSSQ 比较时 –  MSSQ 我们在 4.3.5 节中解读过了– 有两个显著的不同。首先，在 MSSQ 中处理器的数据链路是由手工写的描述文件提供的，而 CHESS 中数据链路是由基于 nML 格式的文件自动生成的[90，91]，这减少了人力需求。</p>
 <p> 第二，打包的方法 – 即合并能并行执行的操作 – 是不同的：在 MSSQ 中，指令选择器依赖于 DAG 覆盖，通过寻找数据路径模型图中的子图来覆盖表达式树，然后在模式选择之后，一个后续的例程尝试调度选择好的指令使其并行化。与之相反的是， CHESS 采用了更渐进的方式，制定了一个<em>链接图</em>，其中每个节点表示表达式图中的一个操作（允许包含循环）。节点由可以执行这个操作的功能单元标注着。在 DSP 处理器上，功能单元通常被分组为功能构建块（FBBs），然后为每对潜在的能在相同的 FBB 中执行的节点对在链接图中添加一条边（这被称为链接）。在然后一个启发式的算法尝试去收缩链接图中的节点，通过选择一条边，接着用一个新节点替换两个节点，然后删除不能在再与新节点的操作在同一个 FBB 上执行的边。这个过程会一直迭代直到没有节点能在压缩的，然后链接图中剩余的每个节点都构成一个包。后来这个作者在 [249] 中扩展了这个方法，通过分支限界搜索在所有可能的包中进行选择，允许表达式图中相同的操作出现在多个包中。</p>
