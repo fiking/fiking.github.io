@@ -30,7 +30,7 @@
 <meta property="og:description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-27T16:08:19.000Z">
-<meta property="article:modified_time" content="2023-03-07T16:17:44.286Z">
+<meta property="article:modified_time" content="2023-06-18T11:24:03.458Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="compiler">
 <meta property="article:tag" content="software pipeline">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-08 00:17:44" itemprop="dateModified" datetime="2023-03-08T00:17:44+08:00">2023-03-08</time>
+                <time title="修改时间：2023-06-18 19:24:03" itemprop="dateModified" datetime="2023-06-18T19:24:03+08:00">2023-06-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -235,14 +235,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.8k</span>
+              <span>7.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>7 分钟</span>
             </span>
 
         </div>
@@ -310,8 +310,34 @@
 <p>模调度的一个副作用是在重叠连续迭代的时候，定会导致寄存器压力的增加。如果寄存器压力的增加超过了可用寄存器数量，必须溢出寄存器，有效的 II 可能被无意中增加了。如果出现着这种情况，通常会丢弃模调度后的循环，使用原始的循环进行替代。</p>
 <p>本文会简短地介绍三个模调度算法，它们与 SMS 类似，使用了上述的模式。</p>
 <h3 id="全局模调度"><a href="#全局模调度" class="headerlink" title="全局模调度"></a>全局模调度</h3><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文描述的所有模调度方法的实现不是这个论文的主题。但是，Codina 等人[10]的研究深入地比较了每个方法。</p>
-<h2 id="模调度的实现"><a href="#模调度的实现" class="headerlink" title="模调度的实现"></a>模调度的实现</h2><h3 id="循环重构"><a href="#循环重构" class="headerlink" title="循环重构"></a>循环重构</h3><p>循环重构过程主要是生成导言，结语，内核，还有修复原始程序的控制流，让其可以跳转到模调度后的循环。图 4.11 给出了循环重构算法。</p>
-<p>内核是由来自多个阶段的指令组成的调度过程构造的。来自大于零的阶段的指令是前一个迭代的一部分。</p>
+<h2 id="模调度的实现"><a href="#模调度的实现" class="headerlink" title="模调度的实现"></a>模调度的实现</h2><h3 id="节点属性"><a href="#节点属性" class="headerlink" title="节点属性"></a>节点属性</h3><p>在构造好数据依赖图之后，为了正确地排序和调度指令，需要计算一些节点属性。因为图可能会包含循环，所以每个迭代的回边（无论哪个）后被忽略了。对于如下的节点属性计算，$\lambda$ 是指令延迟，$\delta$ 是两个节点的依赖边的距离，$Pred()$ 是节点的前驱集，$Succ()$ 是节点的后继集，MII 是 4.3 节里描述的最小启动间隔。</p>
+<h3 id="节点排序"><a href="#节点排序" class="headerlink" title="节点排序"></a>节点排序</h3><p>节点排序阶段是一个复杂的算法，它使用了数据依赖图和节点属性来创建调度顺序。排序算法用于给位于最关键路径上的节点优先级，同时保持低的寄存器压力。它首先使用启发式将最高移动性的指令调度到最后。其次，通过排序指令，使得没有指令会在它的前驱和后继之后调度。让指令尽可能地靠近它的前驱和后继，能降低生命周期。唯一的例外是迭代，里面的指令会在它的前驱和后继之后被调度（这是无法避免的）。</p>
+<p>排序算法开始于计算局部顺序，会有一系列的节点组。图 4.7 描述了局部节点排序算法，其中 | 表示列表追加操作。对于一个带有迭代的图，局部排序列表中的第一个集合是带有最高 RecMII 迭代的集合。第二高 RecMII 迭代的集合被追加到局部表中，它包含那些将其和已经在局部顺序中的循环连接的节点，并移除已经在局部顺序中的了。重复这个直到所有的迭代都添加好了。如果局部顺序中没有节点或者图没有迭代，节点被分组为连接部分，已连接的节点集，和被追加到局部顺序的集合。</p>
+<p>图 4.8 给出了我们简单循环例子的局部顺序。这个局部顺序是一个已排序的集合列表。第一个集合由依赖图中的独立循环的节点组成。其它的集合表示图中的连接部分（减去循环）。连接部分的添加是没有顺序的。</p>
+<p>一旦计算了局部顺序，最后的节点排序算法会产生一系列节点，送到调度器。图 4.9 给出的算法按特定顺序遍历节点集中的子图。在没有循环的已连接依赖图的场景中，它会遍历整个图。</p>
+<p>算法从最关键路径底部的节点开始，根据它们的深度访问所有的祖先节点，自底向上遍历。如果祖先节点有相等的深度，较小的自由度的节点有更高的优先级。一旦访问了所有的祖先，按高度顺序依次访问节点的后继，自顶向下遍历。重复向上遍历和向下遍历直到所有的节点都放到了最后的顺序里，整个图被遍历完。</p>
+<p>图 4.9 给出了最后的节点排序算法，使用 | 表示列表追加操作，Succ_L(O) 和 Pred_L(O) 的定义如下：<br>$$<br>Pred_L(O) = { v | \exists u \in O 其中 v \in Pred(u)， v\in O}<br>$$</p>
+<p>$$<br>Succ_L(O) = {v | \exists u \in O 其中 v \in Succ(u)，v \in O}<br>$$</p>
+<p>对于循环例子，最后的节点排序算法处理每个局部排序的集合，确定了如下的节点顺序：</p>
+<h3 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h3><p>摇摆模调度的调度过程按节点排序算法得到的顺序调度节点。从概念上讲，调度是一张表，它的行表示周期，列是发射槽。调度一条指令是在一个特定的周期上保留一个发射槽。架构和资源决定了可以一起放到发射槽的指令组合。如果还没有调度完所有的指令，则这个表称为一个局部调度。</p>
+<p>当调度指令的时候，SMS 尝试将它们尽可能地放置在靠近它们在局部调度里的前驱或后继。通过将指令尽可能地靠近它们的邻居放置，可以降低寄存器压力。</p>
+<p>图 4.10 展示了 SMS 调度算法，其中 <em>PS</em> 代表局部调度，<em>PSP</em> 表示局部调度中的前驱，<em>PSS</em> 表示局部调度中的后继。 每条指令都是在开始周期到结束周期之间调度的，这创建了指令可以被合法调度的时间窗口。开始和结束周期是基于已经在局部调度里的内容来计算的。调度可以向前（如果开始周期早于结束周期）或向后扫描（如果开始周期晚于结束周期）。指令根据下面的规则进行调度。</p>
+<ul>
+<li>对于在局部调度里没有前驱或后继的指令，指令可以在 ESTART 到 ESTART + II - 1 里调度，其中，ESTART = $ASAP_u$。</li>
+<li>如果指令在局部调度里只有前驱，则指令在 ESTART 到 ESTART + II - 1 里调度，其中，ESTART = $max_{v \in PSP(u)}(t_v + \lambda_v - \delta_{v, u} \times II)$。</li>
+<li>如果指令在局部调度里只有后继，则指令在 LSTART 到 LSTART - II + 1 里进行调度，其中 LSTART = $min_{v \in PSS(u)}(t_v - \lambda_u - \delta_{u, v} \times II)$。</li>
+<li>对于既有前驱又有后继的指令（这在每个循环只出现一个），指令在 ESTART 到 min(LSTART, ESTART +II -1) 里进行调度。ESTART 和 LSTART 与前两个场景的定义相同。</li>
+</ul>
+<p>如果一条指令没有空闲槽可用，则清理整个调度然后增加 II。接着恢复调度，重复这个模式直到找到一个调度或者达到了最大的 II。在我们的是实现中，最大的 II 设置为原始循环的总延迟。</p>
+<p>使用这个调度，通过获取所有在 II 周期后调度的指令，查找它们来自的阶段，以及它们在内核中可以调度的周期，来构造内核。将周期除以 II （然后向下取整）来得到阶段。内核周期等于指令调度周期模 II。此外，与归纳变量和跳转（之前的阶段没有考虑的）相关的指令被重新插入到内核中合理的位置。调度期间，在赋给指令发射槽之前，需要检查它和另一个阶段里的指令是否有内核冲突和资源冲突。</p>
+<p>表 4.3 给出了我们在整章中都作为例子的循环的一个迭代和内核的调度。SPARC IIi 架构每个周期可以发射 4 条指令。可以发射的指令组合取决于它们在流水每个阶段期间使用的哪些资源。为了简单，表 4.3 中的调度只显示了发射槽，但是调度算法即检查了发射槽的可用性，也检查了资源的可用性。</p>
+<p>在这个调度中，所有周期 17 之前的指令属于阶段 0 （循环的当前迭代），同时这之后的指令属于阶段 1。调度算法成功地生成了一个长度为 17 的调度，这就是我们的 MII。这是一个最优的调度。指令已经被调度了，从而许多单周期指令可以和浮点乘法（n34）重叠，这个指令需要花费 4 个周期。表 4.4 给出了模调度循环的内核。括号里的数字表明指令来自哪个阶段。fmuls（n34）指令来自阶段 1，这意味着这个指令是来自前一个阶段的。</p>
+<h3 id="循环重构"><a href="#循环重构" class="headerlink" title="循环重构"></a>循环重构</h3><p>循环重构过程主要是生成导言，结语，内核，还有修复原始程序的控制流，让其可以跳转到模调度后的循环。图 4.11 给出了循环重构算法。</p>
+<p>内核是由来自多个阶段的指令组成的调度过程构造的。来自大于零的阶段的指令是前一个迭代的一部分。在进入内核之前，前面的一些迭代必须在导言里初始化好。图 4.11 中的 6-14 行演示了导言是如何构造的。导言里的基本块数量是内核中阶段的数量减一。例如，我们的简单循环内核（表 4.4）有两个阶段，最大阶段是一。它生成的导言只有一个基本块，组成它的所有指令是来自内核中的阶段 0 的原始基本块（原始的执行顺序）。如果指令的操作数被用到了更高阶段的指令里，需要生成一个拷贝来保存这个值。图 4.12 给出了我们简单循环生成的导言。需要注意的是，用到了额外的，fmovs 指令来保存内核中用到的值，插入了拷贝。</p>
+<p>结语的存在是用于完成导言或者内核中初始化的，但还没有完成的迭代。18-23 行给出了创建结语的步骤。对于内核中每个大于 0 的阶段，都在结语中有个基本块。</p>
+<p>详细的内核构造过程在图 4.11 的 24-29 行。对于任意定义了后续阶段指令使用的值的指令，必须要保存它定义的这个值。然后需要更新来自大于 0 阶段的指令，从而可以使用到这个值的正确版本。图 4.13 给出了我们示例循环的内核。</p>
+<p>最后，分支需要正确地跳转到真正的基本块。对于导言中的每个基本块，必须更新分支以跳转到导言中的下一个基本块（或内核，如果它是最后一个基本块）或者到结语中的相关基本块。内核的分支需要更新以跳转到它自己或者到结语的开头。结语分支需要变成无条件跳转到结语中它的下一个基本块或者到原始循环的退出点。最后，我们程序中到原始循环的分支也必须被更新跳转到导言。</p>
+<p>一旦生成导言，结语和内核，则成功地模调度了循环，完成了摇摆模调度算法。SMS 被用于程序中每个单一基本块循环。</p>
 
     </div>
 
@@ -412,7 +438,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">调度背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E9%9D%A2%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">前面的工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">模调度方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">4.2.</span> <span class="nav-text">全局模调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.2.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">模调度的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E9%87%8D%E6%9E%84"><span class="nav-number">5.1.</span> <span class="nav-text">循环重构</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">调度背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E9%9D%A2%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">前面的工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">模调度方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">4.2.</span> <span class="nav-text">全局模调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.2.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">模调度的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E5%B1%9E%E6%80%A7"><span class="nav-number">5.1.</span> <span class="nav-text">节点属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6"><span class="nav-number">5.3.</span> <span class="nav-text">调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E9%87%8D%E6%9E%84"><span class="nav-number">5.4.</span> <span class="nav-text">循环重构</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -489,13 +515,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">356k</span>
+    <span title="总字数">359k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:23</span>
+    <span title="总时间">5:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
