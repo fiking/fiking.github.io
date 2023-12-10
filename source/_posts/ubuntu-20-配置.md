@@ -194,7 +194,26 @@ sudo service network-manager restart
 apt-get -o Acquire::https::Verify-Peer=false update
 ```
 
+### ssh 访问失败
 
+github 通过ssh方式访问失败，报错如下：
+
+```shell
+ssh: connect to host github.com port 22: Connection timed out
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights and the repository exists.
+```
+
+可能是防火墙导致的错误，在~/.ssh/config 里的添加如下信息即可。
+
+```
+Host github.com
+ Hostname ssh.github.com
+ Port 443
+```
+
+可以通过 ssh -T git@github.com 命令进行测试。
 
 ## 共享文件夹
 
@@ -206,8 +225,6 @@ vmware-hgfsclient
 // 手动挂载文件夹
 sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other
 ```
-
-
 
 ## 参考
 
@@ -270,7 +287,9 @@ https://juejin.cn/post/6844903730068865038
 
 https://www.jianshu.com/p/13f59261e343
 
+### ssh 访问失败
 
+https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out
 
 
 
