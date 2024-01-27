@@ -30,7 +30,7 @@
 <meta property="og:description" content="背景  ubuntu 20 初始使用的一些配置和安装命令。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-13T13:37:13.000Z">
-<meta property="article:modified_time" content="2023-06-18T11:24:03.741Z">
+<meta property="article:modified_time" content="2024-01-24T15:23:45.619Z">
 <meta property="article:author" content="fiking">
 <meta property="article:tag" content="ubuntu">
 <meta name="twitter:card" content="summary">
@@ -133,7 +133,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">55</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">54</span></a>
 
   </li>
         <li class="menu-item menu-item-schedule">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-06-18 19:24:03" itemprop="dateModified" datetime="2023-06-18T19:24:03+08:00">2023-06-18</time>
+                <time title="修改时间：2024-01-24 23:23:45" itemprop="dateModified" datetime="2024-01-24T23:23:45+08:00">2024-01-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,7 +230,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.4k</span>
+              <span>4.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -291,12 +291,13 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo service network-manager stop</span><br><span class="line"></span><br><span class="line">sudo rm /var/lib/NetworkManager/NetworkManager.state</span><br><span class="line"></span><br><span class="line">sudo service network-manager start</span><br><span class="line"></span><br><span class="line">sudo vim /etc/NetworkManager/NetworkManager.conf    #把第四行的false改成true（managed=false改为：managed=true）注:也有可能在第五行</span><br><span class="line"></span><br><span class="line">sudo service network-manager restart</span><br></pre></td></tr></table></figure>
 <h3 id="下载证书错误问题"><a href="#下载证书错误问题" class="headerlink" title="下载证书错误问题"></a>下载证书错误问题</h3><p>通过如下 -o 选项可以临时关闭证书验证。</p>
 <figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-<span class="built_in">get</span> -o Acquire::https::Verify-Peer=<span class="literal">false</span> update</span><br></pre></td></tr></table></figure>
-
-
+<h3 id="ssh-访问失败"><a href="#ssh-访问失败" class="headerlink" title="ssh 访问失败"></a>ssh 访问失败</h3><p>github 通过ssh方式访问失败，报错如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssh: connect to host github.com port 22: Connection timed out</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights and the repository exists.</span><br></pre></td></tr></table></figure>
+<p>可能是防火墙导致的错误，在~/.ssh/config 里的添加如下信息即可。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Host</span> <span class="selector-tag">github</span><span class="selector-class">.com</span></span><br><span class="line"> <span class="selector-tag">Hostname</span> <span class="selector-tag">ssh</span><span class="selector-class">.github</span><span class="selector-class">.com</span></span><br><span class="line"> <span class="selector-tag">Port</span> 443</span><br></pre></td></tr></table></figure>
+<p>可以通过 ssh -T <a href="mailto:&#x67;&#x69;&#116;&#x40;&#x67;&#105;&#x74;&#x68;&#x75;&#x62;&#46;&#99;&#x6f;&#x6d;">&#x67;&#x69;&#116;&#x40;&#x67;&#105;&#x74;&#x68;&#x75;&#x62;&#46;&#99;&#x6f;&#x6d;</a> 命令进行测试。</p>
 <h2 id="共享文件夹"><a href="#共享文件夹" class="headerlink" title="共享文件夹"></a>共享文件夹</h2><p>解决虚拟机共享文件夹看不见的问题[vmware2]：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 查看vmware 共享是否设置成功</span><br><span class="line">vmware-hgfsclient</span><br><span class="line">// 手动挂载文件夹</span><br><span class="line">sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other</span><br></pre></td></tr></table></figure>
-
-
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><h3 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h3><ol>
 <li><a target="_blank" rel="noopener" href="https://linuxconfig.org/ubuntu-20-04-ssh-server">https://linuxconfig.org/ubuntu-20-04-ssh-server</a></li>
 </ol>
@@ -325,6 +326,7 @@
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/466001838">https://zhuanlan.zhihu.com/p/466001838</a></p>
 <h3 id="挂载磁盘"><a href="#挂载磁盘" class="headerlink" title="挂载磁盘"></a>挂载磁盘</h3><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903730068865038">https://juejin.cn/post/6844903730068865038</a></p>
 <h3 id="磁盘扩展"><a href="#磁盘扩展" class="headerlink" title="磁盘扩展"></a>磁盘扩展</h3><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/13f59261e343">https://www.jianshu.com/p/13f59261e343</a></p>
+<h3 id="ssh-访问失败-1"><a href="#ssh-访问失败-1" class="headerlink" title="ssh 访问失败"></a>ssh 访问失败</h3><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out">https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out</a></p>
 
     </div>
 
@@ -427,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">软件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-Server"><span class="nav-number">2.1.</span> <span class="nav-text">SSH Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">proxy 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Samba-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">Samba 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">内存配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA"><span class="nav-number">3.1.</span> <span class="nav-text">扩大 swap 分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8B%E8%BD%BD%E6%BA%90"><span class="nav-number">4.</span> <span class="nav-text">配置下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3"><span class="nav-number">5.</span> <span class="nav-text">环境异常解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BC%82%E5%B8%B8"><span class="nav-number">5.1.</span> <span class="nav-text">网络异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">下载证书错误问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">6.</span> <span class="nav-text">共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">7.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy"><span class="nav-number">7.2.</span> <span class="nav-text">proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vmware"><span class="nav-number">7.3.</span> <span class="nav-text">vmware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="nav-number">7.4.</span> <span class="nav-text">下载源配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF"><span class="nav-number">7.5.</span> <span class="nav-text">下载证书错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#samba-%E6%8C%82%E8%BD%BD"><span class="nav-number">7.6.</span> <span class="nav-text">samba 挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA-1"><span class="nav-number">7.7.</span> <span class="nav-text">扩大 swap 分区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VSCode-%E8%B7%B3%E8%BD%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">7.8.</span> <span class="nav-text">VSCode 跳转配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">7.9.</span> <span class="nav-text">命令行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wsl-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.10.</span> <span class="nav-text">wsl 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E7%A3%81%E7%9B%98"><span class="nav-number">7.11.</span> <span class="nav-text">挂载磁盘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E6%89%A9%E5%B1%95"><span class="nav-number">7.12.</span> <span class="nav-text">磁盘扩展</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">软件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-Server"><span class="nav-number">2.1.</span> <span class="nav-text">SSH Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">proxy 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Samba-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">Samba 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">内存配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA"><span class="nav-number">3.1.</span> <span class="nav-text">扩大 swap 分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8B%E8%BD%BD%E6%BA%90"><span class="nav-number">4.</span> <span class="nav-text">配置下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3"><span class="nav-number">5.</span> <span class="nav-text">环境异常解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BC%82%E5%B8%B8"><span class="nav-number">5.1.</span> <span class="nav-text">网络异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">下载证书错误问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5"><span class="nav-number">5.3.</span> <span class="nav-text">ssh 访问失败</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">6.</span> <span class="nav-text">共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">7.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy"><span class="nav-number">7.2.</span> <span class="nav-text">proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vmware"><span class="nav-number">7.3.</span> <span class="nav-text">vmware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="nav-number">7.4.</span> <span class="nav-text">下载源配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF"><span class="nav-number">7.5.</span> <span class="nav-text">下载证书错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#samba-%E6%8C%82%E8%BD%BD"><span class="nav-number">7.6.</span> <span class="nav-text">samba 挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA-1"><span class="nav-number">7.7.</span> <span class="nav-text">扩大 swap 分区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VSCode-%E8%B7%B3%E8%BD%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">7.8.</span> <span class="nav-text">VSCode 跳转配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">7.9.</span> <span class="nav-text">命令行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wsl-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.10.</span> <span class="nav-text">wsl 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E7%A3%81%E7%9B%98"><span class="nav-number">7.11.</span> <span class="nav-text">挂载磁盘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E6%89%A9%E5%B1%95"><span class="nav-number">7.12.</span> <span class="nav-text">磁盘扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5-1"><span class="nav-number">7.13.</span> <span class="nav-text">ssh 访问失败</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -443,7 +445,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">54</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -494,7 +496,7 @@
 <div class="copyright">
   
   &copy; 2021 – 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class=""></i>
   </span>
@@ -504,13 +506,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">总字数：</span>
-    <span title="总字数">371k</span>
+    <span title="总字数">372k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">总时间 &asymp;</span>
-    <span title="总时间">5:37</span>
+    <span title="总时间">5:38</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
