@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生产环境中生命周期敏感的模调度">
+<meta property="og:url" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_1.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_2.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_3.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_4.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_5.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_6.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_7.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_1.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_8.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_9.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_2.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_10.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_11.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_12.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_13.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/ffg1.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_3.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_4.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_5.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_6.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_14.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_7.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_8.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_9.png">
+<meta property="og:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_15.png">
+<meta property="article:published_time" content="2023-01-02T12:19:45.000Z">
+<meta property="article:modified_time" content="2023-03-09T15:59:49.707Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta property="article:tag" content="software pipeline">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/","path":"2023/01/02/生产环境中生命周期敏感的模调度/","title":"生产环境中生命周期敏感的模调度"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>生产环境中生命周期敏感的模调度 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E6%B5%81%E6%B0%B4%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">软流水的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">动机例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%EF%BC%88SMS%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">摇摆模调度（SMS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%9B%BE%E7%9A%84%E8%AE%A1%E7%AE%97%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">依赖图的计算和分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85%E6%A8%A1%E9%A2%84%E7%95%99%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">填充模预留表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">实验架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E7%BB%93%E6%9E%9C"><span class="nav-number">6.2.</span> <span class="nav-text">性能结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4"><span class="nav-number">6.3.</span> <span class="nav-text">编译时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E7%94%9F%E4%BA%A7%E7%BC%96%E8%AF%91%E4%B8%AD%E7%9A%84-SMS"><span class="nav-number">7.</span> <span class="nav-text">在生产编译中的 SMS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9E%B6%E6%9E%84"><span class="nav-number">7.1.</span> <span class="nav-text">目标架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SMS-%E7%9A%84%E6%8F%90%E9%AB%98%E5%92%8C%E4%BF%AE%E6%94%B9"><span class="nav-number">7.2.</span> <span class="nav-text">SMS 的提高和修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E7%BB%93%E6%9E%9C-1"><span class="nav-number">7.3.</span> <span class="nav-text">性能结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9E%E7%8E%B0%E8%A7%82%E6%B5%8B"><span class="nav-number">7.4.</span> <span class="nav-text">额外的实现观测</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">8.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">9.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="生产环境中生命周期敏感的模调度 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          生产环境中生命周期敏感的模调度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-02 20:19:45" itemprop="dateCreated datePublished" datetime="2023-01-02T20:19:45+08:00">2023-01-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-09 23:59:49" itemprop="dateModified" datetime="2023-03-09T23:59:49+08:00">2023-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>19k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>17 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这篇文章给出了一个新的软流水方法，称为摇摆模调度算法（SMS）。 它生成的调度在起始间隔，寄存器需求，和阶段数量方面都是几乎最优的。摇摆模调度算法是一个启发式方法，计算开销比较低。这篇文章首先描述了相关技术，然后在通用 VLIW 架构上的 Pefect Club 基准测试套上评估它。SMS 和其它的启发式方法相比，表明了它获得的调度质量和编译时间方面都优于其它的。为了进一步探索 SMS    的效果，描述了为 Equator MAP1000 处理器的生产质量编译器添加这个优化的一些经验；讨论了实现的问题，以及原始算法的修改和提高。最后，使用一组工业多媒体应用给出了一个实验结果。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>软流水[5] 是一种利用循环外的指令级并行的技术，通过重复循环的连续迭代，然后并行地执行它们来实现的。关键的思路是寻找一个操作符的模式（称为核心代码），如此，当重复迭代这个模式的时候，它产生的效果是一个迭代会在上一个完成之前就启动好了。</p>
+<p>激进的调度技术，如软流水等的缺点是高的寄存器压力。寄存器的需求会随着并行度的增加而增加[27]，[22]，因为机器要么有较深的流水线，要么有较宽的发射窗口，或者两者都有。寄存器，和功能单元一样，是有限的资源。因此，如果调度需要的寄存器比可用的更多，就不得不执行一些动作了，如添加溢出代码。溢出代码的添加会降低性能[22]，因为调度器额外的周期，或者因为内存内存干扰。</p>
+<p>一些研究组已经将他们的目标放到寻找问题最佳解法的明确方法上了。例如，[16] 中的提案，搜索整个调度空间来寻找最小内存需求的资源限制下的约束，而 [2]，[7]，[13] 中的提案是寻找实际寄存器需求最小的调度。为循环生成一个最优（吞吐量和寄存器需求）的资源约束的调度的任务是一个已知的 NP 难的问题。所有这些已知的方法都需要一个令人望而却步的时间来构造调度，因此，它们的可用性只能被限制在很小的循环里。故而，实际的算法会使用一些启发式来引导调度的过程。文献中的一些提案只关心是否达成高吞吐量 [11]，[19]，[20]，[31]，[32]，[37]，而另一些提案的目标是最小化寄存器需求[9]，[12]，[18]，[24]，产生更高效的调度。</p>
+<p>多级调度[12] 本身不是一个完全的模调度器，而是一组降低任意给定模调度的寄存器需求的启发式。它是通过在调度中移动操作达成目标的。生成的调度具有相同的吞吐量，但只需要更少的寄存器需求。不幸地是，在操作符移动中的限制可能会产生次优的寄存器需求降低。相似的启发式已经包含在 IRIS[9] 调度器里了，其是基于迭代模调度 [11]，[13] 的，为了在调度执行的同时降低寄存器压力。</p>
+<p>松弛调度[18] 是一个将一些操作往后调度的同时将可以降低寄存器需求的操作往前调度的启发式技术，从而可以达成最大执行率。这个算法结合了复发约束和关键路径考量，从而可以判定每个操作的调度时机。这个算法某种意义上类似于迭代的模调度，它使用了有限的回溯，可能会将已经调度好的操作弹出，从而给新的留出位置。</p>
+<p>超节点归约模调度（HRMS）[24]，[25] 是一个尝试缩短循环变量生命周期且不牺牲性能的启发式策略。HRMS 的主要贡献是节点排序策略。这个排序过程会在调度节点之前排序它们，从而每个节点要么它的前驱都在它调度之前被调度好，要么它的后继都在它调度之前被调度好（除了循环的）。在调度阶段，如果一个节点的前驱/后继已经调度了，则会尽可能地前面/后面地调度它。HRMS  与其它启发式方法 [18]，[37] 相比，在实现的吞吐量和编译时间上是由更好的性能的。HRMS 的主要缺点是调度启发式没有将节点的关键性纳入到考量中。</p>
+<p>在这篇文章中，我们给出了一个新的调度策略，<em>摇摆模调度</em>（SMS），考虑了节点的关键性。它是一个低计算开销的启发式技术（如，编译 Prefect Club 所有最内层的不带条件退出和过程调用的循环的时间开销是少于半分钟的）。这篇文章也描述了它在一个具体的 VLIW 处理器的产品编译器中的实现，这个处理器的目标是数字消费者产品。性能图表明了生成在各种消费者工作负载上的调度效果。</p>
+<p>本文剩余部分的组织如下：第 2 节给出了软流水的主要概念。第 3 节讨论了启发我们想法的一个例子，其在第 4 节中会被形式化。第 5 节给出了我们的 SMS 生成的调度的实验评估的主要结果。第 6 节会用于描述将 SMS 放入到产品编译器中的经验，以及它对一些真实工作负载的评估。主要的结论评价在第 7 节中给出。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_1.png" class="" title>
+
+
+<h2 id="软流水的概述"><a href="#软流水的概述" class="headerlink" title="软流水的概述"></a>软流水的概述</h2><p>在软流水化的循环中，一个迭代的调度被分成了多个阶段，所以处于不同阶段的连续迭代的执行是可以重叠。一个迭代中的阶段数量被称为阶段数（SC）。软流水中的连续迭代起始之间的周期数量称为启动间隔（II）[32]。图 1 给出了一个简单的例子，由三个操作（V1，V2，和V3）组成的软流水的执行过程。在这个例子中，II = 4，SC = 3。</p>
+<p>两个连续迭代的启动间隔 <em>II</em> 是由图中的重复循环（<em>RecMII</em>）和架构中的资源约束（<em>ResMII</em>）确定的。<em>II</em> 的下界称为最小的启动间隔（$MII = max(RecMII, ResMII)$）。读者可以参考扩展论文  [11]，[31] 来了解如何计算 <em>ResMII</em> 和 <em>RecMII</em>。</p>
+<p>循环中使用的变量要么对应的是循环不变量，要么是循环变量。在循环执行期间，循环不变量是重复使用的，绝不会被定义。对于循环的所有迭代，每个循环不变量都只有一个值，因此不管是什么样的调度和机器配置，它都只需要一个寄存器。</p>
+<p>对于循环变量，它的值会在每次循环迭代中都生成，因此，对于每次迭代都对应一个不同的生命周期。因为软流水的特性，一个迭代中定义的值的生命周期可以和下一个迭代中定义的值的生命周期重叠。这就是为什么寄存器需求会增加的主要原因。此外，对于生命周期大于 <em>II</em> 的值，新值在前一个值被使用前就生成了。为了修复这个问题，提出了软件解决方案（模变量展开[21]）和硬件解决方案（循环寄存器文件 [10]，[17]）。</p>
+<p>一些软件流水方法都可以视为有两个两个连续的独立步骤：节点排序和节点调度。假设 <em>MII</em> 作为 <em>II</em> 的初始值，执行这两个步骤。如果根据这个 <em>II</em> 无法获得调度，则增加 <em>II</em> 然后在执行调度步骤。下一节会给出排序步骤是如何影响循环的寄存器需求的。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_2.png" class="" title>
+
+
+<h2 id="动机例子"><a href="#动机例子" class="headerlink" title="动机例子"></a>动机例子</h2><p>考虑图 2 中的依赖图，以及具有相同图片中设定的流水线功能单元和延时的架构配置。因为图 2 中没有重用的循环，它的启动间隔只被有效的资源限制；在这个场景下，最可能被限制的资源是乘法器，它使得 $MII = 4/1 = 4$ 。</p>
+<p>将操作排列成调度的一个可能的方法是使用自上而下的方法，它会优先处理关键路径上的操作；在这个排序的情况下，节点按如下顺序优先调度：&lt;n1, n2, n5, n8, n9, n3, n10, n6, n4, n11, n12, n7&gt;。图 3a 给出了一个迭代自顶向下的调度，图 3c 是核心代码（括号中的数字表示操作所属的阶段）。图 3b 给出了循环变量的声明周期。循环变量开始于生产者被发射，结束于最后一个消费者被发射。图 3d 给出了这个调度的寄存器需求；对于每个周期，它给出了调度的需要的存活变量。在任意周期中同时存在的存活变量的最大数量可以近似为所需的寄存器数量，它称为<em>MaxLive</em>（对于巨大数量的循环，[33] 表明寄存器分配需要的不会超过<em>MaxLive + 1</em>）。图 3d 中，$MaxLive = 11$。需要注意的是，在这个方法中，节点 <em>n2</em>  和 <em>n9</em> 有个没必要的巨长的生命周期，是由于调度中相关的操作被过早防止导致的；因此，循环的寄存器需求增加了。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_3.png" class="" title>
+
+
+<p>在 HRMS [24] 中，排序的目标是所有的操作（除了第一个）都有前一个已调度完成的依赖操作。例如，对于前一个例子，它们建议的是如下的调度节点顺序&lt;n1, n3, n5, n6, n4, n7, n8, n10, n11, n9, n2, n12&gt;。注意到，对于这个调度顺序，在 n2 和 n9 需要在局部调度中放置时，它们都有一个依赖操作（分别是 n8 和 n10）已经放置好了。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_4.png" class="" title>
+
+
+<p>图 4a 给出了每遍迭代最后的调度。例如，当操作 n9 被调度时，则操作 n10 已经在调度中放置好了（在第 8 个周期），所以它会尽可能第被调度得靠近它（在第 6 个周期），因此降低了 n9 生成的值的生命周期。类似的情况也发生在操作 n2 上了，在它的后继被调度的时候，它也已经被放在了调度中了。图 4b 给出了循环变量的生命周期，图 4d 给出了调度的寄存器需求。在这个场景中，<em>MaxLive = 9</em>。</p>
+<p>HRMS 建议的顺序没有提高关键路径上的优先权。例如，操作 n5 需要在操作 n1 初始化之后两个周期调度；但是，它却没有，因为在这个周期中，地址器正在繁忙地执行操作 n3，因为它在之前已经被调度了。因为这个，一个在更关键路径（n5）上的操作被前一个在不太关键的路径（n3）上的操作给延迟了。操作 n11 也发生了类似的事情，它与属于非关键路径的操作 n6 的位置冲突了，但是在选择它之前顺序已经确定了。图 5a 和图 5c 给出了我们的想法获得的调度，图 5b 和图 5d 给出了变量的生命周期和寄存器的需求量。这个调度的 <em>MaxLive</em> 是 8。这个调度是使用如下顺序&lt;n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7&gt;获得的。需要注意的是，关键路径上的节点，相比其它节点，是具有一定的调度优先级的。下一节详细的介绍了基于这些想法和调度步骤排序节点的算法。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_5.png" class="" title>
+
+
+<h2 id="摇摆模调度（SMS）"><a href="#摇摆模调度（SMS）" class="headerlink" title="摇摆模调度（SMS）"></a>摇摆模调度（SMS）</h2><p>大部分模调度方法由两步组成。首先，它们计算一个尝试缩小 <em>II</em> 的调度，但不关心寄存器压力，然后将变量分配到寄存器上。软流水循环的执行时间依赖于 <em>II</em>，存活变量的最大数量（<em>MaxLive</em>）和阶段数量。<em>II</em> 决定了循环迭代的发射率。对于第二个因素，如果 <em>MaxLive</em> 不高于可用的寄存器数量，则计算好的调度是有效的，它不会影响到执行时间。否则，需要采取一些动作来降低寄存器压力。[33] 概述了一些可能的方法，并在 [22] 中给出了效果评估：</p>
+<ul>
+<li>根据增加后的 <em>II</em> 重新调度循环。通常，增加 <em>II</em> 将会降低 <em>MaxLive</em>，但它会降低发射率。</li>
+<li>添加溢出代码。这个也由副作用，因为它会增加所需的内存带宽，然后导致更多的内存惩罚（如，缓存未命中）。此外，内存会变成最长利用的资源，因此，添加溢出代码将会需要增加 <em>II</em>。</li>
+</ul>
+<p>最后，阶段数量决定了循环结尾部分的迭代数量（它完全等于阶段数量减去一）。</p>
+<p><em>摇摆模调度</em> 是一种尝试达成最小化 <em>II</em>，降低 <em>MaxLive</em>，和最小化阶段数量的模调度算法。它是一种有着比较低计算开销的同时，产生的调度非常接近于由基于极致搜索的最优方法产生的调度的启发式技术，最优方法对于真实程序会有过高的计算成本。为了有较低的计算成本，SMS 只调度每个节点一次（不想其它基于回溯的方法[9], [11], [18], [31]）。尽管没有使用回溯，SMS 也产生了高效的调度，因为是在预调度顺序上调度的，这保证了 4.2 节中描述的某些属性。</p>
+<p>为了取得最小的<em>II</em> ，以及降低阶段数量，SMS 按照一定的顺序调度节点，这个顺序考虑了每个节点所属的循环的 <em>RecMII</em>，其次也考虑了节点所属路径的关键级别。</p>
+<p>为了降低 <em>MaxLive</em>，SMS 尝试最小化所有循环的值的生命周期。为了达成这个目的，它尝试让每个操作都尽可能地靠近它的前驱和后继。  当一个操作已经被调度了，如果这个局部的调度有唯一的前驱，则它会尽可能快地被调度。如果这个局部调度只包含后继，则它会被尽可能地往后调度。在被调度的操作同时包含前驱和后继的局部调度的场景中，获得的调度可能是不如预期的，因为在这个场景中，如果从前驱到操作的生命周期已经最小化了，则从操作到它的后继的生命周期就会增加。这种情况只发生在每个递归的一个节点上，如果循环不包含任意的递归，则它可以完全避免掉。</p>
+<p>SMS 的算法由如下三个步骤组成，后面会进行详细地描述：</p>
+<ul>
+<li>依赖图的计算和分析，</li>
+<li>节点排序。</li>
+<li>调度。</li>
+</ul>
+<p>SMS 可以应用来为没有子程序调度的最内层循环生成代码。包含条件语句（IF）的循环可以在应用<em>if-转换</em> [1] 之后进行处理，要么是处理器支持预测执行[10]，要么是根据流水线翻转 <em>if-转换</em> [38]。</p>
+<h3 id="依赖图的计算和分析"><a href="#依赖图的计算和分析" class="headerlink" title="依赖图的计算和分析"></a>依赖图的计算和分析</h3><p>最内侧循环的依赖图由一个四元素组（$DG = {V, E, \alpha, \lambda}$）组成：</p>
+<ul>
+<li>V 是图的节点（顶点）集合，其中，每个节点 $v \in V$ 对应循环的一个操作。</li>
+<li>E 是边的集合，其中每条边 $(u, v) \in E$ 表示从操作 u 到操作 v 的一个依赖。只包含数据依赖（流，反，和输出依赖），因为 SMS 可以处理的循环类型只在结尾包含一条分支指令，它与迭代次数相关联。其它的分支已经在之前被 if-转换过程消除了。</li>
+<li>$\gamma_{u, v}$ 被称为距离函数。它赋给每条边 $(u, v)\in E$ 一个非负数整数。这个值表明迭代  I 的操作  v 取决于迭代$I - \gamma_{u,v}$ 的操作 u。</li>
+<li>$\lambda_{u}$ 被称为延迟函数。对于图中的每个节点，它表明了对应操作花费的周期数。</li>
+</ul>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_6.png" class="" title>
+
+
+<p>给定图中的一个节点$v \in V$，$Pred(v)$ 是 v 的所有前驱的集合。即，$ Pred(v) = {u | u \in V 且 (u, v) \in E}$。类似的，$Succ(v)$ 是 v 的所有后继的集合。即，$Succ(v) = {u | u \in V 且 (v, u) \in E}$。</p>
+<p>只要依赖图被计算好了，则调度器使用的一些额外的函数也被计算好了。为了比秒循环，执行这些计算都会把每个迭代的回边忽略掉。这些函数如下：</p>
+<ul>
+<li><p>$ASAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最早可以被调度的时间。它的计算如下：<br>$$<br>如果 Pred(u) = \empty 则 ASAP_u= 0<br>$$</p>
+<p>$$<br>否则 ASAP_u = max(ASAP_v + \lambda_v - \gamma_{v, u} \times MII) \ \forall \in Pred(u)<br>$$</p>
+</li>
+<li><p>$ALAP_u$ 是给图中每个节点赋值的函数。它表明对应操作最晚必须执行的时间。它的计算如下：<br>$$<br>如果 Succ(u) = \empty\ 则 ALAP_u = max(ASAP_v)\forall v\in V 否则 ALAP_u = min(ALAP_v - \lambda_u + \gamma_{u, v} \times MII) \forall \in Succ(u)。<br>$$</p>
+</li>
+<li><p>$MOB_u$ 称为灵活（松弛）函数。对于图中的每个节点，它表示对应的操作可以被调度的时间槽数量。在最关键路径上的节点的灵活性为零，然后随着操作所在路径越不关键，灵活性就越会增加。它的计算如下：<br>$$<br>MOB_u = ALAP_u - ASAP_u<br>$$</p>
+</li>
+<li><p>$D_u$ 被称为每个节点的深度。它定义为到没有前驱的节点的最大距离。它的计算方式如下：<br>$$<br>如果 Pred(u) = \empty 则 D_u = 0 否则 D_u = max(D_v + \lambda_v)\forall v \in Pred(u)。<br>$$</p>
+</li>
+<li><p>$H_u$ 称为节点的高度。它定义为到没有后继的节点的最大距离。计算方式如下：<br>$$<br>如果 Succ(u) = \empty 则 H_u = 0 否则 H_u = max(H_v + \lambda_u) \forall v \in Succ(u)。<br>$$</p>
+</li>
+</ul>
+<h3 id="节点排序"><a href="#节点排序" class="headerlink" title="节点排序"></a>节点排序</h3><p>排序阶段将前面计算好的依赖图作为输入，生成一个包含图中所有节点的排序列表。这个列表声明了图中节点在调度阶段的分析顺序。就是说，调度阶段先为列表中排序在第一个的节点分配时间槽，然后在为列表中第二个节点寻找合适的时间槽，以此类推。需要注意的是，随着局部调度已经放置好的节点数量的增加，剩余的节点遇到的约束会越多，因此，越难以为它们找到合适的位置。</p>
+<p>就像之前概述的，排序阶段的目的有两个：</p>
+<ul>
+<li><p>给位于最关键路径的节点一个优先级。通过这种方法，最后一个被调度的操作需要满足更多约束的事实被它们更高的流动性（$MOB_u$）给抵消了。这个方法倾向于降低 <em>II</em> 和阶段数。</p>
+</li>
+<li><p>尝试降低 <em>MaxLive</em>。为了达成这个，调度器会将节点尽可能地放置在靠近它的前驱和后继的位置上。但是，节点被调度的顺序对于最后的结果会有比较大的影响。例如，假设有图 6 所示的示例依赖图和双发射处理器。</p>
+<p>如果节点 a 在周期 0 中被调度了，节点 e 在周期 2 中被调度了（就是说它们被调度都是基于它们的 ASAP 和 ALAP 值），则无法为节点 b，c 和 d 找到合适的位置，因为 a 和 e 之间没有合适的槽。另一方面，如果节点 a 和 e 被调度得太远，则对于剩余的节点有许多可以放置的位置。但是，这样子无论选择哪个调度，产生的 <em>MaxLive</em> 都会比较高。例如，如果我们尝试降低从 a 到 b 的生命周期， 则我们会在 b 到 e 的生命周期中增加相同的数量。通常，在调度一个节点之前，调度它的前驱和后继都会导致较差的调度结果。因为这个原因，节点排序会尽量避免这个情况（注意到，一个循环的场景中，除了一个节点外的所有节点都可以避免掉）。</p>
+</li>
+</ul>
+<p>如果图没有递归，实现这两个目标的直接想法是基于依赖图的遍历计算排序顺序。从位于最关键路径底部的节点开始遍历，然后向上移动直到访问了所有的祖先节点。祖先节点被访问到的顺序取决于它们的深度。在相等深度的情况下，节点按流动性由低到高进行排序。一旦访问了所有的祖先节点，则已经排序好的节点的后继节点也会被访问，但现在是向下移动，按它们的高度给出的顺序进行。后续会交替地执行图的向上遍历和向下遍历直到遍历完整个图。</p>
+<p>如果图有循环，则图的遍历从有最高 <em>RecMII</em> 的循环开始，然后只在循环的节点中应用上述算法。一旦子图被遍历完，则遍历具有第二高 <em>RecMII</em> 循环的节点。在这步里，会考虑位于前一个循环和当前循环之间的任意路径中的节点，避免在调度它之前调度这个节点的前驱和后继。当属于循环或者循环之间任意路径中的所有节点都已经被遍历了，则以相同的方式遍历剩余的节点。 </p>
+<p>具体来说，这个排序阶段是个两级的算法。首先，计算排序。这个偏序由一个排好序的集合列表组成。虽然这些集合间是按最高到最低优先级顺序进行排序的，但是每个集合里是没有顺序的。图中的每个节点都只属于一个集合。</p>
+<p>最高优先级的集合由带有最高 <em>RecMII</em> 的循环中的所有节点组成。通常，第 i 个集合由第 i 高 <em>RecMII</em> 循环中的节点组成，消除了那些属于任意之前集合（如果任意）的节点，添加那些在连接任意前一个集合的节点和当前集合的循环的节点的路径上的所有节点。最后，剩余的节点组成相同优先级的集合，但是这个优先级低于包含循环的集合。这些集合中的每一个都是由图的连接部分中的节点组成，这些节点都不属于任意之前的集合。</p>
+<p>一旦这个偏序已经计算好了，则排序每个集合中的节点，从而获得最后的完整的顺序。这一步以之前的集合列表和完整的依赖图作为输入。集合按之前计算的顺序进行处理。对于图的每一个循环，会忽略回边从而获得没有循环的图。排序阶段的最终结果是一列有顺序的节点 O，它包含了图的所有节点。</p>
+<p>图 7 给出了排序算法，其中 | 表示列表追加操作，$Succ_L(O)$ 和 $Pred_L(O)$ 分别是一系列节点的前驱和后继集合，其定义如下：<br>$$<br>Pred_L(O) = {v | \exists u \in O, 其中 v\in Pred(u) 且 v\notin O}<br>$$</p>
+<p>$$<br>Succ_L(O) = {v | \exists u \in O ，其中 v \in Succ(u) 且 v \notin O}。<br>$$</p>
+<h3 id="填充模预留表"><a href="#填充模预留表" class="headerlink" title="填充模预留表"></a>填充模预留表</h3><p>这一步按排序步骤给出的顺序分析每个操作。这个调度步骤尝试将操作尽可能地调度靠近它的已经调度好的邻近节点。当一个节点被调度时，它可以有不同的调度方式，这取决于特定调度中的操作的邻居。</p>
+<ul>
+<li><p>如果操作 u 在局部调度中只有前驱，则 u 需要尽可能快地被调度到。在这个场景下，调度器将 u 的 <em>Early_Start</em> 计算为：<br>$$<br>Early_Start_u = max_{v\in PSP(u)}(t_v + \lambda_v - \delta_{v, u} \times II),<br>$$<br>其中，$t_v$  是已经调度好的 v 的周期，$\lambda_v$ 的延迟，$\delta_{v, u} $ 是从 v 到 u 的依赖距离，$PSP(u)$ 是之前已经调度好的 u 的前驱集合。然后，调度器在周期$Early_Start_u$ 到周期$Early_Start_u + II - 1$  之间扫描局部调度，为节点 u 查找一个空闲的槽。需要注意的是，由于模的约束，扫描超过 II 周期是没有意义。</p>
+</li>
+<li><p>如果操作 u 在局部调度中只有后继，则 u 会被尽可能地往后调度。在这个场景中，调度器将 u 的 <em>Late_Start</em> 计算为：<br>$$<br>Late_Start_u = min_{v\in PSS(u)}(t_v - \lambda_u + \delta_{u, v} \times II),<br>$$<br>其中，$PSS(u)$ 是之前已经调度好的 u 后继。然后，调度器在周期 $Late_Start_u$ 和周期 $Late_Start_u -II + 1$ 之间扫描局部调度，为节点 u 查找一个空闲的槽。</p>
+</li>
+<li><p>如果操作 u 同时有前驱和后继，则调度器需要计算上面描述的$Early_Start_u$ 和 $Late_Start_u$，然后在周期 $Early_Start_u$ 和周期$min(Late_Start_u, Early_Start_u + II - 1)$ 之前扫描局部调度。每个循环只会有一个节点发生这个情况。</p>
+</li>
+<li><p>最后，如果一个操作 u 即没有前驱也没有后继，调度器会将u 的 $Earty_Start$ 计算为：<br>$$<br>Early_Start_u = ASAP_u<br>$$</p>
+</li>
+</ul>
+<p>  然后在周期$Early_Start_u$和周期$Early_Start_u + II - 1$之间扫描局部调度，为节点 u 寻找空闲的槽。</p>
+<p>如果一个节点没有找到空闲的槽，则 II 增加 1。调度步骤会随着增加的 II 而重复，其会为寻找空闲槽提供更多的机会。我们提议的一个优势之一是节点只需要排序一次，即使调度步骤会尝试多次。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_7.png" class="" title>
+
+
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>这一节用两个例子的均值来演示 SMS 的性能。第一个例子是没有递归的小循环，第二个例子用的是带有递归的依赖图。</p>
+<p>假设被调度的最内侧循环体的依赖图是图 2，其中所有的边都表示距离为 0 的边。同时假设有个四个功能单元的四发射处理器完全流水化，延迟如图 2 所示。</p>
+<p>调度的第一步是计算 <em>MII</em> 和 <em>ASAP，ALAP，mobility，depth</em>，以及图中每个节点的 <em>height</em>。<em>MII</em> 等于 4。表 1 给出了每个节点其余的值。</p>
+<p>然后排序节点。因为没有循环，所以排序算法的第一层会将所有的节点放入到相同的集合中。然后，这个集合的元素会按如下方式排序：</p>
+<ul>
+<li>初始化阶段，$R = {n12}$ 且 $order = bottom-up$。</li>
+<li>然后，$n12$ 的所有祖先按照它们的深度进行排序，并将流动性作为第二个因素。这得到了一个偏序$O = &lt;n12, n11, n10, n8, n5, n6, n1, n2, n9&gt;$。</li>
+<li>然后，排序变成自上而下，所有的后代都基于它们的高度和流动性进行排序。这给出了最后的顺序$O = &lt;n12, n11, n10, n8, n5, n6, n1, n2, n9, n3, n4, n7&gt;$。</li>
+</ul>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_1.png" class="" title>
+
+
+<p>下一步是根据之前的顺序，调度这些操作。II 初始化为 MII，然后调度操作，如图 5 所示：</p>
+<ul>
+<li>表中的第一个节点，$n12$，在周期 10 （由它的 ASAP 给出）被调度了，因为它在局部调度中既没有前驱也没有后继。一旦这个调度被折叠，这就会变成阶段 2 的周期 3。</li>
+<li>对于剩余的节点，局部调度可能会有它们的前驱或者后继，但不会同时有两者。节点会被调度得尽可能地靠近它们的前驱/后继。例如，节点 n11 会被尽可能地往后调度，因为局部调度仅包含它的后继。因为资源限制，对于节点 n8 和 n3，这可能并不总是会发生的。例如，n8 尝试尽可能地被往后调度，它应该在图 5 的周期 5 被调度。但是，在这个周期中，乘法器已经被 n11 占据了，这会强制节点 n8 往上移动一个周期。</li>
+</ul>
+<p>第二个例子由带有递归的更复杂依赖图的循环组成，如图 8 描述的。我们将会假设一个四发射的机器，带有四个全流水的通用目的的功能单元，然后有两个周期的延迟。</p>
+<p>在这个例子中，MII 等于 6。排序的第一步是将节点分组到一个排序集合表中。从而，可以获得如下三个集合列表：</p>
+<ul>
+<li>$S1 = {A, C, D, F}$。这是第一个集合，因为它包含了带有最高 <em>RecMII</em> 的循环（即，(3 个节点 x 2 个周期)/(1 个距离) = 6）。</li>
+<li>$S2 = {G, J, M, I}$。这是包含第二循环$(RecMII = (3 个节点 x 2 个周期)/(2 个距离) = 3)$，和所有 S1 到这个循环（即，节点 I）的路径上的节点的集合。</li>
+<li>$S3 = {B, E, H, K, L}$。这是所有剩余节点的集合。</li>
+</ul>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_8.png" class="" title>
+
+
+<p>然后，节点按如下方式排序：</p>
+<ul>
+<li>首先，排序 S1 的节点生成偏序$O = &lt;F, C, D, A&gt;$。</li>
+<li>然后，排序算法计算这四个节点的前驱，但没找到属于 S2 的。然后计算后继，找到 I 和 G 是属于 S2 的，所以它进行了自上而下的扫描。这产生了如下的局部顺序：$O = &lt;F, C, D, A, G, I, J, M&gt;$。</li>
+<li>最后，考虑 S3 中的节点。遍历了 S1 和 S2 的前驱，执行自底想上的扫描，产生了$O = &lt;F, C, D, A, G, I, J, M, H, E, B&gt;$ 的局部顺序。然后，变成自顶向下的遍历所有的后继生成最后的顺序：$O = &lt;F, C, D, A, G, I, J, M, H, E, B, L, K&gt;$。</li>
+</ul>
+<p>调度过程中生成的调度如图 9 所示。</p>
+<h2 id="性能评估"><a href="#性能评估" class="headerlink" title="性能评估"></a>性能评估</h2><h3 id="实验架构"><a href="#实验架构" class="headerlink" title="实验架构"></a>实验架构</h3><p>在这节中，我们给出我们实验研究的一些实验结果。我们将 SMS 和其它两种调度方法进行比较：HRMS 和 Top-Down。两种方法都使用了 LEDA 库[29] 以 C++ 的方式进行实现。对于这个评估，我们使用了 Perfect Club 测试用例集 [4] 中所有的即没有子例程调用，又没有条件退出的最内层循环。子例程调用会阻止循环被软流水化（除非它们被内联了）。虽然带有条件退出的循环可以被软流水化[36]，但是这个实验特性没有被添加到我们的调度器中，它超出了本工作的范围。循环体中带有条件结构的循环可以被 IF-转换[1]，从而它们可以表现为单基本块循环。循环的依赖图已经在 [3] 中描述的编译器中获得了。</p>
+<p>总共 1258 个循环被调度了，它们代表了 Perfect Club 78% 的总执行时间（在 HP-PA 735 上测量的）。对于这些循环，438 （34.8%）个是有递归回路，18（1.4%）个是有条件的，还有 67 个（5.4%）两个都有的，然后剩余的 735（58.4）个循环是既没有递归又没有条件的。同时，有 152 （12%）个循环有不能并行的操作（即，模操作，除法，和平方根），这使得调度任务变得复杂化。已调度的循环最多有 376 个节点和 530 条依赖边，即使平均下来每个图也有略大于 16 个节点和 20 条边。</p>
+<p>我们假设每个 store 指令是 1 个延迟，load 指令是 2 个延迟，加法和乘法指令是 4 个延迟，除法指令是 17 个延迟，平方根是 30 个延迟。循环基于一个带有两个 load/store 单元，两个地址器，两个乘法器，和两个 Div/Sqrt 单元的机器配置进行调度。基本所有的单元都是全流水化的，除了 Div/Sqrt 单元，它们本来就不是流水化的。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_9.png" class="" title>
+
+
+<h3 id="性能结果"><a href="#性能结果" class="headerlink" title="性能结果"></a>性能结果</h3><p>表 2 给出了三个调度器的一些性能数据。注意，比起其它方法，SMS 可以在更多的循环上获得与 <em>MII</em> 相等的 <em>II</em>。同时，比起其它方法，它只需要更少的寄存器和更少的调度阶段。通常，它可以产生比 Top-Down 调度器好很多的结果，在某些方面比 HRMS 好一些的结果，并且非常接近于最优的结果（SMS 只在 18 个循环上不能获得 $II = MII$ 的调度结果；换句话说，它在 98.6% 的循环上都能获得最优的结果）。只有一个性能参数（阶段数，SC），它在上面的结果比 Top-Down 调度器的结果坏，但这是因为 Top-Down 会有更大的启动间隔导致的。越大的启动间隔，意味着更少的并行被利用到，以及迭代间的重叠更少，这通常只需要更少的阶段，但是需要更高的执行时间。尽管如此，还是要注意到，虽然 SMS 的启动间隔比 HRMS 的小，但是它需要的阶段数反而略少。这是因为 SMS 的设计是同时优化三个参数的：<em>II</em>，寄存器需求，SC。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_2.png" class="" title>
+
+
+<p>一旦循环被调度了，通过计算在调度任意周期的存活变量的最大数量，我们可以找到寄存器需求（<em>MaxLive</em>）的最低边界。如 [33] 所示，实际的寄存器分配几乎不会需要超过 $MaxLive + 1$ 个寄存器；因此，我们用 <em>MaxLive</em> 作为i寄存器需求量的值。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_10.png" class="" title>
+
+
+<p>图 10 给出了三个调度器的寄存器需求的累积分布。图中的每个点 $(x, y)$ 表示 y% 的循环可以用 x 或者更少的寄存器进行调度。因为 SMS 和 HRMS 有最小化寄存器需求的目标，它们之间几乎没有区别，即使 SMS 在各个方面都稍微好一点。这个图仅考虑循环变量导致的寄存器需求；循环不变量导致的需求不依赖于调度的质量。</p>
+<h3 id="编译时间"><a href="#编译时间" class="headerlink" title="编译时间"></a>编译时间</h3><p>在使用软流水作为代码生成技术的上下文中，考虑计算调度的时间也是非常重要的。实际上，这也是整数线性规划方法没有被使用的主要原因。例如，当使用动态重调度技术的时候[6] 生成调度的时间是极端重要的。图 11 比较了三个运行在 Sparc-10/40 工作站上的调度器的执行时间。SMS 调度 Perfect Club 的 1258 个循环只需要 27.5秒。图 11 也比较了计算 MII，节点排序（或计算节点的优先级），以及执行调度的时间。注意到，Top-Down（其是最简单的调度器）在计算节点优先级上所需的时间比其它的更少，但是令人惊讶的是，它需要更多的时间来调度节点。这是因为，当调度器在 MII 周期里查找一个调度失败时，循环会以增加启动间隔的方式重新调度，Top-Down 比其它调度器需要更多的重新调度循环。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_11.png" class="" title>
+
+
+<p>HRMS 以高的复杂度和更多的时间开销预排序步骤获得更好的调度（需要更少的时间调度循环）。SMS 使用一个简单的，但非常有效的，启发式排序节点，需要的时间和 Top-Down 排序节点相同，也和 HRMS 调度节点的时间相同。总之，它比其它两个调度器快大约两倍左右。</p>
+<h2 id="在生产编译中的-SMS"><a href="#在生产编译中的-SMS" class="headerlink" title="在生产编译中的 SMS"></a>在生产编译中的 SMS</h2><p>在这节中，我们描述 SMS 在 Equator Technologies, Inc.（ETI） 的优化编译器（在 [8] 中介绍）中的一个工业实现。ETI 是 Multiflow Computer, Inc.  [26] 的继承者，其为数字消费产品生产一系列的 VLIW 处理器。</p>
+<h3 id="目标架构"><a href="#目标架构" class="headerlink" title="目标架构"></a>目标架构</h3><p>ETI 的 MAP1000 处理器是这里使用的目标架构。它是 ETI 多媒体加速处理器（MAP）系列的第一个实现。这个实验是在一个预生产（工程原型机）的 MAP1000 芯片上进行的，它以 170 MHz 运行。MAP1000 是一个四发射的 VLIW 处理器，它由两个相同的簇 <em>cl0</em> 和 <em>cl1</em> 组成，如图 12 所描述的。</p>
+<p>每个簇包含：</p>
+<ul>
+<li>I-ALU 单元（32位整型，取/存，和分支子单元），</li>
+<li>IFG-ALU 单元（单精度浮点，DSP，和64位整型子单元），</li>
+<li>通用寄存器文件（64 x 32位寄存器），</li>
+<li>谓词寄存器文件（16 x 1位谓词寄存器），</li>
+<li>特殊目的 PLV 寄存器（1 x 128位），</li>
+<li>特殊目的 PLC 寄存器（1 x 128位）。</li>
+</ul>
+<p>一个指令字是 136 位长，由四条驱动两个簇的操作组成。大部分的操作只在 I-ALU 或者 IFG-ALU 上执行。但是，一些操作，如单整型操作，可以在两个单元上执行，这给了软件流水更大的自由度来放置它们。除了除法器之外的所有的功能单元都可以全流水，因此可以在每个周期都接受一个操作。</p>
+<p>分支指令会有延迟的 – 分支指令在周期$ i $发出，但直到周期 $i + 2$才提交。因此，“延迟槽”有 11 个操作需要填充（包含分支的指令字中有三个操作，加上两个后续的指令字中的八个操作）。这对于模调度是很重要的，因为它强制 <em>MinII</em> 至少是三个周期，那些具有三个工作周期或者更少的内核可以完全在延迟槽中执行。当然，有些时候需要取展开小的循环，从而可以产生足够多的工作来填充这些周期。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_12.png" class="" title>
+
+
+<p>架构具有一些对软件流水循环有限支持的功能，即包含了一套全可预测指令集（例如，支持 if-转换 ）和投机的内存操作。进一步地提供了 <em>select</em> 指令，它基于一个谓词输入，从两个通用寄存器输入中选择一个。没有其它硬件支持重叠循环的了 – 具体而言，没有循环寄存器文件或者相关的循环指令。因此，对于每个流水化的循环，我们都必须为它们生成导言和结语两个多出的部分，以及压缩的 kernel 的一个拷贝（如果有任意相互重叠的生命周期会更多）。</p>
+<p>编译器必须精确地管理处理器资源，它们不能有硬件互锁（除了 bank stalls 和缓存未命中的情况）。此外，由于簇功能单元和寄存器文件，编译器必须关心簇之间的数据移动的开销。跨簇移动可以通过一个简单的寄存器拷贝操作或者结果广播来完成。广播指的是一个操作到目的的能力，即到局部寄存器文件和远端簇寄存器文件。</p>
+<p>每个通用寄存器都能保存整型，浮点和多媒体数据。寄存器可以看作是一组重叠类，根据用于读写它们的指令分类。这些类使得软件流水和寄存器分配变得复杂化。例如，带有受限寄存器操作数的指令必须从 r0 到 r7 或者 r16 到 r23 读取操作数。此外，指令的广播只能写目的寄存器 r0 到 r15。最后，64 位指令会读写寄存器组 rN:rN+1（其中 N 是偶数，指令引用 N）。</p>
+<p>操作中的一类，<em>sigma</em> 操作，需要特别提出来，因为它们会显著地影响 SMS 的实现。考虑到其中一个操作<br>$$<br>srshinprod.ps64.ps16 rd, rs, iw, ip<br>$$<br>其中，rd 和 rs 是通用寄存器对，iw 和 ip 是立即数操作数：<br>$$<br>PLV = rs[8 \times (ip + iw) - 1:8 \times ip] | PLV[127:8 \times iw]<br>$$</p>
+<p>$$<br>rd = \sum^7_{i = 0}PLC.16i \times PLV.16i<br>$$</p>
+<p>$[x : y]$ 符号表示位的一个范围，$x | y$ 表示位的并列。第一个更新 PLV 寄存器的操作是通过将它往右移动，最左边的位被替换成来自 rs 的位。然后，一个内积计算给了 rd，通过将 128 位 PLC 和 PLV寄存器相乘，每个寄存器都是八个有符号 16 位整型向量。由于每个簇只有一个 PLV 寄存器的原因，所以在任意给定的周期里，都不可能有相关的生命周期相交的情况发生（相同的簇里）。这对于尝试重叠操作的软件流水来说是会造成问题的。6.2 节会详细地解决这个问题，有一个方法来处理这类操作。</p>
+<h3 id="SMS-的提高和修改"><a href="#SMS-的提高和修改" class="headerlink" title="SMS 的提高和修改"></a>SMS 的提高和修改</h3><p>虽然将添加 SMS 到已经存在的软件流水器中式相对直接的，但还是有一些方面是值得关注的。在不改变 SMS 一些基本属性的情况下会做一些修改，从而允许它在处理 VLIW 架构表现出的一些复杂性下执行得更好。</p>
+<p>首先，排序算法和 ETI 的依赖图结构交互就存在一个问题。考虑图 7 中在 15 行到 19 行之间的部分算法（类似的部分是 23 行到 27 行）。这里做了一个隐式的假设，即节点可以根据它们的高度或者深度进行拓扑区分。就是说，它假设有依赖关系的节点都有一个高度和深度的明确的值，这是对应着它们在图中的拓扑位置。这是一个合理的假设，但是 ETI 的图结构并不满足它，因为一些节点关联的延迟是 0。实际上，对于一个约束跳转的节点而言，负的延迟也会存在的，因为有架构的跳转延迟槽。例如，如果一个节点（有一个后继）的延迟是 0，则节点和它的后继将会有相同的高度和深度。在这个场景下，SMS 算法就不能只依赖高度/深度值，因为当没有相关的正数延迟的时候，它们是摸棱两可的。ETI 版本中会做一个简单的修改，因此当在相关节点之间选择节点时（如，图 7 中的 16 和 24 行），检测干涉图的时候不会只检查<em>高度/深度</em>值。换句话说，当高度和深度无法给出图拓扑的完整属性的时候，我们会关注整个图的结构。这会有一些代价，但只有在允许节点有非正数延迟的带有图表示的编译器中才是需要的，所以许多编译器都不会用到这个特性。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_13.png" class="" title>
+
+
+<p>第二个修改涉及一组特殊的操作，这些操作对于流水化是比较麻烦的。sigma 操作，除了使用通用寄存器外，还依赖于一个独特的寄存器资源。特殊目的 128 位寄存器（<em>PLV</em>）比通用寄存器大了许多，但每个簇中都只有一个。Sigma 操作从簇的局部 <em>PLV</em> 中读取值，然后写入一个新值（除了通用寄存器的定义之外的）。因为 <em>PLV</em> 只有一个（每个簇），修改操作必须是顺序发射的。通常，sigma 操作出现在四个或者更多链上（至少程序开发者会产生它）。因为这些指令出现在一个组中，且它们会读/修改一个独特的资源，所以将它们尽可能地发射地相互靠近是比较重要的。这增加了达成 MII 或者完全发射指令链的机会。在绝大部分的场景中，内核时不会大于链的长度的，因此，原子地发射它们是至关重要的。为了达成这个，SMS 被扩展成将 sigma 操作链看作是循环的样子，即，作为一个高优先级的子图。在 SMS 的第一步中，会识别出链，然后为每个链创建一个分离的集合。这些集合根据具有最高优先级的最长链进行排序。这些集合比起循环集合的优先级更高，因为循环中的一个资源消耗很有可能会使得一个链无法被发射。通常会更早地调度链周边的其它节点。图 13 描述了独特的 <em>PLV</em> 资源出现的问题。ssetinprod 操作初始化了 PLV 寄存器，同时 srshinprod 操作消耗了 <em>PLV</em> 寄存器，产生了图 13b 给出的生命周期。但是，内核在周期 0 需要的 PLV 大于一个（图13 d），这就是非法的。正常的操作可以简化成写另一个寄存器，但是，对于 sigma 操作，调度器必须保证这样的场景一定不会出现。</p>
+<p>两个用于获得尽可能更小的 <em>II</em> 的额外的提升，是通过保证好的资源压缩获得的。SMS 尝试同时优化一组参数，即寄存器压力，II，和阶段数。有时候，优化一个参数会对另一个产生负面的影响。在少数的场景中，SMS 的寄存器使用优化会产生一个比它都能达到的 II 大得多的调度。这种情况不是很经常发生，但是在有非常复杂的资源使用的机器中，是很常见的。这个行为在 目标 VLIW 上可以观察到，其有多个簇和流水结束资源争用，如寄存器写端口（所有都是由调度器管理的）。因为资源复杂性的原因，即使有足够的可用总资源，一些操作的放置也可能会阻止另一些操作的放置。第三个修改涉及到节点的选择，其出现在算法的多个地方：第 10 行，16行和24行。在这三个场景中，有可能会有多个符合条件的节点可供选择。原始的算法会从三个中任意选择一个。实际的节点选择可能会依赖于追踪节点的数据结构或者其它因素。在这种方式下，可能会选出一个不符合预期的节点，然后锁住后续的其它节点，从而增加 <em>II</em>。修改后的版本将随机选择替换为一个基于节点资源消耗的猜测。例如，如果一个节点是长延迟的，不能流水化的除法操作和其它单周期的加法操作，我们会预测选择第一个可能会产生一个更好的资源压缩。简言之，如果我们观察到，两个节点中，有一个会更限制读或者写端口资源，则我们会选择它。</p>
+<p>第四个修改尝试通过添加一个对称的场景到工作集 R 的初始化中，来获得一个紧凑的资源压缩（第 3 行到 12 行）。条件的顺序是倾向于自底向上的，这在大多数场景中都是可取的。如下对称的用例则更倾向于自顶向下：</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/ffg1.png" class="" title>
+
+
+<p>在实际的实现中，循环首先根据原始的方法进行调度，只有当 MII 没有达成的时候会以对称的方式调度第二次。如果第二次调度产生的 <em>II</em> 和第一次一样（或者更大），则选择第一次的，因为自底向上的性能通常在相同 <em>II</em> 的情况下，会更好地减少生命周期。在每个 II 进行多次调度尝试的类似想法在 [34]中描述的 SGI MIPSPro 编译器和 PGI i860 编译器 [28] 中也有用到。但是，这些编译器中的 SMS 方法都没有同时即使用自底向上调度一些节点，又使用自顶向下调度另一些节点。</p>
+<h3 id="性能结果-1"><a href="#性能结果-1" class="headerlink" title="性能结果"></a>性能结果</h3><p>在这一节中，我们将 SMS 和原始的 ETI 模调度器进行对比来评估它的效果，证明了在产品编译器中实现 SMS 的时间代价是值得的。这里的实验是基于少量的关键客户应用程序，来自信号处理领域和 2D/3D 图的，以及一些测试集代码。表 3 描述了工业的工作集。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_3.png" class="" title>
+
+
+<p>总共 75 个循环有如下属性：15（20%）个包含了非平凡循环；17（22.7%）个包含条件；5 （6.7%）个同时包含循环和条件。尽管没有一个详细的指令分解，但是许多循环都包含了复杂的操作，如非流水化的除法和 sigma 操作链，需要复杂的调度。</p>
+<p>我们首先比较两个调度器，包括启动间隔，阶段数（SC），复制因子（RF），和假定无限寄存器数量下的寄存器需求等方面。复制因子是需要执行模变量扩张的内核拷贝数量 [20]。后面，我们会考虑在有限寄存器数量（每个簇 64 个寄存器）的时候，溢出代码的添加和它对性能的影响。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_4.png" class="" title>
+
+
+<p>表 4 比较了一些性能指标。给出了寄存器总的需求统计和每个簇单独的需求统计（CL0，CL1）。首先，除了两个循环因为资源冲突外（一个循环在 UWICSL，另一个在 NAS APPBT 应用中），两个调度器在剩下的所有循环都达成了 <em>MII</em>；它们在那两个循环中也获得了相同的 <em>II</em>。</p>
+<p>每个循环的平均寄存器数量，SMS 是 47.2，而 top-dwon 是 55.6。此外，对各自结果的单独分析表明，这个 75 个循环中，有 63 个 SMS 比 top-down 需要的寄存器更少。有 6 个其它场景，寄存器使用量是相同的。top-down 只在 6 个循环中使用的寄存器量少于 SMS。表 5 也说明了 SMS 在 RF 上相对来说也比 top-down 更好（稍后再详细介绍）。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_5.png" class="" title>
+
+
+<p>虽然平均的寄存器需求对于我们考虑的架构来说是合理的，但更重要的是去详细地研究每个单独循环的寄存器需求。图 14 给出了工作集累积的寄存器需求。需要注意的是，在这个场景中，软件流水化的循环集合的寄存器压力是高于 Perfect Club 中的循环寄存器压力的。尤其是，SMS 分别只能以 32 个寄存器调度 45% 的循环，而以 64 个寄存器则可以调度 81 % 的循环；原始的 top-down 方法在相同的寄存器情况下，只能调度 40% 和 71% 的循环。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_6.png" class="" title>
+
+
+<p>早先描述的包含一个 128 寄存器文件的目标架构，可以组织成两组分别是 64 个寄存器的。对于这个配置，我们可以发现使用 SMS 进行调度的时候，只有两个循环需要额外地添加溢出代码。表 6 给出了在添加了溢出代码并重新调度循环之后，获得的最终的 <em>II</em>。</p>
+<p>比起静态循环级别的比较，更大的兴趣是包含被影响循环的应用的动态加速情况的比较。例如，在 MPEG2 应用中，关键循环（占用了 70% 的总运行时间）使用 top-down 进行调度显著慢于 SMS 调度的。这是因为溢出代码导致了一个更大的 <em>II</em>，和额外的内存引用，以及一个更大的复制因子，从而影响了缓存的性能。如表 7 所示，使用 SMS 编译产生的总 MPEG2 比起使用  top-down 编译产生的快了 11%。这是 ETI 最关键的应用之一，所以通过简单的重编译就获得的提升是令人兴奋的。同时也显示了其它受影响的应用和它们的加速比。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_14.png" class="" title>
+
+
+<p>在 128 寄存器 MAP1000 上，大部分的循环调度后是不需要溢出代码的。但是即使在不需要溢出代码的场景下，降低寄存器压力也是很重要的。内层循环寄存器需求的降低可以增加外层循环的可用寄存器，然后进一步影响到整体周边的代码。但是，通过假设只拥有少量的寄存器，我们可以更好地了解 SMS 对特地工作集的正向影响。为此，另一个实验是在强制让编译器假定总共只有 64 个通用寄存器（两个32个寄存器簇）的基础上进行的。这个更小配置对应的重调度循环的结果在表 8 中给出。对于这个试验，SMS 有 13 个循环需要溢出代码，而 top-down 则有 21 个循环需要溢出代码。UWICSL 中的一个循环无法在总共只有 64 个寄存器的情况下进行编译，因为它有非常高的寄存器需求。这个循环被排除在表中的计算之外。</p>
+<p>如表 9 可见的，在 12 实例中，SMS 编译的应用有明显更好的动态运行时间。如预测的一样，SMS 在寄存器文件大小下降的情况下，会更有效。MPEG 在 64 寄存器模型下的加速比只是稍微小于 128 寄存器模型的，因为，这个时候 SMS 和 top-down 调度都有一定数量的溢出（SMS 在 128 寄存器的场景下是没有溢出的。）动态的结果表明，对于典型的 32 寄存器 RISC 处理器，生命周期敏感的模调度会更有收益。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_7.png" class="" title>
+
+
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_8.png" class="" title>
+
+
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/table_9.png" class="" title>
+
+
+<p>最后，因为 SMS 降低了寄存器生命周期，似乎直观上它也会降低复制因子。实验支持了这个现象。平均而言，SMS 的循环调度需要的内核拷贝比 top-down 调度器的循环调度需要的少一份（表 4）。虽然并非完全出乎意料，图 15 显示的结果还是有一点令人惊喜的。SMS 可以在两个复制里调度 54 % 的循环，在四个复制里调度 92% 的循环。另一方面，Top-down，在两个复制和四个复制里，分别只能调度 21% 和 77%的循环。因为大部分模调度的场景中都会假定目标架构有循环的寄存器文件，所以很少会注意到复制因子问题。但是，这里的 VLIW 目标有一个相对较小的指令缓存，所以代码体积的降低是非常重要的。即使是考虑了 SMS 的结果，检查复制因子也表明了 ETI流水线可能需要改进的地方。</p>
+<h3 id="额外的实现观测"><a href="#额外的实现观测" class="headerlink" title="额外的实现观测"></a>额外的实现观测</h3><p>最后，我们强调三个额外的方面，主要是涉及目标处理器架构的，其还没有被包含在当前的实现中，需要未来关注的。未来的研究需要确定这些东西是如何影响我们的生命周期敏感的软件流水的。</p>
+<p>首先，在赋给功能单元的时候，SMS 最初的设计并没有将簇架构（如，MAP1000）的极限连接（分区）和数据移动需求纳入到考量中。这意味着最小化生命周期可能不是产生寄存器降低的必要条件，因为它可能会导致集群间的不平衡。即使这样子，平均而言 SMS 还是执行得很好的，应用编译过程中是很少碰见问题的。可能是这种行为在超过两个集群的机器上会更明显。SMS 已经被扩展来处理集群架构 [35]。其它针对集群架构的模调度也可以在别处找到 [14]，[30]。</p>
+ 
+  <img src="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/figure_15.png" class="" title>
+
+
+<p>第二，之前提到的广播特性能同时对两个集群上的寄存器压力有效果，所以它值得让任意寄存器敏感的调度器将其纳入考量中。同时重要的是，确定哪个操作需要广播它的结果。另一个问题涉及的是，某些操作需要一个操作数被限定在一个严格的寄存器上 – 这个寄存器是来自寄存器文件的子集。这些被限制的寄存器操作数可能会导致限制集（只有 25% 的寄存器）里高的寄存器压力，即使在非约束子集中没有太高的争用也会出现。将这些受限的生命周期纳入到 SMS 考量中是有收益的，最小化它们通常比最小化其它的更重要。</p>
+<p>然后，第三，在流水化之前应用循环展开，可能会给 SMS 算法带来不良的影响。循环体的依赖图展开 n 次可能会比没有展开的大致宽 n 倍大。此外，每个展开体之间都有相同长度的关键路径。SMS 将会从多个展开中的一个的最低端节点开始排序。然后，会继续排序相同深度但来自整个图远端的所有节点（即，来自不同的展开）。因此，最终的节点顺序可能会导致在调度期间的某个时刻需要处理的计算范围太宽。就是说，同时会有太多的存活变量从不同的展开过来，这可能会消耗太多的有用寄存器。这个问题类似于以广度优先方式对节点排序的自上而下的表调度器，潜在地会导致更高的并行度以及相关的寄存器压力增加。降低寄存器需求的一个可能的方法是将调度过程限制在图的较小范围里。例如，如果它假设展开图没有包含循环，则当前的调度过程会在一个包含整个图（所有的展开）的巨大集合中进行。这个集合可以被分为 m 个新的集合，则每个都会包含 n/m 个展开。在调度期间，尽管可能会需要付出大的阶段数的代价，但是最后的排序还是会允许较小的寄存器压力的更窄的计算。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>我们提出了一个称为<em>摇摆模调度</em>（SMS）的软件流水技术。 它是一个启发式技术，在启动间隔，导语/结语大小，和所需的寄存器等方面都接近最优的调度，同时还有非常低的编译时间。</p>
+<p>这个技术已经通过 Perfect Club 的 1258 个循环深入的评估过了，这些循环代表了这个测试套 78% 的总执行时间。我们已经证明了 SMS 在获得的调度指令方面优于其它的启发式方法，这是通过测量达到的启动间隔，寄存器需求，和阶段数获得的。此外，它需要的编译时间更少（大约只有用于对比的调度器的一半）。</p>
+<p>在本文中，我们也评估了一个在面向数字消费者产品的 VLIW 架构上的产品编译器上实现的 SMS 的性能。实验的结果证明，在各种消费者工作负载上，SMS的性能是优于原来实现的软件流水器。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>略。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+              <a href="/tags/software-pipeline/" rel="tag"># software pipeline</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/" rel="prev" title="CHESS：嵌入式 DSP 处理器的可变目标代码代码生成">
+                  <i class="fa fa-chevron-left"></i> CHESS：嵌入式 DSP 处理器的可变目标代码代码生成
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/" rel="next" title="扩展到超级块的摇摆模调度的实现">
+                  扩展到超级块的摇摆模调度的实现 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

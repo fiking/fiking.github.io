@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器独立的编译器中的代码生成">
+<meta property="og:url" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
+<meta property="article:published_time" content="2022-06-11T01:18:57.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.959Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/","path":"2022/06/11/机器独立的编译器中的代码生成/","title":"机器独立的编译器中的代码生成"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>机器独立的编译器中的代码生成 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%A4%84%E7%90%86%E5%99%A8%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">指令集处理器形式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E4%B9%8B%E5%89%8D%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">代码生成之前的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">上下文确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E8%A1%A5%E7%A0%81-%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E8%AF%86%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">一元补码 &#x2F; 目标路径识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">评估顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90"><span class="nav-number">4.4.</span> <span class="nav-text">流分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%A8%A1%E5%BC%8F%E5%88%A4%E5%AE%9A"><span class="nav-number">4.5.</span> <span class="nav-text">访问模式判定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%90%8D%E5%AD%97%E8%B5%8B%E5%80%BC"><span class="nav-number">4.6.</span> <span class="nav-text">临时名字赋值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">代码生成后的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E6%8A%BD%E8%B1%A1"><span class="nav-number">6.1.</span> <span class="nav-text">代码生成抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">代码生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">6.2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">6.2.2.</span> <span class="nav-text">模式匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E8%BD%AC%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">6.2.3.</span> <span class="nav-text">反转代码生成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%88%86%E6%9E%90%E5%92%8C%E4%B8%B4%E6%97%B6%E5%88%86%E9%85%8D%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">6.3.</span> <span class="nav-text">流分析和临时分配信息的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="机器独立的编译器中的代码生成 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器独立的编译器中的代码生成
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-06-11 09:18:57" itemprop="dateCreated datePublished" datetime="2022-06-11T09:18:57+08:00">2022-06-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文介绍了 PQCC（Production-Quality Compiler Compiler）项目中的一些代码生成问题[8]。采用的方法在几个方面上是独特的。代码序列选择，寄存器分配等需要的机器相关信息，已经以表格的形式，与机器无关的算法分离。这不仅极大地简化了新机器或者语言的代码生成器开发，也为从形式化机器描述如 ISP [1] 自动生成这些表铺平了道路。使用了一个类似解析树的中间程序表示，促进了表达式相关的上下文和数据依赖信息的使用。代码生成过程分成了几个阶段。这使得更简单以及能更好的理解代码生成过程，并且允许对生成代码的质量进行重大改进。讨论了初步确定寻址方式，寄存器和其它位置的分配，以及代码选择场景分析等的算法。这篇文章描述的算法已经在 PQCC 编译器中实现和使用。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来有些关注点在构建机器独立的编译器上：依赖于目标机器（已编译的程序要运行的机器）的信息与机器无关算法相分离（以表格的形式）的编译器。已经有面向语言独立编译器的发展，特别是自动解析器生成。但是，在更难的编译器后端形式化问题上进展少得多，即在从编译器表示程序的中间表示到生成机器码的部分。以这种方式希望能为广泛的机器生成高质量的代码。这是这篇文章的主题。</p>
+<p>代码生成将会在 Carnegie-Mellon 大学的 Prodution-Quality Compiler-Compiler (PQCC) 的框架上进行讨论。虽然我们的一个目标是代码能与最好的手写编译器相比较，但 PQCC 的工作不关注优化本身：从很大程度上说，编译器技术取自 Bliss-11 优化编译器[12]。迄今为止的研究集中在：</p>
+<ol>
+<li>制定以机器依赖信息分离到表格的形式的方式的编译过程，同时保留继承自原始 Bliss-11 编译器结构的杰出代码质量。</li>
+<li>自动化或者简化从一个机器描述生成表的过程。</li>
+</ol>
+<p>本文描述的工作主要涉及（1）。一个更完整的机器形式化讨论和代码生成器自动生成可以在 [3] 中找到。</p>
+ 
+  <img src="/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png" class="" title>
+
+
+<p>在我们可以构建一个全的 PQCC 系统前，我们首先要理解目标编译器的编译过程，如 PQC，使用的模型。一个编译器结构的简单图如图 1 所示；在这篇文章中，我们将会处理标记为 DELAY，TNBIND，和 CODE 的阶段。一个源语言程序由 LEXSYN 阶段解析为一个中间类解析树的符号，我们可以称它为 TCOL。然后，FLOW 阶段做全局的数据流分析，可能会识别出能降低程序大小或者时间开销的代码转换。之后，DELAY 阶段做一组优化和分析，基本上达成最后要生成的代码的“形状”上的推测。在之后，TNBIND 使用这个推测（此处是需要临时变量的）来执行目标机器上寄存器和其它位置的分配。然后，CODE 阶段执行场景分析来实际生成符号形式的机器代码。最后，FINAL 执行窥孔优化和代码移动优化，获得实际的目标机器代码。这些阶段名都来自于 BLISS-11 编译器[12]；我们使用它们便于优化分组。但是，我们已经识别了三类特别的“阶段”，通常定义为单树或者单图的遍历，将会构成实际的编译器。</p>
+<p>这篇文章的下一节，给出了足够多的机器形式化，来理解代码生成的问题。在 3.1 ~ 3.5 节中，讨论了DELAY 阶段与猜测程序树段的最好指令和地址模式有关的部分。在 3.6 节给出了寄存器分配算法。在 5.2 和 5.3 节，我们讨论了基础的代码生成算法和它使用控制流优化，通用子表达式，和其它信息的扩展，最后，在第 6 节中，我们总结了结果，然后讨论了机器独立的编译器原型实现的现状。</p>
+<h2 id="指令集处理器形式化"><a href="#指令集处理器形式化" class="headerlink" title="指令集处理器形式化"></a>指令集处理器形式化</h2><p>我们从机器模型或者指令集处理器的概述开始。我们通过七个组件来定义一个指令集处理器：<em>机器操作</em>和<em>数据类型</em>，指定了机器上的有效操作；<em>存储基础，访问模型（AMs）</em>，和<em>操作数类</em>，指定了机器上的有效位置和它们如何作为操作数访问的；<em>指令域和格式</em>，指定了指令的二进制表示。</p>
+<p>与每条指令相关联的是一组<em>输入/输出断言</em>，其表达了指令的动作。一个<em>输出断言</em>指定了指令执行之后处理器的状态，作为指令执行前处理器状态的函数。注意到因为大部分的处理器状态保存不变，所以我们实际需要表达的只是被改变了的状态。与每个输出断言成对的是<em>输入断言</em>，它指定了处理器状态的条件函数。输出断言成立，即状态有了一个新值，当且仅当输入断言满足（如果输入断言没有满足，则状态不会改变）。断言表达为一个<em>程序树模式</em>，其对应于指令执行的操作。例如，ADD 指令表达为<br>$$<br>A \leftarrow A+E<br>$$<br>其中，A 是累加器，E 是一个内存操作数。将断言表示为程序树的效果是，我们可以将这些作为模式树与程序树“匹配”，这可以实现一条指令。</p>
+<p>处理器状态实际的位置是<em>存储基础</em>（SBs）。SBs 可能是各种大小的简单位置，如一个累加器或者条件码，或者位置的数组，如通用寄存器数组或者主存。</p>
+<p>通常有几个指令操作数的选择，根据机器上不同的地址模型：“寄存器下标”，“间接通过内存位置”，“一个累加器”，等等。这些将被称为<em>访问模型</em>（AMs）。这些对指令操作数的访问模型的一致性由<em>操作数类</em>指定。特别的，一个操作数类定义了一个指令的操作数位置：它指定了一组访问，其在上下文中是有效的。访问模式的指定集合中的任意一个可能会用于获取/存储指令的相关操作数。例如，一个 ADD 指令可能需要一个通用的寄存器作为操作数接收结果，然后允许一个立即数常量或者内存位置作为其它操作数（在更早的例子中，A 和 E 是操作数类）。</p>
+<p>随着我们下一节的处理，一个机器地址的三级描述（存储基础，访问模式，操作数类）的效果在降低机器描述的大小和帮组生成良好的代码上应该变得更明显。</p>
+<p>为了一些特定的目的，我们发现将访问模型分为三类是有用的：原子，分子，和复合。一个原子访问模式是一条指令的参数的一个立即数类型，即，一个在它的值范围有些限制的常量。一个分子访问模式，是一个到存储基础的直接访问（存储基础索引的字/位的位置是原子的）。相比之下，分子访问模式（所有的其它场景）包含到存储基础的间接和索引访问。就本文的目的而言，只有分子访问模式是有意义的；我们将这种访问模式称为一个存储类，因为它表示了一个存储基础里的一个特定位置集合。</p>
+<p>同时，对于每个适用的访问模式，与一个操作数类关联的是信息指定，包括时间和空间开销，以及二进制格式信息。这样的额外信息也与每条指令关联。但是，这边读者可以忽略这些细节，除了要注意它们允许我们去评估代码序列的开销，和在需要时生成抽象操作的实际二进制表示。</p>
+<p>详细的机器形式化讨论可以在 [3] 和 [4] 中找到。前面提到的内容在这边已经足够了。就第 3 节和第 5.2 节而言，形式化的核心组成是访问模式和指令断言。这两个都表示为一个模式树，主要的代码生成过程简单地由遍历源码树组成，匹配这些模式来确定当前树节点使用的代码序列和位置。</p>
+<h2 id="代码生成之前的操作"><a href="#代码生成之前的操作" class="headerlink" title="代码生成之前的操作"></a>代码生成之前的操作</h2><p>在流分析和代码生成器之间的阶段执行一系列的机器相关的优化，此处仅简要概述这些优化。更完整的解释会在 [12] 中找到，其解释了 Bliss-11 编译器做的优化；在 [8] 中，讨论了为 PQC 做的扩展。这里的讨论必须是简短的，我们只保留足够的解释来设置代码生成器实际操作需要的上下文。</p>
+<p>PQC 和传统编译器间一个主要的不同是”代码生成器“没有必要去做任意如下的决策，包括关于局部或全局寄存器分配，结果临时变量的分配，评估顺序的确定，或者任意传统上被认为是”代码生成“的任务。当然，所有这些功能都会被执行，但不是通过实际确定要生成什么代码的阶段进行的。</p>
+<h3 id="上下文确定"><a href="#上下文确定" class="headerlink" title="上下文确定"></a>上下文确定</h3><p>上下文确定决定了一个操作的结果被使用的方式。例如，一个“+”节点可以计算出一个结果存储到一个变量里，或者计算出一个地址进行数据访问。如果目标机器由一个地址大小，其小于整个机器字（如，DEC PDP-10 或者 IBM S/370），它可能也会有只在地址上操作的指令；此外，可以利用机器的隐式地址计算硬件，如，下标，来执行加法。（如，使用S/370 的“加载地址”指令来加两个寄存器的值和一个小整型，产生一个 24 位的值）。我们区分这些场景为“真实”和“地址”上下文。</p>
+<p>另一个上下文语境用于区分程序控制流。考虑一个布尔表达式 “A &lt; B”。如果它出现在一个赋值语句的右边，表示 “true” 或者 “false” 的位模式必须开发和存储。但如果它作为条件的布尔部分出现，它可能只会导致控制流条件的改变。在这个场景中，我们指派节点作为”流“的上下文。</p>
+<p>最后，表达式在 a 可能不会产生结果；这在如 Bliss 的表达式语言里是比较重要的，其没有在一些场景下是没有语法区别的，例如，一个”条件语句“和一个”条件表达式“。</p>
+<p>我们当前识别了四类结果，”void“，”real“，”address“ 和 ”flow“。注意到通用子表达式的出现让一个给定表达式存在多个（或者所有）上下文成为可能。</p>
+<h3 id="一元补码-目标路径识别"><a href="#一元补码-目标路径识别" class="headerlink" title="一元补码 / 目标路径识别"></a>一元补码 / 目标路径识别</h3><p>一元补码操作会传播一元操作符到更高的树节点直到它们被纳入其它的操作或者不能再进一步了。一个传统的例子是把 “（-A * -B）” 变为 “（A * B）”，通过向上传播负号以及在“*”节点消除它们。但是，在 PQC 中一个一元补码操作符可能也会改变父节点的操作符（如，“+” 或者 “-”）。当涉及到两个临时位置时，这也会影响到哪个位置最适合开发结果（“目标路径”）。</p>
+<p>这个阶段需要的机器依赖的信息时相对简单的。例如，在优化一元否定时，必须知道如下一些开销：</p>
+<ul>
+<li>从内存移动值到寄存器</li>
+<li>从内存移动否定值到寄存器</li>
+<li>从寄存器存一个值到内存</li>
+<li>从寄存器存一个否定值到内存</li>
+</ul>
+<p>给定这些开销信息和一些内存到内存或寄存器到内存的算术计算的能力的信息，可以做出一个最优目标路径的猜测，和程序树表示的记录选择。这个阶段完成后，一元补码优化就完成了，期望的目标路径也被确定了。</p>
+<h3 id="评估顺序"><a href="#评估顺序" class="headerlink" title="评估顺序"></a>评估顺序</h3><p>这个阶段决定了树中算术表达式的评估顺序。在缺少通用子表达式的情况下，有一些已知的优化算法来做这个决策；在存在通用子表达式或者评估一个操作数的副作用的情况下，问题变成了 NP-完全的，应用了一些简单的启发式；细节在 [12]中给出。</p>
+<h3 id="流分析"><a href="#流分析" class="headerlink" title="流分析"></a>流分析</h3><p>在此处描述的所有阶段之前的是全局数据流分析阶段。它做了最经典的优化，基础的源到源的转换，如，将常量计算移除循环外，将通用计算移到分叉的控制结构的头或者尾等。更详细的讨论在[8]中。但是，流分析器实际不做任何的程序转换；它只表明了哪个是可用的。在评估顺序已经确定之后，通过另一个阶段选取可用的优化是实际可行的。当这个阶段完成了它的工作，就为树创建了实际运行顺序的流图。虽然这没有在当前的代码生成器中使用，但它在将来的工作中会变得重要的，如 5.3 节描述的。</p>
+<h3 id="访问模式判定"><a href="#访问模式判定" class="headerlink" title="访问模式判定"></a>访问模式判定</h3><p>访问模式判定阶段搜索机器表，判定哪个访问模式可以用于评估给定的节点。例如，只是执行地址计算的指令（其中地址相比全的机器字位数比较少）将不会被选择，如果一个全的结果已经被开发（如，S/370 上的 24位地址计算）。然而，精心制作的地址模式如前索引间接式，后索引间接式，带有或不带常量偏移的双索引（如大部分的 IBM S/370 指令带有基础+索引+移位的模式），自动递增或者自动递减寻址，和用标量下标寄存器索引（LLL S-1 [9] 或者 DEC VAX-11/780[5]）都会被考虑在内。此外，关于操作数和结果的知识可以被考虑在内；在目标架构有能力用较少的位编码小值（如，VAX），或者在更小的域上执行操作（如，PDP-10 或者 S/370 的地址计算）的时候是有用的。所有的这些信息都是衍生自机器描述表的。为了复杂架构，这个判定可以任意的复杂，特别是当存在通用子表达式被计算在内时；[8] 中给出了例子。</p>
+<p>在这个阶段完成之后，会做出一个机器的所有访问模式中哪个是最佳的使用的好的猜测。要注意到资源的限制可能会让它实际无法实现这个阶段设置的目标。</p>
+<h3 id="临时名字赋值"><a href="#临时名字赋值" class="headerlink" title="临时名字赋值"></a>临时名字赋值</h3><p>“寄存器分配”这个常规的任务在 PQC 中被分成了几个阶段。这边最重要的一个原则是所有的分配都是以统一的方式进行的：变量和编译器生成的临时位置都受到相同的处理。</p>
+<p>赋给所有这些的分配单元是<em>Temporary Name</em> 或者 TN。首先需要的是确定树上哪个节点需要 TN 进行评估。这个显然需要知道被生成代码的信息：为了知道需要什么 TN，如果有的话，作为补充，我们不但必须知道什么指令是对数字对相加有效的，同时也要知道哪个将会被选择。我们解决这个循环问题的方法是有个假的代码生成阶段：为代码生成做相同的程序树遍历，在后一节中描述的，在这个更早的阶段完成，但替换掉生成指令，这个阶段只是为累加器或者其它特殊地存储类型简单地标注需要的指令。这些需要体现在 TN 中。如果一个算术操作可能用两种方式计算，取决于为结果选择的存储的类型，代表它的结果的 TN 被标记了，因此它可能（后面）被赋值到那些存储类型中的任意一个。做了一个”无限寄存器“的假设：在没有后期阶段提供知识的情况下，假设特定操作所需的任意类型的存储都是可用的。</p>
+<p>TN 不只是赋给表达式结果的表示。有些时候，一个表达式的计算可能需要一个完全的临时位置，其在结束之后就不在需要了。例如，在一些机器上两个数量的比较需要其中一个被放入累加器，不管其比较的结果存储的位置是哪（如果它可以任意存储的话）。同时，对于过程调用，每个参数需要一个 TN；这个 TN 很可能别限制的，因此它可能只被分配到运行时栈上的特定位置。</p>
+<p>正常地，每个用户定义的变量可能也会被赋值给一个单一的 TN。但是，循环中在一个快速寄存器里保存变量值的已知策略是可取的；通过创建另一个 TN 表示循环里的变量来记录可能有用的标识。（后续的处理决定了哪个循环是有用的；如果它不是，循环的 TN 被简单分配如同变量本身的存储。）同时，因为流分析信息是有效的，可以确定是否用户定义的变量的使用实际有分离的生命周期；例如：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">beg i n </span><br><span class="line">  integer A; </span><br><span class="line">    A &lt;- ...;</span><br><span class="line">         ... &lt;- A; /* last use of </span><br><span class="line">                      A ... */</span><br><span class="line"></span><br><span class="line">    (other code);</span><br><span class="line">    A &lt;- ...;     /* ... until </span><br><span class="line">                         this </span><br><span class="line">                         assignment */</span><br><span class="line">         ... &lt;- A;                </span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>在这个场景中，两个 TN 可能会赋值给变量 A ，同时 A 的结果可能会实际被赋给不同的位置，在每个这些不相交的使用中！</p>
+<p>TN 的分配需要机器底层知识；存储基础和一组有趣的存储集合必须为架构定义。存储类是存储基础里一组特定的位置：例如，所有偶数寄存器组或奇偶寄存器对集合是那些可能被特别关注的存储类。</p>
+<p>AMD 和 TN-赋值过程产生开销信息，其表明哪类存储类可能用于保存 TN，以及如果必须使用不太受欢迎的存储类发生的额外开销。这个信息用于 TN 填充阶段，其是完全机器独立的，确定了 TN 到存储类最合算的分配。虽然这是一个 NP-完全问题的例子，但在文献中，有一些近似算法被建议使用；那些在这种风格的编译器里使用的算法在[12] 和 [7]  中讨论了。我们倾向于进一步调查。</p>
+<p>在这个阶段完成时，树几乎包含了所有与“代码生成”问题相关的经典信息；现在只是需要生成指令来执行计算。在 5.2 节，我们描述这个场景分析，其产生的以对象代码序列的符号表示输出。</p>
+<h2 id="代码生成后的操作"><a href="#代码生成后的操作" class="headerlink" title="代码生成后的操作"></a>代码生成后的操作</h2><p>代码生成器的输出进入最后一个优化阶段，其在对象代码上操作。所有的经典的“窥孔”优化 [10] 都在这里执行，同时其它我们简单涉及的优化也会在这节里。对象代码优化即使在带有一个高质量的代码生成器里也是可取的，因为它更容易执行那些在实际代码放置是已知的之后的操作。这是因为某些代码邻接发生了，其是广泛评估分离树节点的结果。</p>
+<p>在这里我们包含了 FINAL 的简短讨论，因为窥孔优化经常被认为是“代码生成”的活动。在 PQC 中，代码生成，这篇论文的主要论题，是一个分离的活动，不会尝试去执行任意的局部或窥孔优化。</p>
+<p>FINAL 执行一些其已经做过的优化，通常在一个更全局的范围里，在更早期的编译器过程中。例子是冗余 store/load 消除，常量折叠（如，两条将立即数常量加到一个相同位置的指令将被压缩为一条），以及死代码消除。其它会做的优化只与 FINAL 相关。这些中的一个，其可以在代码生成器中做，但变成一个分离的过程会更简单，是跳转链接：一个跳转指令，其的目的是另一条已经被改变的跳转指令，因此它的目的是最终的目的。</p>
+<p>FINAL 在具有相对和绝对传输指令的机器上的一个重要特性是处理解决使用哪种形式的指令。典型的机器有， PDP-10，其有跳过和跳转指令；PDP-11，其有相对跳转（可能是条件的）和绝对跳转（只有无条件的）指令；以及 360，其可能需要在做控制转换前加载一个基础寄存器。对于 PDP-10 和 PDP-11，FINAL 将会反转一个判断的含义，提供相反的条件从而生成更好的代码，如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  CAHE r, m     CAHN r, m </span><br><span class="line">  JRST <span class="keyword">label</span><span class="bash"> =&gt; ADD x, y </span></span><br><span class="line">  <span class="keyword">ADD</span><span class="bash">  x, y </span></span><br><span class="line"><span class="keyword">label</span><span class="bash">:</span></span><br></pre></td></tr></table></figure>
+<p>重要的是 FINAL 可以以机器独立的方式执行这些优化；虽然算法是固定的，但机器特有的特性必须在表中描述。在 FINAL 中，表以一组产生式的方式组织。对于 PDP-10，只需要三个这样的规则就能获得和 BLISS-11 相同质量的优化。</p>
+<p>FINAL 执行了一些其它的优化，与这篇论文无关；它们的一个总结在 [8] 中。</p>
+<h2 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h2><p>代码生成的讨论有三节：我们编译器模型的代码生成的抽象理论（5.1节）；代码生成算法本身（5.2节）；这个算法扩展到使用来自我们编译器的寄存器分配和流分析阶段的信息（5.3节）。</p>
+<h3 id="代码生成抽象"><a href="#代码生成抽象" class="headerlink" title="代码生成抽象"></a>代码生成抽象</h3><p>如果我们首先给出我们如何思考代码生成的模式，则更容易理解我们关于代码生成的观点。这个模型是不现实的，因为没有“真正的”编译器会实际在编译过程中做手段目的分析和目标导向搜索。在我们的实现里，代码生成中会执行尽可能多的这种搜索。</p>
+<p>给定一个机器描述，代码生成会尝试做的是定位，对于解析树上的每个操作，有一组指令会可行地评定这个操作。这个涉及启发式搜索技术；会存在一条指令就能评估操作，只要它的操作数满足一些标准（如，它们都在寄存器里）；如果不是，则使用目标导向收缩尝试将实际的情况转为期望的情况。</p>
+<p>目标向导搜索涉及使用一组将树转换为对应等价树的规则。这些包含了简单的布尔和算术公理如，<br>$$<br>\urcorner \urcorner E \equiv E<br>$$</p>
+<p>$$<br>E+0 \equiv E<br>$$</p>
+<p>$$<br>E_1 * E_2 \equiv E_2 * E_1<br>$$</p>
+<p>$$<br>\urcorner (E_1 \geq E_2) \equiv (E_1 &lt; E_2)<br>$$</p>
+<p>此外，有一些处理抽象机器行为的规则。<em>获取分解</em>规则表示为：<br>$$<br>E_1(E_2)\equiv S \leftarrow E_2; E_1(S) Fetch decomposition<br>$$<br>这个规则本质上说的是机器上的存储位置可以被用于保存中间结果：一个表达式$E_1$有一个子表达式$E_2$，可以通过首先计算$E_2$ 到 S 位置上，然后用 S 替换 $E_1$ 计算式里的 $E_2$ 。</p>
+<p>排序规则描述了带有程序计数器的机器里的控制流；特别是，在我们的机器模型里假设了程序计数器（PC）的传统自动增量。这样规则的一些例子如下：<br>$$<br>goto E \equiv PC \leftarrow E  \ \ goto \ rule<br>$$</p>
+<p>$$<br>PC \leftarrow PC + n; \ \ S&lt;space \ n&gt;\equiv <nil> \ \ skip rule<br>$$</p>
+<p>$$<br>goto \ L_1 \equiv goto \ L_1 - L_2 + PC; \ \ L_2; \ \ relative\ jump\ rule<br>$$</p>
+<p>最简单的规则表明 goto 与对 PC 的分配相同。在机器描述中，一个绝对跳转的输出断言被表示为一个给 PC 的赋值，因此，因此这条规则将 goto 关联到跳转。下一条规则描述<em>跳过</em>指令，即，长度为 n 的代码块，表示为”$S<space n>$“，在 n 被加到 PC 后，会被跳过。最后的规则表示绝对和相对的控制转换可以用于相互转换。</p>
+<p>完整的规则集和它们的使用在 [3] 中描述。</p>
+<p>实际上，在编译过程中使用这些规则执行启发式搜索是不合理的。因此，我们使用一个执行大量此类搜索的程序来产生一组表，这些表涉及少量或不存在搜索策略来获得期望的代码序列。这个程序是代码生成器的生成器，或者叫 CGG。其在[3] 和 [2] 中有详细的描述。</p>
+<p>CGG 包含的选择”感兴趣的“代码生成场景（模式树）的启发式规则，代码生成器很可能遇到。如果在目标机器指令集里不存在可以解决这个场景的指令，用于生成一条或一组指令的搜索技术将会完成这个任务。如果找到了多个待选项，则最低开销的待选项会被保留。作为 CGG 这些搜索的一个结果，当前在编译时唯一应用的一个规则时获取分解，其本质是寄存器分配和模式组合（会在下一节中进一步讨论）。</p>
+<p>这里值得注意的是 CGG 策略不保证有一个优化方案，或者确实有方案被找到。例如，在一条指令或者一组指令序列被找到前，已经到达了搜索深度的极限了。可能也存在一个公理需要确定代码序列等价的目标树可能不在公理的范围里的场景。程序等价的一般场景还未解决，因为没有一组产生式可以表示正确覆盖所有程序树的完备性。但是，这一理论结果对实际影响不大；对于”真正的“机器和”真正的“程序，一组小的产生式集和限制搜索深度看起来是足够的。</p>
+<h3 id="代码生成器"><a href="#代码生成器" class="headerlink" title="代码生成器"></a>代码生成器</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>代码生成器使用 CGG 的输出作为它的模式数据库和相对应的代码序列。它的基本操作是检索所有假设会用于解析树的模式集合，在这些中间找到最低开销的指令序列并应用。在目标树的叶子节点没有匹配模式的叶子节点的场景中（如，包含一个表达式，其模式期望一个简单的存储单元），预取/存储分解规则被用来获得一个简单的存储单元，通过为子树生成代码。</p>
+<p>因为 PQC 的结构，许多简单的传统”代码生成“任务不存在了。例如，全“寄存器”分配，实际是 TN 分配，已经做完了。因此，代码生成器基本不关心实际使用的存储位置。因为，TN 赋值和分配过程已经为可能的存储类型检查了机器描述，至少会有一个模式被匹配上。因此，当没有模式匹配上的时候，代码生成算法不需要处理在可能的存储类中获得存储位置。如果需要将数据从一个位置移到另一个位置（因为 TNs 已经被赋予了不同的存储类型或者在一个相同存储类型里的不同位置），则这些会被做完；这个转换的开销已经被计算为特定 TN 赋值开销的一部分。</p>
+<h4 id="模式匹配"><a href="#模式匹配" class="headerlink" title="模式匹配"></a>模式匹配</h4><p>在当前代码生成器中模式恢复是很简单的。模式在每个上下文（real，flow，void，address）里通过主要的（根）模式树的操作符索引。主要的操作符可能是任意的算术，关系，或者布尔操作符。模式在每个恢复集里排序，通过一个成本指标（当前是代码大小）以”收益”递减的形式排序。我们把”收益“和”开销“区别对待，因为收益表示选择一个模式的值覆盖另一个的。开销和收益决定的细节将会在 5.3 节中给出。比起简单的索引 CGG 产生的模式，从它们 [6] 中可以为表驱动的代码生成器派生出一个更高效的表示。这本质上避免了当一个模式匹配失败时，需要重新匹配新模式的相似部分。我们暂时认为使用这样的方案来取得代码生成器原型的合理性能是不必要的。</p>
+<p>作为模式索引方案的结果，当给出一个目标树时，代码生成器将会尝试首先使用最高收益模式。如果匹配成功，相关的代码序列将会被关联到匹配模式的树的部分。否则，低收益的模式将会被尝试直到有一个匹配上。最终会有一个模式匹配上，因为 CGG 至少为每个操作符生成一个模式。如果公式库或者搜索深度不足以为一些操作符找到代码序列，CGG 的使用者需要扩展它的已知信息。这可能需要涉及扩展公理系统，扩展它的场景生成器，扩展机器描述（例如，添加新的指令），或者添加新的”虚拟指令“（作为公理），如，定义一个浮点算术操作作为生成子例程调用。</p>
+<h4 id="反转代码生成"><a href="#反转代码生成" class="headerlink" title="反转代码生成"></a>反转代码生成</h4><p>代码生成器新的特性是它以逆执行顺序生成代码。一个传统的代码生成器通常是做左到右，深度优先，递归树访问叶子节点，如果需要，为每个叶子节点生成代码，然后返回操作符节点，为操作符生成代码，一直重复直到为整个树生成所有代码。因为我们的代码生成器尝试去利用机器的地址模式和尽可能多的指令集，它从树的根节点出发，然后为操作符找到最高收益的模式。这个模式通常是跨过树最大节点集合的模式。通过为每个不匹配模式叶子的树节点重复这个过程（应用获取/存储分解），模式的最小数量会被用于匹配这个树，这会产生最低开销的代码序列。没有详尽的枚举，是不可能保证实际最低开销的代码序列[11]。但是，启发式技术会产生最接近它的相似值，而且通常是最低成本的序列，而且不需要详尽搜索的计算。</p>
+<p>在我们的编译器中，这个匹配任务由于公共子表达式（cse）的存在而变得复杂；一个模式不可能跨过 cse 边界的。cse-创建和cse-最后使用的特殊场景也必须被处理。但是，事实上，cse 结果的目的是由 TN 赋值确定的，生成使用 cse 结果的代码是简单的，即使计算这个结果的代码还没有被生成。</p>
+<p>代码生成器的输出是指令序列的双向链表；树形结构和它的一些修饰（cse 链，流图，等）被丢弃了。</p>
+<h3 id="流分析和临时分配信息的使用"><a href="#流分析和临时分配信息的使用" class="headerlink" title="流分析和临时分配信息的使用"></a>流分析和临时分配信息的使用</h3><p>现在我们讨论处理上一节讨论过的算法里的程序流优化和变量分配的设计。这些阶段间交互的实现在本次写作中还没有完成。</p>
+<p>在图 1 显示的模型中，TNBIND 阶段做 TN 的赋值到存储位置。TNBIND 做这个的部分是 PACK 阶段，其尝试解决 2-1/2 维度的装箱问题，这个问题是个已知的 NP 完全问题。因为 PACK 有更多的存储位置利用率的全局知识，为了其对代码形状的评估，它可能会选择违反 DELAY 使用的”无限寄存器“的假设（当然，因为这个假设在任意真实的机器上是错误的）。此外，因为它实现了一个带有有限回溯的启发式方法，它可能无法满足 TN 赋值的特定要求（注意到，”期望“是比”需要“更弱的限制）。这个全局分配的结果是代码生成器可能找到不存在的模板匹配到存在的树，从而不得不使操作数符合给定的模板。</p>
+<p>这个不会造成模型概念化或者实现的任何特定的问题。使操作数符合要求所需的搜索时微不足道的；它是一个获取分解从一个存储位置到另一个。做这样的获取分解的开销对于 PACK 是已知的，因此可以在全局开销分析中统计到，它用在选择存储位置实际赋值上。此外，如果，需要存储一个中间结果（在大部分编译器中这个场景是“寄存器溢出”），这个开销也被计算在内。因为这个问责制，TNs 做的到位置的赋值仍然和启发式方案允许的一样好。</p>
+<p>这个策略特别有价值的方面是，现在它几乎总是可以生成特定目标树的代码，独立于分配给操作数的实际位置。一个更高级别的搜索备份（这个需求伴随着相关的开销）不在是必须的。</p>
+<p>为选择代码序列做的开销/收益决策的特定设计仍然在设计中。一个模式的实际开销是它关联的指令的基础开销，加上使用特定访问模式的额外开销（如，在 PDP-1 上需要一个全 16 位的地址操作数），加上当操作数不满足这个模式时的获取分解开销，加上可能需要的寄存器溢出和恢复的开销。但是，收益是有多少目标树的节点被这个模式实例化的函数。</p>
+<p>我们描述的代码生成器做了一个逆执行序的树遍历。但是，因为流图结构的存在，树本身必须扭曲才能使得树遍历等价于执行顺序。这个可以通过以逆序遍历流图本身（一个程序树节点连接表）而不是使用树结构简单的避免。</p>
+<p>在这个方案里，我们使用了解析树和流图表示。反过来，流图用于从目标树中选择候选节点。如果必须为它生成代码，我们在模式匹配中使用树形结构。但是，不像当前的实现，其之后会下降树中已经匹配了模式叶子的节点，以及为它们生成代码；图制导代码生成器在匹配后返回控制给图遍历算法，然后选择一个新的节点。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文为产品质量的编译器代码生成提供了一个机器独立的代码生成算法。设计了一个机器形式模型，允许目标机器定义从机器独立的代码生成算法本身分离出来。几个阶段先于实际的代码生成场景分析，将上下文信息，程序流，地址模式使用，和临时分配，“装饰”到程序树上。然后，生成目标机器代码的过程使用了这些信息，使得程序树匹配到代码生成模板。算法已经在当前的原型编译器中测试过了。在当前写作的时间里，很遗憾，我们没有在非平凡程序中，与好的手写代码编译器有一个合理的目标代码大小和速度的合适比较。PQCC 组计划为几个传统机器（PDP-10，IBM-360，PDP-11，Intel 8080，…）和语言（Bliss，Pascal，…）做这些比较，同时实验这里介绍的算法和其它优化技术。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/" rel="prev" title="DWARF 调试格式简介">
+                  <i class="fa fa-chevron-left"></i> DWARF 调试格式简介
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/" rel="next" title="LALR高效计算-向前看集">
+                  LALR高效计算-向前看集 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

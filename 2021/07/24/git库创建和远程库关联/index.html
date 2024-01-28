@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git库创建和远程库关联">
+<meta property="og:url" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="背景  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/new_repository.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/create_repo.png">
+<meta property="og:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/error_refused.png">
+<meta property="article:published_time" content="2021-07-24T15:42:47.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.939Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="总结文档">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png">
+
+
+<link rel="canonical" href="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/","path":"2021/07/24/git库创建和远程库关联/","title":"git库创建和远程库关联"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>git库创建和远程库关联 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%BF%87%E7%A8%8B%E5%92%8C%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">主要过程和命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">创建本地库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAgithub%E5%BA%93"><span class="nav-number">2.2.</span> <span class="nav-text">创建github库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E8%BF%9C%E7%A8%8B%E5%BA%93"><span class="nav-number">2.3.</span> <span class="nav-text">关联远程库</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">2.3.1.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="nav-number">2.3.2.</span> <span class="nav-text">错误处理</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="git库创建和远程库关联 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git库创建和远程库关联
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-07-24 23:42:47" itemprop="dateCreated datePublished" datetime="2021-07-24T23:42:47+08:00">2021-07-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GIT/" itemprop="url" rel="index"><span itemprop="name">GIT</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>435</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>  记录下本地创建git库，并关联远程库的过程和命令。远程库放在github上。</p>
+ <a id="more"></a>
+
+<h3 id="主要过程和命令"><a href="#主要过程和命令" class="headerlink" title="主要过程和命令"></a>主要过程和命令</h3><h4 id="创建本地库"><a href="#创建本地库" class="headerlink" title="创建本地库"></a>创建本地库</h4><ol>
+<li><p>创建库目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir the_c++_Programming_language</span><br></pre></td></tr></table></figure></li>
+<li><p>进入到上述目录，进行初始化git库</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">init</span></span><br></pre></td></tr></table></figure>
+<p>实际执行的效果如下：</p>
+ 
+      <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/git_init.png" class="" title>
+  
+
+</li>
+</ol>
+<h4 id="创建github库"><a href="#创建github库" class="headerlink" title="创建github库"></a>创建github库</h4><ol>
+<li>点击new按钮进入创建页面 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/new_repository.png" class="" title>
+</li>
+<li>配置项目，然后点击create进行创建 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/create_repo.png" class="" title>
+
+
+</li>
+</ol>
+<h4 id="关联远程库"><a href="#关联远程库" class="headerlink" title="关联远程库"></a>关联远程库</h4><h5 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h5><p>  有两种协议可以访问。</p>
+<ol>
+<li><p>https</p>
+<p>需要本地配置github用户名和密码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://github.com/fiking/the_cpp_Programming_language.git</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="2">
+<li><p>ssh</p>
+<p>要上传ssh key到github。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:fiking/the_cpp_Programming_language.git</span><br></pre></td></tr></table></figure>
+<h5 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h5> 
+    <img src="/2021/07/24/git%E5%BA%93%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%85%B3%E8%81%94/error_refused.png" class="" title>
+
+<p>没有配置https需要的用户名和密码，访问被拒绝。可以配置用户名和密码解决此问题。或者通过ssh进行绑定。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%BB%E7%BB%93%E6%96%87%E6%A1%A3/" rel="tag"># 总结文档</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/26/%E5%87%A0%E5%8D%B7%E4%B9%A6/" rel="prev" title="几卷书">
+                  <i class="fa fa-chevron-left"></i> 几卷书
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/25/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%85%BE%E8%AE%AF%E7%AF%87/" rel="next" title="面试经历--腾讯篇">
+                  面试经历--腾讯篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

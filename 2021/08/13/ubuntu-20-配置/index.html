@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景  ubuntu 20 初始使用的一些配置和安装命令。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu-20 配置">
+<meta property="og:url" content="http://example.com/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="背景  ubuntu 20 初始使用的一些配置和安装命令。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-13T13:37:13.000Z">
+<meta property="article:modified_time" content="2024-01-28T01:22:54.534Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/","path":"2021/08/13/ubuntu-20-配置/","title":"ubuntu-20 配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ubuntu-20 配置 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">软件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-Server"><span class="nav-number">2.1.</span> <span class="nav-text">SSH Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">proxy 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Samba-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">Samba 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">内存配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA"><span class="nav-number">3.1.</span> <span class="nav-text">扩大 swap 分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8B%E8%BD%BD%E6%BA%90"><span class="nav-number">4.</span> <span class="nav-text">配置下载源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3"><span class="nav-number">5.</span> <span class="nav-text">环境异常解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%BC%82%E5%B8%B8"><span class="nav-number">5.1.</span> <span class="nav-text">网络异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">下载证书错误问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5"><span class="nav-number">5.3.</span> <span class="nav-text">ssh 访问失败</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">6.</span> <span class="nav-text">共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">7.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proxy"><span class="nav-number">7.2.</span> <span class="nav-text">proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vmware"><span class="nav-number">7.3.</span> <span class="nav-text">vmware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="nav-number">7.4.</span> <span class="nav-text">下载源配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%AF%81%E4%B9%A6%E9%94%99%E8%AF%AF"><span class="nav-number">7.5.</span> <span class="nav-text">下载证书错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#samba-%E6%8C%82%E8%BD%BD"><span class="nav-number">7.6.</span> <span class="nav-text">samba 挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7-swap-%E5%88%86%E5%8C%BA-1"><span class="nav-number">7.7.</span> <span class="nav-text">扩大 swap 分区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VSCode-%E8%B7%B3%E8%BD%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">7.8.</span> <span class="nav-text">VSCode 跳转配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">7.9.</span> <span class="nav-text">命令行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wsl-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.10.</span> <span class="nav-text">wsl 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E7%A3%81%E7%9B%98"><span class="nav-number">7.11.</span> <span class="nav-text">挂载磁盘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E6%89%A9%E5%B1%95"><span class="nav-number">7.12.</span> <span class="nav-text">磁盘扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5-1"><span class="nav-number">7.13.</span> <span class="nav-text">ssh 访问失败</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ubuntu-20 配置 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ubuntu-20 配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-13 21:37:13" itemprop="dateCreated datePublished" datetime="2021-08-13T21:37:13+08:00">2021-08-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-28 09:22:54" itemprop="dateModified" datetime="2024-01-28T09:22:54+08:00">2024-01-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ubuntu/" itemprop="url" rel="index"><span itemprop="name">ubuntu</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>  ubuntu 20 初始使用的一些配置和安装命令。</p>
+ <a id="more"></a>
+
+<h2 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h2><h3 id="SSH-Server"><a href="#SSH-Server" class="headerlink" title="SSH Server"></a>SSH Server</h3><ol>
+<li><p>安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br></pre></td></tr></table></figure></li>
+<li><p>查看 ssh server 的状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status sshd</span><br></pre></td></tr></table></figure>
+<h3 id="proxy-配置"><a href="#proxy-配置" class="headerlink" title="proxy 配置"></a>proxy 配置</h3><p>使用 shadowsocks 进行代理，要在本地安装client。</p>
+</li>
+<li><p>安装client</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br><span class="line">sudo pip install git+https://github.com/shadowsocks/shadowsocks.git@master</span><br></pre></td></tr></table></figure></li>
+<li><p>配置文件</p>
+<p>添加 /etc/shadowsocks.json 文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;server&quot;:&quot;服务器 IP 或是域名&quot;,</span><br><span class="line">    &quot;server_port&quot;:端口号,</span><br><span class="line">    &quot;local_address&quot;: &quot;127.0.0.1&quot;,</span><br><span class="line">    &quot;local_port&quot;:1080,</span><br><span class="line">    &quot;password&quot;:&quot;密码&quot;,</span><br><span class="line">    &quot;timeout&quot;:300,</span><br><span class="line">    &quot;method&quot;:&quot;加密方式 (chacha20-ietf-poly1305 / aes-256-cfb)&quot;,</span><br><span class="line">    &quot;fast_open&quot;: false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>启动服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/bin/sslocal -c /etc/shadowsocks.json -d start</span><br></pre></td></tr></table></figure></li>
+<li><p>配置全局使用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install privoxy</span><br><span class="line">sudo vim /etc/privoxy/config</span><br><span class="line">systemctl restart privoxy</span><br></pre></td></tr></table></figure>
+<p>参考 <a target="_blank" rel="noopener" href="https://www.wylu.me/posts/eed37a90/">https://www.wylu.me/posts/eed37a90/</a> 的 “配置 Ubuntu 使用 Global 模式”。</p>
+</li>
+</ol>
+<h3 id="Samba-配置"><a href="#Samba-配置" class="headerlink" title="Samba 配置"></a>Samba 配置</h3><p>为了实现 Win10 和 Ubuntu 20  的文件共享，设置了 Samba 服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装软件</span></span><br><span class="line">sudo apt isntall samba samba-common</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加用户密码</span></span><br><span class="line">sudo smbpasswd -a &#123;username&#125;</span><br></pre></td></tr></table></figure>
+<p>编写配置文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 打开配置文件</span></span><br><span class="line">sudo vim /etc/samba/smb.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在配置文件smb.conf最后添加下面的内容（[]中是待共享目录的文件名，path是带共享目录的绝对路径）</span></span><br><span class="line">[share]</span><br><span class="line">comment = share folder</span><br><span class="line">browseable = yes</span><br><span class="line">path = /home/&#123;username&#125;/share</span><br><span class="line">create mask = 0700</span><br><span class="line">directory mask = 0700</span><br><span class="line">valid users = &#123;username&#125;</span><br><span class="line">public = yes</span><br><span class="line">available = yes</span><br><span class="line">writable = yes</span><br></pre></td></tr></table></figure>
+<p>重启</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service smbd restart</span><br></pre></td></tr></table></figure>
+<h2 id="内存配置"><a href="#内存配置" class="headerlink" title="内存配置"></a>内存配置</h2><h3 id="扩大-swap-分区"><a href="#扩大-swap-分区" class="headerlink" title="扩大 swap 分区"></a>扩大 swap 分区</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># 将现有swap移动到主内存，可能需要几分钟</span><br><span class="line">sudo swapoff -a</span><br><span class="line"></span><br><span class="line"># 创建新的swap文件，bs×count=最后生成的swap大小，这里设置<span class="number">8</span>G</span><br><span class="line">sudo dd <span class="keyword">if</span>=/dev/zero of=/swapfile bs=<span class="number">1</span>G count=<span class="number">8</span></span><br><span class="line"></span><br><span class="line"># 设置权限</span><br><span class="line">sudo chmod <span class="number">0600</span> /swapfile</span><br><span class="line"></span><br><span class="line"># 设置swap</span><br><span class="line">sudo mkswap /swapfile</span><br><span class="line"></span><br><span class="line"># 打开swap</span><br><span class="line">sudo swapon /swapfile</span><br><span class="line"></span><br><span class="line"># 检查设置是否有效</span><br><span class="line">grep Swap /proc/meminfo # 或者htop看一下</span><br><span class="line"></span><br><span class="line"># 设置永久有效</span><br><span class="line">sudo gedit /etc/fstab</span><br><span class="line"># 在末尾行加上 </span><br><span class="line"># /swapfile swap swap sw <span class="number">0</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="配置下载源"><a href="#配置下载源" class="headerlink" title="配置下载源"></a>配置下载源</h2><ol>
+<li><p>编辑 /etc/apt/sources.list</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span></span></span><br><span class="line">deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span></span></span><br><span class="line"></span><br><span class="line"># 预发布软件源，不建议启用</span><br><span class="line"><span class="meta"># deb https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span></span><br><span class="line"><span class="meta"># deb-src https:<span class="comment">//mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span></span><br></pre></td></tr></table></figure></li>
+<li><p>执行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get upgrade</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<h2 id="环境异常解决"><a href="#环境异常解决" class="headerlink" title="环境异常解决"></a>环境异常解决</h2><h3 id="网络异常"><a href="#网络异常" class="headerlink" title="网络异常"></a>网络异常</h3><p>虚拟机下，启动 ubuntu-20 后发现无网络连接，状态栏的网络图标也缺失，但vmware虚拟机网络配置是正常的。查找原因发现可以通过以下命令重启网络服务，修复这个问题[vmware1]：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo service network-manager stop</span><br><span class="line"></span><br><span class="line">sudo rm /var/lib/NetworkManager/NetworkManager.state</span><br><span class="line"></span><br><span class="line">sudo service network-manager start</span><br><span class="line"></span><br><span class="line">sudo vim /etc/NetworkManager/NetworkManager.conf    #把第四行的false改成true（managed=false改为：managed=true）注:也有可能在第五行</span><br><span class="line"></span><br><span class="line">sudo service network-manager restart</span><br></pre></td></tr></table></figure>
+<h3 id="下载证书错误问题"><a href="#下载证书错误问题" class="headerlink" title="下载证书错误问题"></a>下载证书错误问题</h3><p>通过如下 -o 选项可以临时关闭证书验证。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-<span class="built_in">get</span> -o Acquire::https::Verify-Peer=<span class="literal">false</span> update</span><br></pre></td></tr></table></figure>
+<h3 id="ssh-访问失败"><a href="#ssh-访问失败" class="headerlink" title="ssh 访问失败"></a>ssh 访问失败</h3><p>github 通过ssh方式访问失败，报错如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssh: connect to host github.com port 22: Connection timed out</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights and the repository exists.</span><br></pre></td></tr></table></figure>
+<p>可能是防火墙导致的错误，在~/.ssh/config 里的添加如下信息即可。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Host</span> <span class="selector-tag">github</span><span class="selector-class">.com</span></span><br><span class="line"> <span class="selector-tag">Hostname</span> <span class="selector-tag">ssh</span><span class="selector-class">.github</span><span class="selector-class">.com</span></span><br><span class="line"> <span class="selector-tag">Port</span> 443</span><br></pre></td></tr></table></figure>
+<p>可以通过 ssh -T <a href="mailto:&#x67;&#x69;&#116;&#64;&#x67;&#x69;&#x74;&#x68;&#x75;&#98;&#x2e;&#x63;&#111;&#x6d;">&#x67;&#x69;&#116;&#64;&#x67;&#x69;&#x74;&#x68;&#x75;&#98;&#x2e;&#x63;&#111;&#x6d;</a> 命令进行测试。</p>
+<h2 id="共享文件夹"><a href="#共享文件夹" class="headerlink" title="共享文件夹"></a>共享文件夹</h2><p>解决虚拟机共享文件夹看不见的问题[vmware2]：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 查看vmware 共享是否设置成功</span><br><span class="line">vmware-hgfsclient</span><br><span class="line">// 手动挂载文件夹</span><br><span class="line">sudo vmhgfs-fuse .host:/ /mnt -o nonempty -o allow_other</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><h3 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://linuxconfig.org/ubuntu-20-04-ssh-server">https://linuxconfig.org/ubuntu-20-04-ssh-server</a></li>
+</ol>
+<h3 id="proxy"><a href="#proxy" class="headerlink" title="proxy"></a>proxy</h3><ol>
+<li><p><a target="_blank" rel="noopener" href="https://www.wylu.me/posts/eed37a90/">https://www.wylu.me/posts/eed37a90/</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF">https://shadowsockshelp.github.io/Shadowsocks/linux.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%A2%E6%88%B7%E7%AB%AF</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File">https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/">https://cjh.zone/2018/11/25/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-Linux-Ubuntu-16-04-%E9%85%8D%E7%BD%AEshadowsocks%E5%AE%A2%E6%88%B7%E7%AB%AF/</a></p>
+</li>
+</ol>
+<h3 id="vmware"><a href="#vmware" class="headerlink" title="vmware"></a>vmware</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15346769/3688228">VMware Workstation Ubuntu 20.04 无法连接网络问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44126785/article/details/120585921">VMware共享文件夹——Ubuntu20.04</a></li>
+</ol>
+<h3 id="下载源配置"><a href="#下载源配置" class="headerlink" title="下载源配置"></a>下载源配置</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/xiangxianghehe/article/details/105688062">https://blog.csdn.net/xiangxianghehe/article/details/105688062</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7033412379727626247">https://juejin.cn/post/7033412379727626247</a></p>
+<h3 id="下载证书错误"><a href="#下载证书错误" class="headerlink" title="下载证书错误"></a>下载证书错误</h3><p><a target="_blank" rel="noopener" href="https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516">https://github.com/IntelRealSense/librealsense/issues/10980#issuecomment-1272884516</a></p>
+<h3 id="samba-挂载"><a href="#samba-挂载" class="headerlink" title="samba 挂载"></a>samba 挂载</h3><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=0103702273237520029">https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=0103702273237520029</a></p>
+<h3 id="扩大-swap-分区-1"><a href="#扩大-swap-分区-1" class="headerlink" title="扩大 swap 分区"></a>扩大 swap 分区</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/480903179">https://zhuanlan.zhihu.com/p/480903179</a></p>
+<h3 id="VSCode-跳转配置"><a href="#VSCode-跳转配置" class="headerlink" title="VSCode 跳转配置"></a>VSCode 跳转配置</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43083491/article/details/119573501">https://blog.csdn.net/weixin_43083491/article/details/119573501</a></p>
+<h3 id="命令行配置"><a href="#命令行配置" class="headerlink" title="命令行配置"></a>命令行配置</h3><p><a target="_blank" rel="noopener" href="https://forum.ubuntu.com.cn/viewtopic.php?t=466064">https://forum.ubuntu.com.cn/viewtopic.php?t=466064</a></p>
+<h3 id="wsl-配置"><a href="#wsl-配置" class="headerlink" title="wsl 配置"></a>wsl 配置</h3><p><a target="_blank" rel="noopener" href="https://alessandrococco.com/2021/01/wsl-how-to-resolve-operation-not-permitted-error-on-cloning-a-git-repository">https://alessandrococco.com/2021/01/wsl-how-to-resolve-operation-not-permitted-error-on-cloning-a-git-repository</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/466001838">https://zhuanlan.zhihu.com/p/466001838</a></p>
+<h3 id="挂载磁盘"><a href="#挂载磁盘" class="headerlink" title="挂载磁盘"></a>挂载磁盘</h3><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903730068865038">https://juejin.cn/post/6844903730068865038</a></p>
+<h3 id="磁盘扩展"><a href="#磁盘扩展" class="headerlink" title="磁盘扩展"></a>磁盘扩展</h3><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/13f59261e343">https://www.jianshu.com/p/13f59261e343</a></p>
+<h3 id="ssh-访问失败-1"><a href="#ssh-访问失败-1" class="headerlink" title="ssh 访问失败"></a>ssh 访问失败</h3><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out">https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/" rel="prev" title="面试经历--蚂蚁金服篇">
+                  <i class="fa fa-chevron-left"></i> 面试经历--蚂蚁金服篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/13/V8-%E4%BB%A3%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%8F%8A%E7%BC%96%E8%AF%91/" rel="next" title="V8 代码下载及编译">
+                  V8 代码下载及编译 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景  八月份开始了蚂蚁金服的面试，岗位还是编译器虚拟机相关的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试经历--蚂蚁金服篇">
+<meta property="og:url" content="http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="背景  八月份开始了蚂蚁金服的面试，岗位还是编译器虚拟机相关的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-08T05:54:57.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.979Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="面试经历">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/","path":"2021/08/08/面试经历-蚂蚁金服篇/","title":"面试经历--蚂蚁金服篇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>面试经历--蚂蚁金服篇 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E8%BD%AE%E9%9D%A2%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">第一轮面试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E8%BD%AE%E9%9D%A2%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">第二轮面试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E8%BD%AE%E9%9D%A2%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">第三轮面试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E8%BD%AE%E9%9D%A2%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">第四轮面试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/08/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E8%9A%82%E8%9A%81%E9%87%91%E6%9C%8D%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="面试经历--蚂蚁金服篇 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面试经历--蚂蚁金服篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-08 13:54:57" itemprop="dateCreated datePublished" datetime="2021-08-08T13:54:57+08:00">2021-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>  八月份开始了蚂蚁金服的面试，岗位还是编译器虚拟机相关的。</p>
+ <a id="more"></a>
+
+<h3 id="第一轮面试"><a href="#第一轮面试" class="headerlink" title="第一轮面试"></a>第一轮面试</h3><p>全程电话面试，大概半个小时到四十分钟左右的时间。</p>
+<ol>
+<li><p>自我介绍</p>
+<p>常规流程，从自我介绍开始，讲了下自己的工作项目经历。着重编译器后端的工作，提了一嘴WASM。</p>
+</li>
+<li><p>ARM 的函数调用约定</p>
+<p>只回答了下参数传递的方式（寄存器和栈），寄存器保存和恢复和Bl指令。</p>
+</li>
+<li><p>Debug用到的二进制工具</p>
+<p>提下objdump，应该还readelf，link等。</p>
+</li>
+<li><p>ARM 链接器重定位的方式</p>
+<p>重定位的分类，只是说二进制地址的计算，感觉没答到点子上，后来提了下函数调用需要的函数表。应该回答下相对地址和绝对地址的。还有VM中对地址重新编码的。</p>
+</li>
+<li><p>WASM 和 Java Byte Code、汇编 的比较</p>
+<p>没回答好。把 JBC和DEX IR混淆了，JBC和WASM一样是栈式的，DEX IR是寄存器式的。</p>
+</li>
+<li><p>遇到的难题和解决方法</p>
+<p>说了下调度优化的事情。</p>
+</li>
+<li><p>内核锁的种类和对应的使用场景</p>
+<p>只说了spin_lock，还有mutex，信号量 和 临界区。</p>
+</li>
+<li><p>WASMJIT的原因</p>
+<p>七七八八地说了一些。应该简单讲，觉得性能会好一点。</p>
+</li>
+<li><p>提问</p>
+<p>问了下对应的岗位情况。</p>
+</li>
+</ol>
+<p>整体回答的一般，相对之前有条理一些了。但是做过的事情还是没讲好，后面在写写。二面争取争取。</p>
+<h3 id="第二轮面试"><a href="#第二轮面试" class="headerlink" title="第二轮面试"></a>第二轮面试</h3><p>  电话面试，面试了将近一个小时。面试官可能偏编译器方向的，问了许多编译器方向的问题，都是些比较实际的技术问题。</p>
+<ol>
+<li><p>自我介绍</p>
+<p>还是按时间线讲了下自己做过的东西。</p>
+</li>
+<li><p>CPU体系结构的问题</p>
+<p>因为是编译器后端，会了解一些体系结构的东西。所以问了这方面的知识点。但问的是x86和arm的内存模型差异点，比较出乎意料，目前不了解内存模型相关的知识，好像是强内存序和弱内存序的区别；</p>
+<p>arm64和arm32指令集的区别，指针长度不一样，数据长度不一样。其它的没想出来。</p>
+</li>
+<li><p>编译优化的问题</p>
+<p>循环优化，如何找到优化点，有哪些方向可以优化。用perf看性能点，方法有循环展开，常规的冗余消除。面试官补充了指令向量化，data cache优化。</p>
+</li>
+<li><p>链接和动态加载</p>
+<p>主要是针对ELF文件格式，如何动态加载和链接。没答上。</p>
+</li>
+<li><p>WASM 的设计理念</p>
+<p>wasm这边主要是问四个特性，安全，快速，可移植。为了实现这些特性做了哪些设计？没了解太清楚，LEB128的压缩编码减少体积，结构化控制流减少非规约循环等。主要是WASM论文里的东西。</p>
+</li>
+<li><p>maple的Java栈与C++栈有和不同</p>
+<p>maple的栈基本与native栈类，只是多了些分区来储存变量。</p>
+</li>
+<li><p>指令调度</p>
+<p>算法如何实现的，介绍了下List Scheduling、三个主要约束、denpendence建立和寄存器压力。做了哪些事情，提了机器模型和latency计算。为什么做指令调度，硬件上有乱序功能了，因为小核是In-Order的，所以只能软件上实现。</p>
+</li>
+<li><p>提问</p>
+<p>如何学习编译器虚拟机。面试官答，编译器知识不是为了编译器专门学，而是可以把这些东西用到AI等新兴领域。</p>
+<p>这轮面试，面试官按简历上的项目分大类进行提问，感觉问的问题比较常规，小问题比较多，面完很久了，有些问题没记住了。这轮面试主要问题是知识点都比较碎片化，没有系统性的总结。</p>
+</li>
+</ol>
+<h3 id="第三轮面试"><a href="#第三轮面试" class="headerlink" title="第三轮面试"></a>第三轮面试</h3><p>   这轮面试比较短暂，二十分钟左右。</p>
+<ol>
+<li><p>自我介绍</p>
+</li>
+<li><p>WASM 的特性</p>
+<p>跟上轮问题相识。</p>
+</li>
+<li><p>ELF GOT和PLT区别</p>
+<p>重定位的作用，区别没答上来。</p>
+</li>
+<li><p>变更岗位的看法</p>
+<p>面试官假设是否可以去做Android相关的岗位。不太想去。</p>
+</li>
+<li><p>为啥换工作，驱动和编译器差别还是有的。</p>
+<p>刚好有机会，对基础软件也都有兴趣，前家学不到东西。</p>
+</li>
+<li><p>提问</p>
+<p>不想问问题了。</p>
+</li>
+</ol>
+<p>这轮面试问题跟上轮的一些题目相识度比较高，都是些大方向的问题，个人积累不深，没说两句，面试官看回答得不怎样也就没继续问了。</p>
+<h3 id="第四轮面试"><a href="#第四轮面试" class="headerlink" title="第四轮面试"></a>第四轮面试</h3><p>  感觉有点面试不动了，也是二十分钟左右的面试时间。终于没有自我介绍了。</p>
+<ol>
+<li><p>主要做了哪些驱动模块</p>
+<p>LCD和Audio。</p>
+</li>
+<li><p>LCD方面遇到了哪些问题，如何解决</p>
+<p>花屏问题概率性的比较难解决。一般思路，看log-&gt;测试时序-&gt;硬件分析。</p>
+</li>
+<li><p>Android framework-hal-内核通信机制</p>
+<p>不懂。</p>
+</li>
+<li><p>Android驱动下实现的进程通信的方法</p>
+<p>binder，但原理没清楚。</p>
+</li>
+<li><p>为何要有hal</p>
+<p>Linux协议限制，隔离硬件。</p>
+</li>
+<li><p>framebuffer机制原理</p>
+<p>不记得了。</p>
+</li>
+<li><p>设备驱动模型</p>
+<p>只记得 device-bus-driver的概念。</p>
+</li>
+<li><p>做wasm虚拟机的原因</p>
+<p>有跨平台需求。</p>
+</li>
+<li><p>WASM虚拟机的性能</p>
+</li>
+<li><p>WASM jit遇到困难的问题</p>
+<p>控制流指令的翻译，涉及到多层block间不可达指令的跳过问题。</p>
+</li>
+<li><p>编译器后端遇到比较难的问题和解决思路</p>
+<p>arm32栈帧布局的修改，先实现简单的，在逐步演进。</p>
+</li>
+<li><p>后端代码的问题和改进点</p>
+<p>没有分层设计，移植比较困难。</p>
+</li>
+<li><p>线程和进程的区别</p>
+<p>线程间数据共享。数据结构上的区别答不上来。</p>
+</li>
+<li><p>提问</p>
+<p>不想问问题了。</p>
+</li>
+</ol>
+<p>这轮面试，主要就问解决问题的思路。到了基础性的问题没回答，估计被判了基础能里不行吧，然后面试就结束了。此次驱动方向的东西都没答好，基本都还回去了，主要还是做过的东西没有整理成文档，导致基本被遗忘了。操作系统的东西要重新学习下了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次面试，轮次比较多，把知识漏洞暴露的一干二净。后续系统性的学习和总结做过学过的东西，然后是对于一些问题要有自己的思考，最后是操作系统进程调度，资源竞争和锁等要重新学习，把操作系统重新看一下。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86/" rel="tag"># 面试经历</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/07/%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86-%E5%AD%97%E8%8A%82%E7%AF%87/" rel="prev" title="面试经历--字节篇">
+                  <i class="fa fa-chevron-left"></i> 面试经历--字节篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/13/ubuntu-20-%E9%85%8D%E7%BD%AE/" rel="next" title="ubuntu-20 配置">
+                  ubuntu-20 配置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

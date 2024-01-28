@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="扩展到超级块的摇摆模调度的实现">
+<meta property="og:url" content="http://example.com/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。 模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。 摇摆模调度的一个缺点，（以">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-27T16:08:19.000Z">
+<meta property="article:modified_time" content="2023-03-15T15:27:56.764Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta property="article:tag" content="software pipeline">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/","path":"2023/02/28/扩展到超级块的摇摆模调度的实现/","title":"扩展到超级块的摇摆模调度的实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>扩展到超级块的摇摆模调度的实现 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">模调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">调度背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E9%9D%A2%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">前面的工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">模调度方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%A8%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">4.2.</span> <span class="nav-text">全局模调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.2.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">模调度的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E5%B1%9E%E6%80%A7"><span class="nav-number">5.1.</span> <span class="nav-text">节点属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">节点排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6"><span class="nav-number">5.3.</span> <span class="nav-text">调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E9%87%8D%E6%9E%84"><span class="nav-number">5.4.</span> <span class="nav-text">循环重构</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/28/%E6%89%A9%E5%B1%95%E5%88%B0%E8%B6%85%E7%BA%A7%E5%9D%97%E7%9A%84%E6%91%87%E6%91%86%E6%A8%A1%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="扩展到超级块的摇摆模调度的实现 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          扩展到超级块的摇摆模调度的实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-28 00:08:19" itemprop="dateCreated datePublished" datetime="2023-02-28T00:08:19+08:00">2023-02-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-15 23:27:56" itemprop="dateModified" datetime="2023-03-15T23:27:56+08:00">2023-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本论文详细介绍了摇摆模调度的实现，这是一种软件流水技术，在编译时间和生成代码质量上具有有效性和高效性。软件流水致力于挖掘循环中的指令级并行度，这往往有助于科学和图形应用程序。</p>
+<p>模调度是一类尝试重叠单基本块循环的迭代和基于优先级（来自一组启发式）调度指令的算法。摇摆模调度使用的方法被设计用于取得高度优化的调度，保持低寄存器压力，以及在取得两者的同时有个合理的编译时间。</p>
+<p>摇摆模调度的一个缺点，（以及所有的模调度算法）是只处理单基本块循环会导致失去更多指令级平行度的优化机会。这篇论文详细介绍了将摇摆模调度算法扩展成以超级块的方式处理多个基本块循环。超级块是一组基本块，其单入口多出口的。将摇摆模调度扩展成能处理这种类型的循环，可以增加摇摆模调度可以应用的循环的数量。此外，它允许模调度应用到热点路径上（也是单入多出的），根据 profile 信息可以离线或者在运行时进行优化。</p>
+<p>我们的摇摆模调度实现以及扩展到超级块循环的算法都进行了评估，发现它们是既有效又高效。对于原始算法，测试集被转换了有 10-33% 的性能收益，同时扩展的算法增加了测试集 7-22% 的性能收益。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>现代编译器实现了多个优化，以获取程序的并行度，从而可以加速程序执行，或者更高效地利用多处理器机器。许多这样的优化都应用于循环中。这样的优化有循环分布，循环互换，倾斜，平铺，循环反转，和循环碰撞[36]。其它的技术会展开循环来增加循环体的大小从而增加潜在的调度。虽然这可以产生更高效的调度，但是却忽略了循环迭代间的并行性[31]。</p>
+<p>通常，因为指令间和循环迭代间的依赖，这些技术是不会成功的。一个更复杂的方法，<em>软件流水</em>，重构了循环，从而循环的每次迭代都以一个恒定的间隔执行，进而产生一个最优的调度。这个方法目的是使得处理器满流水运行，最终加速程序的执行时间。</p>
+<p>软件流水存在了许多年了，已经被证明了是 VLIW （超长指令字）和超标量处理器的有效调度方法。随着越来越多为软件流水提供支持的架构出现[20, 24, 37]，优化了已经存在的算法，开发了新的技术。</p>
+<p>在软件流水的早期，这个技术会调度来自几个迭代的指令，然后寻找一个模式[36]。<em>模调度</em>是一系列软件流水技术，它们使用“模”技术（而不是最大展开）在调度中放置指令，这样子当迭代重叠时没有资源或数据冲突。本文描述了这样一个算法的实现和它的扩展，即<em>摇摆模调度</em>。</p>
+<h3 id="模调度"><a href="#模调度" class="headerlink" title="模调度"></a>模调度</h3><p>模调度里的想法可以简单地用如下的例子进行说明。图 1.1 给出了一段表示循环体的指令。假设这段指令从一个数组读取一个值，给这个值加上一个常量，然后存储这个值。对于这个简单的例子，只有迭代中有数据依赖，因为后续的迭代都访问一个数组中不同的元素。</p>
+<p>假设加法指令是花费两个周期的单阶段流水化操作，同时 load 和 store 都只有一个周期。因此，你可以看到原来的循环在每次迭代启动之前都需要 4 个周期。</p>
+<p>模调度尝试最小化循环迭代启动间隔，然后降低循环的总执行时间。它通过修改循环，从而没有资源和数据冲突而可以保持处理器不断填满（即没有 stall），来完成这个。图 1.2 显示了代码是如何分为三部分的，上升阶段开始填充流水线，然后达成流水线满的稳定状态，最后下降阶段排空流水线，结束流水。这个目标是保证主要的时间花费在稳定阶段。</p>
+<p>循环被重构为与图 1.2 中描述相关的 3 个组件[31]：</p>
+<ul>
+<li>导言：达成稳定状态的指令序列。</li>
+<li>内核：它是一旦循环达成稳定状态，每个周期执行的指令。</li>
+<li>结语：结束循环的指令。</li>
+</ul>
+<p>使用图 1.1 的例子，如果我们查看循环的 4 个迭代，从每个迭代中选择一条指令，则我们可以形成一个内核。</p>
+<p>图 1.3(a) 给出迭代和为内核选出的指令。对于我们简单的循环，它的导言由内核之前的所有指令组成，而结语由内核之下的所有指令组成。对于这个重构后的循环，内核（图 1.3(b)）现在的循环迭代启动是三个周期，代替了原本循环的四个周期。如果循环有大的迭代次数，则主要的时间用于执行最优调度的内核，加速了程序总时间 1.3 倍。</p>
+<p>模调度算法通常将一组启发式和表调度结合起来用于创建内核。这些技术在章节 3 会进一步讨论。表调度和其它调度术语会在章节 2 中解释。</p>
+<h2 id="调度背景"><a href="#调度背景" class="headerlink" title="调度背景"></a>调度背景</h2><p><em>指令调度</em>致力于重排指令来填充间隙，即指令依赖导致的延迟。如果其它指令不能在这个间隙被调度，则处理器会暂停而浪费了周期数。指令调度通常是在机器无关的优化之后做的，要么是寄存器分配前，要么是寄存器分配后。根据编译器基础设施，调度是在目标机器汇编上完成的，或者是在一个低级别的中间表示上完成，其详细地建模了汇编。</p>
+<p>所有的指令调度技术都致力于产生一个<em>最优调度</em>，即一个最短长度的调度。调度长度是以周期为单位的总执行时间来衡量的。此外，最优的调度必须在一个合理的时间里被找到。</p>
+<p>当创建一个调度的时候，指令调度算法必须同时满足依赖和资源约束。依赖约束通过构造一个数据依赖图确定，它是一个有向图，节点表示指令，边表示指令间的依赖。当两个指令有个公用的操作数，其中一个指令定义了这个操作数，则这两个指令间需要构造个依赖。</p>
+<p>如果满足资源约束，则调度不在需要更多的架构可用的资源。指令调度必须有个资源使用模型（即，加载，整型算术，浮点算术等），它为每类指令分解了每个流水线阶段的资源。使用这个资源模型，调度器可以填充一张<em>资源预留表</em>。一张资源预留表是一个 $r \times c$ 的矩阵形式的，其中 $r$ 是资源，$c$ 是调度的周期。表中的每一项是指令每个周期使用的资源。</p>
+<p>尽管找到一个最优的调度是主要的目标，但是指令调度也必须关心因为指令重排导致的潜在的<em>寄存器压力</em>增加的问题。寄存器压力是程序中一个给定点位置的存活变量数量的一个衡量值。一个<em>生命周期</em>是指一个变量被定义到它在程序中最后使用的范围。在一个给定点，如果它的最后使用还没有出现，则这个值是存活的。因为架构只有有限的寄存器，所以存活变量的数量不能超过可用寄存器的总数。如果值超过了，则寄存器会被溢出到内存中，在需要的时候才会被加载回来。读写内存是比较昂贵的。</p>
+<p>指令调度可以分为三类：<em>局部调度</em>，<em>全局调度</em>，<em>循环调度</em>[36]。局部调度处理单基本块，其是单入单出的直线代码区域。全局调度可以处理多个没有循环控制流的基本块，然后循环调度可以处理当个或多个有循环控制流的基本块。软件流水是在最后一个分类中的。</p>
+<p>局部调度通常使用<em>表调度</em>的形式。表调度在周期 0 开始调度指令，直到所有的指令被调度完结束。在每个周期中，它都会维护一张预备指令表（它们没有资源和依赖冲突），然后按启发式给的顺序调度这个列表。这里有些经典使用的启发式：</p>
+<ul>
+<li>从一个节点到没有后继的节点的最大距离（延迟）。也被称为<em>基于高度</em>的优先级。</li>
+<li>子节点，直接或所有后代的数量。</li>
+<li>最小 ESTART 值，其中 ESTART 等于节点前驱的总延迟。</li>
+<li>最小 LSTART 值，其中 LSTART 等于节点后继的总延迟。</li>
+<li>更低的移动性，其中移动性是 LSTART 和 ESTART 的差值。</li>
+<li>关键路径上的节点，这意味着它们的移动性为 0 。</li>
+</ul>
+<p>局部约束是有局限性的，因为它只在单基本块中进行，这通常不会太大。因此，尽管在这些小区间里可以找到最优的调度，但是总的性能影响会比较小。全局调度从多个基本块中调度指令，重叠来自不同基本块的指令的执行。存在多个全局调度算法 [36] 如：</p>
+<ul>
+<li>轨迹调度：它识别程序中频繁执行的轨迹，然后将这个轨迹作为扩展基本块，在上面使用表调度的方法进行调度。</li>
+<li>超级块调度：超级块是有单入多出属性的轨迹子集（因此它们是没有旁路退出的轨迹）。表调度通常用于调度超级块。</li>
+<li>Hyperblock 调度：过多的控制流会使得调度复杂化，所以这个方法会用到称为 If-转换[3] 的技术来移除条件分支。3.2.2 节中会讨论 If-转换。</li>
+</ul>
+<p>根据这些指令调度背景，软件流水，是一种循环调度的形式，会在第三章中详细讨论它。</p>
+<h2 id="前面的工作"><a href="#前面的工作" class="headerlink" title="前面的工作"></a>前面的工作</h2><p>软件流水 [9] 是一组致力于通过重叠循环连续迭代来利用指令间并行度（ILP）的技术。这些年来，开发了两个主要的软件流水方法：<em>移动-然后-调度</em>，和<em>调度-然后-移动</em>。移动-然后-调度技术 [16, 30, 14, 22]，不在本文中讨论，为了获得流水化的循环，它移动指令跨过循环的回边。调度-然后-移动算法尝试创建一个最大化性能的调度，它构建了一个由当前和之前迭代中的指令组成的新的流水化循环。</p>
+<p>调度-然后-移动技术组被进一步分解成两类。第一类称为<em>基于展开的调度</em>，它在调度的时候，使用循环展开以形成软件流水化的循环。它重复这个过程直到调度变成一个现成的调度的循环。可以推测出，这类方法总是会导致高的时间复杂度。第二类，<em>模调度</em> [27, 33, 12, 21, 4, 16, 28]，致力于创建一个没有资源和依赖冲突的调度，它可以在一个固定周期里重复。因为模调度算法（SMS） 属于第二类算法中的一个，所以本文会简短描述下这个分类里的其它一些知名的算法。</p>
+<p>传统上模调度被限制在没有控制流的单基本块循环里，这会限制候选循环的数量。出现了全局软件流水技术来探索多基本块循环里的一些 ILP 机会，这种循环在计算密集应用里经常出现。我们将探索一些这方面的技术，因为它直接与第 5 章讨论的 SMS 扩展相关。</p>
+<h3 id="模调度方法"><a href="#模调度方法" class="headerlink" title="模调度方法"></a>模调度方法</h3><p>模调度技术通常使用基于启发式方法来寻找接近最优调度。尽管存在其它方法，如枚举所有可能的方法然后选择最好的一个[4]，寻找最优的调度是 NP 完全问题。因此，大部分产品编译器[18]实现模调度使用了基于启发式的算法。</p>
+<p>当流水化一个循环的时候（图 3.1），模调度算法展现了相同的模式。每个都是从构建一个<em>数据依赖图（DDG）</em>开始的。然后使用 DDG，可以计算出<em>最小启动间隔</em>（MII），其是循环连续的迭代起始时间之间的最小间隔。模调度算法致力于创建一个启动间隔（II）等于 MII 的调度，MII 是最小的 II 可以产生一个尽可能好的调度。越低的 II，并行度越高。</p>
+<p>MII 定义为循环的资源约束 II（ResMII）和循环约束 II（RecMII）两个之间的最大值。精确的 ResMII 可能可以使用预约表计算得到，它是一个建模资源使用的方法，但是它可能会导致一个指数级的复杂度 [33]。模调度算法通常使用一个近似的方法，通过计算每个资源总的使用数量，然后用使用最重资源数量作为 ResMII。</p>
+<p>当数据依赖图中存在一个指令到前一次迭代的指令的一个依赖，则数据依赖图中存在环。这些循环携带的依赖有距离属性，它等于分离两条相关指令的迭代次数。使用数据依赖图，所有的环都可以用任意的环路查找算法找到。对于每个环，II 是用所有指令的总延迟（L），总距离（D），和如下约束：$L - II * D &lt;= 0$ 计算得到的。计算得到的最大的 II 作为 RecMII。</p>
+<p>使用 MII 作为算法的初始 II 值，然后算法使用一些启发式去尝试调度循环中的每条指令。模调度实现中使用的启发式差别很大。如果没有获得最优的调度，则 II 递增，然后算法尝试重新计算调度。这个过程会一直重复直到获得调度或者算法放弃寻找（通常是因为 II 已经达到超过原始循环的长度值了）。</p>
+<p>然后对于这个调度，循环被重构为导言，内核，还有结语。导言开始前 n 次迭代。在 $n * II$ 周期之后，达成一个稳定的状态，每个周期会初始化一个迭代。结语完成了最后 n 个迭代。长执行时间的循环大部分的时间都花费在内核上。</p>
+<p>模调度的一个副作用是在重叠连续迭代的时候，定会导致寄存器压力的增加。如果寄存器压力的增加超过了可用寄存器数量，必须溢出寄存器，有效的 II 可能被无意中增加了。如果出现着这种情况，通常会丢弃模调度后的循环，使用原始的循环进行替代。</p>
+<p>本文会简短地介绍三个模调度算法，它们与 SMS 类似，使用了上述的模式。</p>
+<h3 id="全局模调度"><a href="#全局模调度" class="headerlink" title="全局模调度"></a>全局模调度</h3><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文描述的所有模调度方法的实现不是这个论文的主题。但是，Codina 等人[10]的研究深入地比较了每个方法。</p>
+<h2 id="模调度的实现"><a href="#模调度的实现" class="headerlink" title="模调度的实现"></a>模调度的实现</h2><h3 id="节点属性"><a href="#节点属性" class="headerlink" title="节点属性"></a>节点属性</h3><p>在构造好数据依赖图之后，为了正确地排序和调度指令，需要计算一些节点属性。因为图可能会包含循环，所以每个迭代的回边（无论哪个）后被忽略了。对于如下的节点属性计算，$\lambda$ 是指令延迟，$\delta$ 是两个节点的依赖边的距离，$Pred()$ 是节点的前驱集，$Succ()$ 是节点的后继集，MII 是 4.3 节里描述的最小启动间隔。</p>
+<h3 id="节点排序"><a href="#节点排序" class="headerlink" title="节点排序"></a>节点排序</h3><p>节点排序阶段是一个复杂的算法，它使用了数据依赖图和节点属性来创建调度顺序。排序算法用于给位于最关键路径上的节点优先级，同时保持低的寄存器压力。它首先使用启发式将最高移动性的指令调度到最后。其次，通过排序指令，使得没有指令会在它的前驱和后继之后调度。让指令尽可能地靠近它的前驱和后继，能降低生命周期。唯一的例外是迭代，里面的指令会在它的前驱和后继之后被调度（这是无法避免的）。</p>
+<p>排序算法开始于计算局部顺序，会有一系列的节点组。图 4.7 描述了局部节点排序算法，其中 | 表示列表追加操作。对于一个带有迭代的图，局部排序列表中的第一个集合是带有最高 RecMII 迭代的集合。第二高 RecMII 迭代的集合被追加到局部表中，它包含那些将其和已经在局部顺序中的循环连接的节点，并移除已经在局部顺序中的了。重复这个直到所有的迭代都添加好了。如果局部顺序中没有节点或者图没有迭代，节点被分组为连接部分，已连接的节点集，和被追加到局部顺序的集合。</p>
+<p>图 4.8 给出了我们简单循环例子的局部顺序。这个局部顺序是一个已排序的集合列表。第一个集合由依赖图中的独立循环的节点组成。其它的集合表示图中的连接部分（减去循环）。连接部分的添加是没有顺序的。</p>
+<p>一旦计算了局部顺序，最后的节点排序算法会产生一系列节点，送到调度器。图 4.9 给出的算法按特定顺序遍历节点集中的子图。在没有循环的已连接依赖图的场景中，它会遍历整个图。</p>
+<p>算法从最关键路径底部的节点开始，根据它们的深度访问所有的祖先节点，自底向上遍历。如果祖先节点有相等的深度，较小的自由度的节点有更高的优先级。一旦访问了所有的祖先，按高度顺序依次访问节点的后继，自顶向下遍历。重复向上遍历和向下遍历直到所有的节点都放到了最后的顺序里，整个图被遍历完。</p>
+<p>图 4.9 给出了最后的节点排序算法，使用 | 表示列表追加操作，Succ_L(O) 和 Pred_L(O) 的定义如下：<br>$$<br>Pred_L(O) = { v | \exists u \in O 其中 v \in Pred(u)， v\in O}<br>$$</p>
+<p>$$<br>Succ_L(O) = {v | \exists u \in O 其中 v \in Succ(u)，v \in O}<br>$$</p>
+<p>对于循环例子，最后的节点排序算法处理每个局部排序的集合，确定了如下的节点顺序：</p>
+<h3 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h3><p>摇摆模调度的调度过程按节点排序算法得到的顺序调度节点。从概念上讲，调度是一张表，它的行表示周期，列是发射槽。调度一条指令是在一个特定的周期上保留一个发射槽。架构和资源决定了可以一起放到发射槽的指令组合。如果还没有调度完所有的指令，则这个表称为一个局部调度。</p>
+<p>当调度指令的时候，SMS 尝试将它们尽可能地放置在靠近它们在局部调度里的前驱或后继。通过将指令尽可能地靠近它们的邻居放置，可以降低寄存器压力。</p>
+<p>图 4.10 展示了 SMS 调度算法，其中 <em>PS</em> 代表局部调度，<em>PSP</em> 表示局部调度中的前驱，<em>PSS</em> 表示局部调度中的后继。 每条指令都是在开始周期到结束周期之间调度的，这创建了指令可以被合法调度的时间窗口。开始和结束周期是基于已经在局部调度里的内容来计算的。调度可以向前（如果开始周期早于结束周期）或向后扫描（如果开始周期晚于结束周期）。指令根据下面的规则进行调度。</p>
+<ul>
+<li>对于在局部调度里没有前驱或后继的指令，指令可以在 ESTART 到 ESTART + II - 1 里调度，其中，ESTART = $ASAP_u$。</li>
+<li>如果指令在局部调度里只有前驱，则指令在 ESTART 到 ESTART + II - 1 里调度，其中，ESTART = $max_{v \in PSP(u)}(t_v + \lambda_v - \delta_{v, u} \times II)$。</li>
+<li>如果指令在局部调度里只有后继，则指令在 LSTART 到 LSTART - II + 1 里进行调度，其中 LSTART = $min_{v \in PSS(u)}(t_v - \lambda_u - \delta_{u, v} \times II)$。</li>
+<li>对于既有前驱又有后继的指令（这在每个循环只出现一个），指令在 ESTART 到 min(LSTART, ESTART +II -1) 里进行调度。ESTART 和 LSTART 与前两个场景的定义相同。</li>
+</ul>
+<p>如果一条指令没有空闲槽可用，则清理整个调度然后增加 II。接着恢复调度，重复这个模式直到找到一个调度或者达到了最大的 II。在我们的是实现中，最大的 II 设置为原始循环的总延迟。</p>
+<p>使用这个调度，通过获取所有在 II 周期后调度的指令，查找它们来自的阶段，以及它们在内核中可以调度的周期，来构造内核。将周期除以 II （然后向下取整）来得到阶段。内核周期等于指令调度周期模 II。此外，与归纳变量和跳转（之前的阶段没有考虑的）相关的指令被重新插入到内核中合理的位置。调度期间，在赋给指令发射槽之前，需要检查它和另一个阶段里的指令是否有内核冲突和资源冲突。</p>
+<p>表 4.3 给出了我们在整章中都作为例子的循环的一个迭代和内核的调度。SPARC IIi 架构每个周期可以发射 4 条指令。可以发射的指令组合取决于它们在流水每个阶段期间使用的哪些资源。为了简单，表 4.3 中的调度只显示了发射槽，但是调度算法即检查了发射槽的可用性，也检查了资源的可用性。</p>
+<p>在这个调度中，所有周期 17 之前的指令属于阶段 0 （循环的当前迭代），同时这之后的指令属于阶段 1。调度算法成功地生成了一个长度为 17 的调度，这就是我们的 MII。这是一个最优的调度。指令已经被调度了，从而许多单周期指令可以和浮点乘法（n34）重叠，这个指令需要花费 4 个周期。表 4.4 给出了模调度循环的内核。括号里的数字表明指令来自哪个阶段。fmuls（n34）指令来自阶段 1，这意味着这个指令是来自前一个阶段的。</p>
+<h3 id="循环重构"><a href="#循环重构" class="headerlink" title="循环重构"></a>循环重构</h3><p>循环重构过程主要是生成导言，结语，内核，还有修复原始程序的控制流，让其可以跳转到模调度后的循环。图 4.11 给出了循环重构算法。</p>
+<p>内核是由来自多个阶段的指令组成的调度过程构造的。来自大于零的阶段的指令是前一个迭代的一部分。在进入内核之前，前面的一些迭代必须在导言里初始化好。图 4.11 中的 6-14 行演示了导言是如何构造的。导言里的基本块数量是内核中阶段的数量减一。例如，我们的简单循环内核（表 4.4）有两个阶段，最大阶段是一。它生成的导言只有一个基本块，组成它的所有指令是来自内核中的阶段 0 的原始基本块（原始的执行顺序）。如果指令的操作数被用到了更高阶段的指令里，需要生成一个拷贝来保存这个值。图 4.12 给出了我们简单循环生成的导言。需要注意的是，用到了额外的，fmovs 指令来保存内核中用到的值，插入了拷贝。</p>
+<p>结语的存在是用于完成导言或者内核中初始化的，但还没有完成的迭代。18-23 行给出了创建结语的步骤。对于内核中每个大于 0 的阶段，都在结语中有个基本块。</p>
+<p>详细的内核构造过程在图 4.11 的 24-29 行。对于任意定义了后续阶段指令使用的值的指令，必须要保存它定义的这个值。然后需要更新来自大于 0 阶段的指令，从而可以使用到这个值的正确版本。图 4.13 给出了我们示例循环的内核。</p>
+<p>最后，分支需要正确地跳转到真正的基本块。对于导言中的每个基本块，必须更新分支以跳转到导言中的下一个基本块（或内核，如果它是最后一个基本块）或者到结语中的相关基本块。内核的分支需要更新以跳转到它自己或者到结语的开头。结语分支需要变成无条件跳转到结语中它的下一个基本块或者到原始循环的退出点。最后，我们程序中到原始循环的分支也必须被更新跳转到导言。</p>
+<p>一旦生成导言，结语和内核，则成功地模调度了循环，完成了摇摆模调度算法。SMS 被用于程序中每个单一基本块循环。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+              <a href="/tags/software-pipeline/" rel="tag"># software pipeline</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/" rel="prev" title="生产环境中生命周期敏感的模调度">
+                  <i class="fa fa-chevron-left"></i> 生产环境中生命周期敏感的模调度
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

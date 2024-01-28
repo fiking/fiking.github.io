@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要这章介绍 CHESS，一个定点 DSP 处理器的可变目标代码生成环境。CHESS 解决了一系列的商业特定应用领域的处理器，它们越来越广泛地应用在通信，语音和音频处理中的嵌入式应用中。CHESS 是基于混合的行为&#x2F;结构处理器表示模型的，它可以解释许多的架构特性，典型的如定点 DSP 处理器。此外，这个代码生成器采用了一系列高效的优化技术。这些特性产生了高度优化的机器码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CHESS：嵌入式 DSP 处理器的可变目标代码代码生成">
+<meta property="og:url" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要这章介绍 CHESS，一个定点 DSP 处理器的可变目标代码生成环境。CHESS 解决了一系列的商业特定应用领域的处理器，它们越来越广泛地应用在通信，语音和音频处理中的嵌入式应用中。CHESS 是基于混合的行为&#x2F;结构处理器表示模型的，它可以解释许多的架构特性，典型的如定点 DSP 处理器。此外，这个代码生成器采用了一系列高效的优化技术。这些特性产生了高度优化的机器码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_2.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_3.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_4.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_5.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_6.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/table_12.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/table_3.png">
+<meta property="og:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_7.png">
+<meta property="article:published_time" content="2022-12-08T15:40:25.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.919Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/","path":"2022/12/08/CHESS：嵌入式-DSP-处理器的可变目标代码代码生成/","title":"CHESS：嵌入式 DSP 处理器的可变目标代码代码生成"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CHESS：嵌入式 DSP 处理器的可变目标代码代码生成 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CHESS-%E7%8E%AF%E5%A2%83%E7%9A%84%E6%A6%82%E8%A6%81"><span class="nav-number">3.</span> <span class="nav-text">CHESS 环境的概要</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CHESS-%E4%B8%AD%E7%9A%84%E7%9B%AE%E6%A0%87%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">3.1.</span> <span class="nav-text">CHESS 中的目标处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7"><span class="nav-number">3.2.</span> <span class="nav-text">关键特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%B5%81"><span class="nav-number">3.3.</span> <span class="nav-text">设计流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8C%87%E4%BB%A4%E9%9B%86%E5%9B%BE%E5%BB%BA%E6%A8%A1%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">使用指令集图建模处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E6%89%93%E5%8C%85%E6%8A%80%E6%9C%AF"><span class="nav-number">5.</span> <span class="nav-text">指令选择的打包技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E5%88%86%E9%85%8D%E7%9A%84%E6%95%B0%E6%8D%AE%E8%B7%AF%E7%94%B1%E6%8A%80%E6%9C%AF"><span class="nav-number">6.</span> <span class="nav-text">寄存器分配的数据路由技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%B0%83%E5%BA%A6"><span class="nav-number">7.</span> <span class="nav-text">全局调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">8.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">9.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">10.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CHESS：嵌入式 DSP 处理器的可变目标代码代码生成 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CHESS：嵌入式 DSP 处理器的可变目标代码代码生成
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-12-08 23:40:25" itemprop="dateCreated datePublished" datetime="2022-12-08T23:40:25+08:00">2022-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这章介绍 CHESS，一个定点 DSP 处理器的可变目标代码生成环境。CHESS 解决了一系列的商业特定应用领域的处理器，它们越来越广泛地应用在通信，语音和音频处理中的嵌入式应用中。CHESS 是基于混合的行为/结构处理器表示模型的，它可以解释许多的架构特性，典型的如定点 DSP 处理器。此外，这个代码生成器采用了一系列高效的优化技术。这些特性产生了高度优化的机器码。</p>
+ <a id="more"></a>
+
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>今天，数字信号处理系统是快节奏开发的，达到了前所未有的复杂度。在竞争激烈的细分领域，如移动和个人通信系统或电信网络，我们可以看到可编程处理器的使用越来越多，它们用于实现片上系统。这些处理器提供了场或掩码可编程性，因此支持后续的规范改变，硬件重用，和为系统添加新特性的自由度。</p>
+<p>处理技术的提高使得制造复杂，异构的 AISCs 成为可能，这些 ASICs 包含一个嵌入式的可编程指令集处理器，还有应用相关的特定数据路径和内存[89]。这个概念如图 1 所示。在嵌入式信号处理系统中，可编程处理器将会使用定点 DSP 核的形式。这个 DSP 核通常用于实现中低吞吐量的信号处理函数（如，电信终端中的源和通道编解码）或系统控制函数。应用特定的数据路径通常用于加速时间优先的信号处理函数（如，调制解制）。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_1.png" class="" title>
+
+
+<p>DSP 核有两个可能的来源。一个选择是从商业 DSP 处理器中获取。通用的商业 DSP 核可以从大部分的 DSP 厂商获得。但是，对于嵌入式应用，这些核通常消耗太多的能源和硅面积，性能却不足。因为这些原因，系统产业中的半导体集团都倾向于开发自家的 DSP 核，其架构和指令集都可以根据特定应用领域进行优化（如，GSM，DECT，MPEG）。这些核被称为特定应用指令集处理器（ASIPs）[192，208]。ASIPs 产生较低的硬件固有开销和能量消耗，减少了对外部供应商的依赖。但是，ASIPs（仍然）缺乏软件开发的支持，它阻碍了预期的生产力提高的效果。</p>
+<p>一个本质的设计问题是将部分的系统规范编译成高效的微编码或者汇编码，它们可以运行在 DSP 核上。当一个设计者想要处理各种 DSP 核（如，不同的商业 DSPs，以及一个 DSP 的不同版本），则编译程序的体系结构可重定向性是非常需要的特性。CHESS 处理了这些任务，它是一个可重定向代码生成环境，本文就是在描述它。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_2.png" class="" title>
+
+
+<p>本文的结构如下。第 2 节，表示了 CHESS 支持的目标处理器范围的特征，给出了代码生成器设计流程的概要。第 3 节，介绍了 ISG，CHESS 使用的处理器表示模型。第 4 节到第 6 节描述了代码生成过程中三个重要过程的技术：指令选择，寄存器分配，和调度。第 7 节根据来自音频处理领域的应用的实验结果给出了结论。</p>
+<h2 id="CHESS-环境的概要"><a href="#CHESS-环境的概要" class="headerlink" title="CHESS 环境的概要"></a>CHESS 环境的概要</h2><h3 id="CHESS-中的目标处理器"><a href="#CHESS-中的目标处理器" class="headerlink" title="CHESS 中的目标处理器"></a>CHESS 中的目标处理器</h3><p>图 2 给出了 CHESS 支持的一个小的示例处理器。CHESS 的目标是定点 DSP 处理器，有如下的特性：</p>
+<ul>
+<li><em>内存结构</em>：CHESS 支持<em>加载-存储</em>架构[99]。数据路径操作从可寻址寄存器获得操作数，然后将结果放入其中（见图 2（a）中阴影的框图）。内存和寄存器之间的交流需要分离的 “move” 操作。</li>
+<li><em>寄存器架构</em>：CHESS 同时支持同构和异构的寄存器架构，来存储中间的计算结果。一个同构的寄存器架构由通用目的寄存器组成[99]。异构场景由特殊目的分布式寄存器和直接连接到特殊操作终端的寄存器文件组成（图 2（a））。</li>
+<li><em>编码类型</em>：CHESS 当前支持微编码处理器[99]。这意味着每条指令在一个确定的机器周期里执行完成。但是正在扩展成宏编码处理器。</li>
+<li><em>指令格式</em>：CHESS 支持正交和编码两种指令格式。正交格式由固定的控制域组成，每个域都可以独立的设置。例如，“超长指令字”（VLIW）处理器[60] 有正交指令格式。在编码格式的场景里，指令位作为控制域的解释依赖于指定格式位的值（如，图 2（b）中的指令位 1 和 2）。注意到格式位也可以编码操作数。大部分的 DSP 处理器有 16 到 32 位宽编码的指令格式。</li>
+</ul>
+<h3 id="关键特性"><a href="#关键特性" class="headerlink" title="关键特性"></a>关键特性</h3><p>商业定点 DSP 通常会配有一个 C 编译器。但是，这些编译器提供的代码质量通常是糟糕的，因此，设计者不得不采用手写汇编的方式编码。这些产生低质量代码的一个重要原因是定点 DSP 不规则的结构。[6] 中描述的传统的编译器技术，不能直接应用：</p>
+<ul>
+<li>定点 DSP 有带有分布式异构寄存器的特殊数据路径，而传统的寄存器分配技术是假定有一个组通用寄存器的。</li>
+<li>DSP 处理器提供的并行度（在算术操作，数据移动，和地址计算之间的）在传统编译器中只有最后的压缩过程可以利用上。但是，在这个阶段下，不得不将大量的约束纳入考量中，这是因为代码选择和寄存器分配技术，是基于垂直机器模型导致的。</li>
+</ul>
+<p>综上所述，这就是说将一个面向通用目的处理器的传统 C 编译器，移植到一个定点 DSP 不是一个普通的任务，它需要许多的处理器相关的修改。</p>
+<p>最近，开发了许多扩展传统代码选择和寄存器分配技术的方法，从而可以处理异构的寄存器结构。例子包含 [147] 和 [241]（也可以参见第 4 章和第 11 章）。本节描述的 CHESS 代码生成器，致力于相似的扩展，且更强调可重变目标性和并行度的探索。CHESS 的关键特性如下：</p>
+<ul>
+<li><em>可重定向性</em>：CHESS 使用单个处理器模型，其可以表示代码生成所需的处理器的完整行为（见第三节）。这个模型称为 ISG，它是从高级别的处理器描述语言 <em>nML</em> 开始自动构建的[69]（见第八章）。</li>
+<li><em>代码质量</em>：使用高效的优化技术，可以探索定点 DSP 处理器架构的独特性（见第 4 到第 6 节）。首先，代码选择和寄存器分配利用 ISG 模型给出的结构化信息，如操作和存储单元间的连通性。第二，编译器不同阶段使用全局的优化技术。即块间优化。最后不得不提的是，开发了高效的机制将不同优化间的过程连结纳入考量。</li>
+</ul>
+<h3 id="设计流"><a href="#设计流" class="headerlink" title="设计流"></a>设计流</h3><p>CHESS 代码生成器的设计流如图 3 所示。设计者必须提供两个输入描述。<em>应用程序</em>的特征使用过程扩展版的 DFL 语言来描述[58]。一个可选用的基于 C 语言的前端正在开发中。另一方面，<em>目标处理器</em>的行为使用 <em>nML</em> 来描述。nML 能够在数据手册规范的级别上获得处理器的编程者模型（见图 2 例子） 。它包含了高级别结构化信息和完整的指令集描述。<em>DFL/C</em>  和 nML 语言的输入被转成了内部数据结构[133]，分别是控制数据流图的语义模型（CDFG）和指令集图（ISG，见第三节）。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_3.png" class="" title>
+
+
+<p>CHESS 给出了给定应用程序在目标机器上实现的<em>机器码</em>。CHESS 也在代码生成的过程中产生<em>统计数据回馈</em>，它可以用来评估给定应用程序的适配程度。这些信息可以被系统设计者用于重新设计应用程序的规格，或者被 ASIP 设计者用于调整处理器结构或者指令集，适配应用程序。第 7 节会给出静态输出的例子。</p>
+<p>代码生成脚本当前包含六个主要阶段：</p>
+<ul>
+<li><em>优化转换</em>和<em>流图改善</em>：细化初始的规格，从而 CDFG 中的所有节点对应的微操作可以被处理器实现。</li>
+<li><em>代码选择</em>：CDFG 中的节点可以被模式覆盖，这些模式一一对应于指令集支持的一些指令。</li>
+<li><em>寄存器分配</em>：将中间的计算值绑定到了存储区间（寄存器或者内存），同时，确定这些存储位置之间传输最合适的路由路径。</li>
+<li><em>位对齐</em>：在有效的载具上（总线，互连，寄存器），确定每个数据值的独立位的合适映射，因此，保证了实现的位级别的行为是一致正确的。</li>
+<li><em>调度</em>：在这个阶段可以构造所有操作（算术操作和内存/寄存器移动）的详细调度。</li>
+<li><em>生成汇编</em>：在代码汇编阶段，输出最终的机器码。</li>
+</ul>
+<p>指令选择，寄存器分配，位对齐和调度这些任务都是耦合的。虽然在 CHESS 中，它们都是实现成分离的编译阶段，但是，前三个阶段每个都构建了一个中间的调度视图来保证阶段耦合性，它会将前一阶段强加的资源约束纳入考虑。只有在位对齐之后，获得一个精确的调度。</p>
+<p>图 3 表明了 CHESS 的设计流，与之前开发的第二代 CATHEDRAL 高级综合系统[90]有些相似。事实上，当前的代码生成器重用了这个高级综合系统的一些概念。并且第二代 CATHEADRAL 支持的处理器模型是第 2.1 节描述的 CHESS 处理器模型的子集。因此，它可以为第二代 CATHEADRAL 综合系统生成的架构产生代码，只要这个架构有一个可编程的控制器。但是，CHESS 和第二代 CATHEADRAL 两个使用的数据模型和技术基本都是不同的。</p>
+<p>CHESS 中的代码选择，寄存器分配，和调度过程会第 4 到 6 节中进一步描述。而<em>流图细化</em>和<em>位对齐</em>，读者可以参考[133，211]。</p>
+<h2 id="使用指令集图建模处理器"><a href="#使用指令集图建模处理器" class="headerlink" title="使用指令集图建模处理器"></a>使用指令集图建模处理器</h2><p>CHESS 中定义用来描述指令集处理器的单一模型，称为<em>指令集图</em> [231]。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_4.png" class="" title>
+
+
+<p>ISG 是一个紧凑的模型，它通常适用于 2.1 节定义的处理器类型，用在所有的代码生成阶段。它消除了不同的工具相关机器描述的需求，如代码选择需要的详细的操作模式的枚举，或寄存器分配需要的一系列寄存器类型。ISG 模型是达成我们代码生成器方便可便目标性的关键概念。图2 的处理器的 ISG 表示在图 4 中给出。</p>
+<p>ISG 是结构化和行为混合模型：</p>
+<ul>
+<li>处理器的存储元素定义了目标机器架构的基本框架。区分了<em>静态</em>和<em>临时</em>的存储资源[126]。静态存储（即一个内存或者一个可寻址寄存器）会一直保存它的值直达被显式地覆盖重写，而临时的存储只是传递一个值（总线，线，以及某个流水线寄存器上零延时的）。因为绘图的原因，图 4 中的寄存器是重复的，可以在顶层和底层都能找到。其它的存储节点（带有括号中位数的标号）是临时。</li>
+<li>连接到 ISG 中存储节点的微操作描述了目标机器的连接性，并且被链接到描述它们行为的预定义原语的库。为了归一，模型是由临时存储项之间的所有操作构建的，但不包含寄存器和内存之间的读写操作，它们是连接<em>静态</em>和<em>临时</em>存储的。读写操作分别可以在图 4 的最上边和最下边找到。其它的操作可以被赋值给功能单元。在 ISG 中，功能单元只由一组操作建模。</li>
+<li>每个微操作，都存储了一系列的<em>指令字符串</em>。这些字符串包含了使能该操作的有效指令位设置的三次方表示。指令字符串中的这些信息类似于 I-trees，它是 [184] 中的模型使用的，在这个场景下，其是衍生自全结构化（网格列表）的模型。</li>
+</ul>
+<p>ISG 建模了处理器的连接性，编码约束，以及所有的结构风险。例如，有一个相当正交指令格式的处理器，其包含一条指令使能两个驱动相同总线的三态缓存器。通过将总线建模为临时存储，使得编译器可以检查存储项上的冲突，从而不生成一些“非法”的指令。</p>
+<p>ISG 模型是从 <em>nML</em> 规范中自动派生出来的，它也包含了不同的存储类型和时延信息[69]。后续会给出使用 ISG 的示例演示。</p>
+<h2 id="指令选择的打包技术"><a href="#指令选择的打包技术" class="headerlink" title="指令选择的打包技术"></a>指令选择的打包技术</h2><p><em>指令选择</em>的目的是用<em>模式</em>覆盖给定的 CDFG（它的节点对应于微操作），每个模式对应指令集支持的一些指令。这些模式将被称为<em>包</em> [126]。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_5.png" class="" title>
+
+
+<p>在软件编译器中，指令选择通常是基于<em>树模式匹配</em>和<em>覆盖</em>技术的，用到了动态规划[6, 72]。这些方法假定指令集是基于模板库的方式表示的，即，所有可能的包的一个详细枚举。实际应用使用的是 CDFG 操作<em>图</em>而不是<em>树</em>的形式。因此，需要模式匹配/覆盖技术的扩展来处理图结构。[146] 中的 DSP 处理器的代码生成已经采用了这种方式。[68] 中也使用了类似的技术，但是模板库是通过精简的处理器描述自动推导出来的，它是使用 <em>nML</em> 语言描述的。</p>
+<p>与这些方法相反的是，CHESS 中的代码选择技术不使用潜在包的详细列表。在我们的方法中，包是在指令选择阶段，通过搜索 ISG 的有效路径，实时构建的。当沿着一条路径上的所有指令串的交集不为空，则认为这条路径在 ISG 中是有效的。</p>
+<p>图 5 演示了这个原则，以一个对称的 FIR 滤波器为例。对于每个 CDFG 节点，通过它们的指令字符串，在 ISG 中查找可能绑定到的微操作。在这个场景中，CDFG底部展示的“x”（乘法）和“+”（加法）操作可以被打包在“MPY-ACC”单元中，因为 ISG 中存在一条路径包含了“MPY”节点上的乘法和“ACC”节点上的加法，然后相关的指令字符串做交集。</p>
+<p>CHESS 中的代码选择使用的是[133，231]中描述的<em>打包算法</em>的扩展版本。这个算法增量地将 CDFG 操作结合到包中，每次都会检查 ISG 中方案的可行性。注意，我们的技术也可以处理图的模式，以及跨过“基本块”边界的模式。</p>
+<h2 id="寄存器分配的数据路由技术"><a href="#寄存器分配的数据路由技术" class="headerlink" title="寄存器分配的数据路由技术"></a>寄存器分配的数据路由技术</h2><p>在代码选择之后，CDFG 表示的应用被 ISG 中找到的模式覆盖了。这些模式的输入输出被赋给了临时的存储，因此它们仍然需要使用读写操作进行扩展，从而变成完整的寄存器转换。这就是<em>寄存器分配</em>目的。如图 4 所示，通常多个寄存器会被连接到一个临时的存储，这个选择不是显而易见的。为了扩展已经已经存在的模式到寄存器转换，寄存器分配期间也会插入新的寄存器转换。</p>
+<ul>
+<li>一个值可以在两个寄存器之间移动，伴随着 ISG （见图 4）中一条从<em>读</em>到<em>写</em>的路径，其中间包含了一个传递操作。</li>
+<li>因为有效寄存器的数量比较少，几个中间值可能会从寄存器溢出（传输）到内存，以及写回。</li>
+</ul>
+<p>对于同质寄存器结构的通用处理器的编译器，寄存器分配的问题已经被很好地解决了，见 [30，36]。对于一个给定的执行顺序（调度），使用全局技术，只引入最少的寄存器溢出就可以满足寄存器约束。但是如 2.1 节描述的，绝大部分 DSP 处理器是异构的，分布式的寄存器结构，展示了更多的并行度。这两个因素增加了寄存器分配问题的搜索空间。</p>
+<p>这个可以通过对称的 FIR 滤波器例子演示。一旦<em>代码选择</em>工具确定了如图 5 所示的包，<em>寄存器分配</em>就不得不寻找一个最优路径，来传递“+”包的结果（见 CDFG 的顶部），从移位器输出到乘法器输入，然后它们作为“x+”包的操作数（CDFG 的底部）。一些有效的方案如图 6 所示。解决方案（a）使用了最短的有效路由路径。解决方案（b）使用了一个较长的路径，其跨过了乘法器的输入寄存器文件。假如乘法器被大量地占用，则这可能是比较有利的，因为它允许在只要多几个机器周期的时间里缓存已经计算的值。方案（c）中，值被临时地溢出到内存中。当这个值是长周期的，则这个方案是有优势的。所以，不管（a），（b）或者（c）哪个被选择都必须取决于寄存器的加载，功能单元和值被消费的时机。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_6.png" class="" title>
+
+
+<p>为了确定一个好的方案，<em>寄存器分配</em>和<em>调度</em>之间紧密地相互作用是必不可少的。两个问题的组合方案在 [60，94，205] 中已经描述了。这些方法使用了贪心的搜索技术，其通常无法识别好的溢出候选和位置。在 [147] 中，初始粗略调度的阶段寄存器使用是最少的，后面跟着的是寄存器分配和精简。寄存器分配器使用资源类型模型来考虑互联和寄存器约束。</p>
+<p>CHESS 中使用了新的寄存器分配技术，称为<em>数据路由</em> [135]，有如下主要的特性：</p>
+<ul>
+<li>支持一组通用的路由移动。除了内存溢出，寄存器间移动，值重新生成，和改变操作参数的赋值（如，对于交换运算）都需要考虑。</li>
+<li>选择数据移动使用的是分支定界算法，在小的相关数据群上执行。为了评估每个局部方案的质量，使用概率估算监控路由策略在寄存器和功能单元上的加载的影响。因此，不是从一个给定的调度开始的，而是每个操作都有一个执行间隔，表示所有的依然可行的调度集合。这些执行间隔会更新作为数据路由插入新的寄存器转换。</li>
+<li>在选出新的移动之后，需要检查新的局部方案是否依然符合寄存器约束。这个检查是基于 CDFG 中的流分析。当违反了寄存器约束，数据路由算法要么执行局部重路由，要么执行 CDFG 的局部序列化[54]，来降低寄存器压力。</li>
+</ul>
+<h2 id="全局调度"><a href="#全局调度" class="headerlink" title="全局调度"></a>全局调度</h2><p>调度最后压缩了不同的包，移动和控制流操作进入单个微程式。在DSP 处理器的可变目标代码生成上下文中，对调度有两个重要的要求：</p>
+<ul>
+<li>调度器必须能处理<em>参数化的控制器架构</em>模型。例如，处理器可能支持也可能不支持延迟跳转（带有用户定义的延迟值），分支操作可能可以也可能不可以与算术操作并行执行等等。</li>
+<li>为了产生高质量的机器码，在调度期间对应用程序的控制流进行全局优化是必不可少的。传统的调度器被限制在应用的“基本块”里。只是最近，类似于软流水的控制流优化[134, 188, 88]或者代码提升[194, 202, 236] 才获得关注。</li>
+</ul>
+<p>CHESS 使用的是表调度算法[88，232]，它已经根据上面的要求进行了扩展[114]。当前已经支持了多种微代码控制器架构，有不同的序列逻辑行为（如，多路分支或者两路分支，延迟分支或没有等等。）。调度器支持软流水和各种各样的代码提升形式（如，将操作移入和移出条件，在循环前导和后导移动代码等。）。调度器会检查 ISG 中的资源和编码冲突。</p>
+<p>虽然，寄存器分配工具维护它自己的调度视图，但是 CHESS 中详细的调度是推迟到寄存器分配完成之后的。因此，调度器必须将选择的寄存器分配引入的一些约束纳入考量中。这些约束可能会限制调度中潜在的软件流水和代码提升。为了解决这个过程耦合，CHESS 中的寄存器分配的预处理步骤进行了一个粗略的控制流优化。这个预处理在控制流块（如，条件块或者循环）之间重新分配了操作，从而平衡了不同块之间的功能单元和寄存器利用率。</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>可变目标代码生成器 CHESS 当前被应用到音频处理和通信领域的一些实际设计中。支持的目标机器的范围在 2.1 节中描述了。</p>
+<p>在这节中，我们将会讨论的第一个结果是精简的磁盘数字音频后端系统。CHESS 被应用来在图2 描述的微代码 ASIP 上实现这个系统。这是一个带有异构寄存器结构和编码指令集的微代码处理器。后面给出的图片应用到了音频系统的两个基础功能：半带上采样滤波器，和偏移滤波器。</p>
+<p><strong>代码选择.</strong> 表 1 和 2 给出了代码选择在编译时间收集的静态信息。表 1（a）  将 CDFG 的边（每个都对应一对数据依赖操作）划分为三类：</p>
+<ul>
+<li>指令集支持的已经被打包成功的边。在这个情况下，代码选择工具可以成功地将这些边的源和目的操作分组到部分指令。</li>
+<li>指令集支持的但没有成功打包的边，因为其它的包优先级更高。</li>
+<li>指令集不支持的边。这意味着指令集不包含可以实现相关操作对的部分代码。</li>
+</ul>
+<p>“不支持”边和“支持”边之间的巨大比例表明处理器指令集没有很好的适配目标应用。表 2 给出了边的进一步分解。如 2.3 节所述，在代码生成期间收集的静态信息可以被 ASIP 设计者用来为应用调整处理器结构或者它的指令集。一方面，表 2（a）表明了不经常使用的指令，因此，可以指令集可以省略它们。另一方面，表 2（b）列出了 CDFG 中最经常出现的边，而指令集中没有它的部分指令。这个表可以用来识别好的候选来扩展指令集。ASIP 架构的一个完整的设计例子，使用了 CHESS 产生的统计反馈信息的，可以在 [231] 中找到。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/table_12.png" class="" title>
+
+
+<p><strong>寄存器分配.</strong> 表 3 给出了从寄存器分配工具中获得的结果。给出了两个不同的运行：</p>
+<ul>
+<li><p><em>没有约束</em>：第一次运行时，架构中的所有寄存器被假定为是有无限容量的寄存器文件（每个都有一个读接口和一个写接口）。这意味着任意数量的计算值都可以并行地存储到每个文件中。在这个场景中，数据路由算法会选择可以产生大量并行值的短路由路径。每个寄存器文件最大的加载，和这个系统每个采样周期最后的机器周期数一起，在 表 3 中给出（中间列）。</p>
+ 
+    <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/table_3.png" class="" title>
+  
+</li>
+<li><p><em>有约束</em>：在第二次运行时，寄存器的容量被限制成一个。在这个场景中，数据路由算法选择可用的路由路径，如内存溢出，以及引入 CDFG 部分顺序化，从而满足寄存器约束。结果在表 3 中给出（右列）。内存溢出和顺序边优先插入到 CDFG 中的非关键路径的控制流块里，如外层循环和非关键分支，从而只会增加较少的总机器周期数。</p>
+</li>
+</ul>
+<p>图 7 给出了音频后端系统的部分 CDFG，它是寄存器分配工具约束运行之后的。寄存器分配工具添加了几个操作（图中的阴影节点），为了满足寄存器约束：<em>store</em> 和 <em>load</em> 操作可以溢出值到内存，<em>copy</em> 操作可以在不同寄存器里生成重复的值。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>个人通信和通信网络推动了异构芯片架构的发展，它包含了一个可编程 DSP 处理器作为核心的组成部分。需要新的设计技术来支持通用嵌入式 DSP 处理器，和专用的 ASIPs 的设计和使用。</p>
+ 
+  <img src="/2022/12/08/CHESS%EF%BC%9A%E5%B5%8C%E5%85%A5%E5%BC%8F-DSP-%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E5%8F%AF%E5%8F%98%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/figure_7.png" class="" title>
+
+
+<p>这篇论文描述了 CHESS 代码生成环境。CHESS 解决了<em>定点 DSP 处理器</em>。CHESS 有两个目标：给通信和音频芯片中的嵌入设计交付可接受的代码质量，同时，提供多种来源的不同处理器的高度可变目标性。在这个程度上，我们的研究开始关注不同<em>处理器模型</em>和<em>代码生成技术</em>的开发，能够利用现代定点 DSP 处理器典型特性。这些处理器通常是带有几个并行功能单元的 load-store 架构，包含异构的寄存器集合，以及中等到高等的指令编码。使用来自数字音频处理领域的应用，给出了第一版结果。</p>
+<p>未来的工作集中在提高生成的机器代码的质量，以及 CHESS 软件环境的质量，从而提高实际的使用效率。此外，继续新的研究以支持系统规范中的异步并发进程（见第 15 章）。这将通过合成一个应用相关的实时内核完成，这个内核可以动态调度不同的进程。在这个方式下，将会给 CHESS 环境加入新的抽象层。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>略。                                                                                        </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/" rel="prev" title="超长指令字架构和ELI-512">
+                  <i class="fa fa-chevron-left"></i> 超长指令字架构和ELI-512
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/01/02/%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%95%8F%E6%84%9F%E7%9A%84%E6%A8%A1%E8%B0%83%E5%BA%A6/" rel="next" title="生产环境中生命周期敏感的模调度">
+                  生产环境中生命周期敏感的模调度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

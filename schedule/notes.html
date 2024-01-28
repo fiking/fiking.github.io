@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="物理万物皆有其规律，朝阳晚霞，穷一生而不可变。一生所求为何，有所学，有所思，有所为，有所得。 连续性方程，欧拉方程，泰勒展开推导出空气中音速方程。 立春 动车取消，航班也被取消，囧途系列的开始？ 基本把编译器的部分调通了，数据结构部分感觉都要调整。 微明白天的时间变长了，吃晚饭的时间，能见到点自然光了。心态爆炸的一天。jit编译，个人理解，用于长时间运行的程序，可以进行profile采集。或者小存">
+<meta property="og:type" content="website">
+<meta property="og:title" content="札记">
+<meta property="og:url" content="http://example.com/schedule/notes.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="物理万物皆有其规律，朝阳晚霞，穷一生而不可变。一生所求为何，有所学，有所思，有所为，有所得。 连续性方程，欧拉方程，泰勒展开推导出空气中音速方程。 立春 动车取消，航班也被取消，囧途系列的开始？ 基本把编译器的部分调通了，数据结构部分感觉都要调整。 微明白天的时间变长了，吃晚饭的时间，能见到点自然光了。心态爆炸的一天。jit编译，个人理解，用于长时间运行的程序，可以进行profile采集。或者小存">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-09T08:07:28.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.979Z">
+<meta property="article:author" content="fiking">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/schedule/notes">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":true,"permalink":"http://example.com/schedule/notes.html","path":"schedule/notes.html","title":"札记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>札记 | fiking
+</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">物理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%8B%E6%98%A5"><span class="nav-number">2.</span> <span class="nav-text">立春</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E6%98%8E"><span class="nav-number">3.</span> <span class="nav-text">微明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E7%AB%99"><span class="nav-number">4.</span> <span class="nav-text">过站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2021"><span class="nav-number">5.</span> <span class="nav-text">2021</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BE%E5%8F%B6%E7%B9%81%E8%8A%B1"><span class="nav-number">6.</span> <span class="nav-text">百叶繁花</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E9%9B%AA"><span class="nav-number">7.</span> <span class="nav-text">初雪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%B3%E7%BB%9D"><span class="nav-number">8.</span> <span class="nav-text">决绝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%92%E5%86%AC"><span class="nav-number">9.</span> <span class="nav-text">寒冬</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%B7%E6%9C%88"><span class="nav-number">10.</span> <span class="nav-text">冷月</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%8C%96"><span class="nav-number">11.</span> <span class="nav-text">变化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E7%B2%B9"><span class="nav-number">12.</span> <span class="nav-text">纯粹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E5%88%92"><span class="nav-number">13.</span> <span class="nav-text">计划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2020"><span class="nav-number">14.</span> <span class="nav-text">2020</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%AD%E5%B7%9E"><span class="nav-number">15.</span> <span class="nav-text">杭州</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%B9%B4"><span class="nav-number">16.</span> <span class="nav-text">流年</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compiler"><span class="nav-number">17.</span> <span class="nav-text">compiler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%89%E6%8B%A9"><span class="nav-number">18.</span> <span class="nav-text">抉择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E7%94%B1"><span class="nav-number">19.</span> <span class="nav-text">理由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%9F%E6%9C%88"><span class="nav-number">20.</span> <span class="nav-text">星月</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%8F%E6%84%8F"><span class="nav-number">21.</span> <span class="nav-text">随意</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%9C%E8%BF%90"><span class="nav-number">22.</span> <span class="nav-text">停运</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%98"><span class="nav-number">23.</span> <span class="nav-text">忘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A2%A6%E9%AD%87"><span class="nav-number">24.</span> <span class="nav-text">梦魇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%92%E5%BA%97"><span class="nav-number">25.</span> <span class="nav-text">酒店</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A9%E7%9D%A1"><span class="nav-number">26.</span> <span class="nav-text">早睡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%A0%E6%83%AF"><span class="nav-number">27.</span> <span class="nav-text">习惯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%85%E4%BA%8B"><span class="nav-number">28.</span> <span class="nav-text">故事</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%86%E6%9C%88"><span class="nav-number">29.</span> <span class="nav-text">圆月</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%95%E8%BF%B9"><span class="nav-number">30.</span> <span class="nav-text">痕迹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E5%A4%A9"><span class="nav-number">31.</span> <span class="nav-text">蓝天</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%8E%E5%A4%A9"><span class="nav-number">32.</span> <span class="nav-text">明天</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2019-4-15"><span class="nav-number">33.</span> <span class="nav-text">2019-4-15</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E5%AE%89"><span class="nav-number">34.</span> <span class="nav-text">静安</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%A8%E5%AD%A3"><span class="nav-number">35.</span> <span class="nav-text">雨季</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#20160810"><span class="nav-number">36.</span> <span class="nav-text">20160810</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#20160808"><span class="nav-number">37.</span> <span class="nav-text">20160808</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A1%8C"><span class="nav-number">38.</span> <span class="nav-text">前行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8F%E5%AD%A3"><span class="nav-number">39.</span> <span class="nav-text">夏季</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%A0%E5%A4%95%E7%A5%AD"><span class="nav-number">40.</span> <span class="nav-text">坠夕祭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%BE"><span class="nav-number">41.</span> <span class="nav-text">雾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%8B%E8%A8%80"><span class="nav-number">42.</span> <span class="nav-text">残言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%89%E5%B9%B4"><span class="nav-number">43.</span> <span class="nav-text">光年</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8A%E6%99%9A"><span class="nav-number">44.</span> <span class="nav-text">今晚</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%92%E9%B8%9F"><span class="nav-number">45.</span> <span class="nav-text">青鸟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9D%E8%BF%B9"><span class="nav-number">46.</span> <span class="nav-text">绝迹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%99%85"><span class="nav-number">47.</span> <span class="nav-text">实际</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%B7%BE"><span class="nav-number">48.</span> <span class="nav-text">方巾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E4%BE%9D"><span class="nav-number">49.</span> <span class="nav-text">相依</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BE%E5%BC%83"><span class="nav-number">50.</span> <span class="nav-text">放弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%80%81%E8%80%85"><span class="nav-number">51.</span> <span class="nav-text">老者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%87%BA"><span class="nav-number">52.</span> <span class="nav-text">日出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%A6%E7%BB%A3"><span class="nav-number">53.</span> <span class="nav-text">锦绣</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B1%E8%A8%80"><span class="nav-number">54.</span> <span class="nav-text">失言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B4%E8%BD%AE"><span class="nav-number">55.</span> <span class="nav-text">年轮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%83%E6%9C%88"><span class="nav-number">56.</span> <span class="nav-text">元月</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%8F%E4%B8%AD"><span class="nav-number">57.</span> <span class="nav-text">栏中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%A0%E8%A2%AD"><span class="nav-number">58.</span> <span class="nav-text">习袭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8B%A6%E6%80%9D"><span class="nav-number">59.</span> <span class="nav-text">苦思</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E9%A2%98"><span class="nav-number">60.</span> <span class="nav-text">无题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B3%E5%85%89%E4%B8%8B%E7%9A%84%E9%9B%AA"><span class="nav-number">61.</span> <span class="nav-text">阳光下的雪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A5%E4%BA%86"><span class="nav-number">62.</span> <span class="nav-text">知了</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%92%E5%8E%BB"><span class="nav-number">63.</span> <span class="nav-text">归去</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%A5%E8%BF%9C"><span class="nav-number">64.</span> <span class="nav-text">遥远</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%93%8D"><span class="nav-number">65.</span> <span class="nav-text">流响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BB"><span class="nav-number">66.</span> <span class="nav-text">幻</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">札记
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h3 id="物理"><a href="#物理" class="headerlink" title="物理"></a>物理</h3><p>万物皆有其规律，朝阳晚霞，穷一生而不可变。一生所求为何，有所学，有所思，有所为，有所得。</p>
+<p>连续性方程，欧拉方程，泰勒展开推导出空气中音速方程。</p>
+<h3 id="立春"><a href="#立春" class="headerlink" title="立春"></a>立春</h3><p> 动车取消，航班也被取消，囧途系列的开始？<br> 基本把编译器的部分调通了，数据结构部分感觉都要调整。</p>
+<h3 id="微明"><a href="#微明" class="headerlink" title="微明"></a>微明</h3><p>白天的时间变长了，吃晚饭的时间，能见到点自然光了。<br>心态爆炸的一天。<br>jit编译，个人理解，用于长时间运行的程序，可以进行profile采集。或者小存储空间的设备上运行程序，内存和性能的均衡。</p>
+<h3 id="过站"><a href="#过站" class="headerlink" title="过站"></a>过站</h3><p>恍神间，错过了一站，坐到了终点站，慢慢的走回去。虽然夜间了，温度还是蛮高的，一丝的微风，冰凉中带着夏天的温暖.。<br>向日葵，百年孤独，梁，围城 — 来自知乎。</p>
+<h3 id="2021"><a href="#2021" class="headerlink" title="2021"></a>2021</h3><p>规划自己的时间<br>天边的月亮<br>加加油<br>写个总结与计划</p>
+<h3 id="百叶繁花"><a href="#百叶繁花" class="headerlink" title="百叶繁花"></a>百叶繁花</h3><p>各个职业入门贴，知识，秘史，逸事。<br>微信小程序，书页集的形式。</p>
+<h3 id="初雪"><a href="#初雪" class="headerlink" title="初雪"></a>初雪</h3><p>咖啡变得不苦了，又或是突然能接受这个味道了。想来人是会变的吧。可不变的是依旧会让人失眠。<br>风雪夜归人，今夜雨夹雪，年岁前第一场看得见的雪。风吹得冰冰凉凉的。</p>
+<h3 id="决绝"><a href="#决绝" class="headerlink" title="决绝"></a>决绝</h3><p>经历多了，就会遇到各种事情，每天卡着点上班，然后迟到，演变成惯性，不可收拾。本以为做好充足的准备，还是咯噔一下，有那么一刻感觉时间静止了。本以为努力降低预期，会让事情那么不重要一点，但撞了墙，还是有点痛吧。</p>
+<h3 id="寒冬"><a href="#寒冬" class="headerlink" title="寒冬"></a>寒冬</h3><p>变冷的天，猜不透的心<br>嬉笑着开怀<br>自言自语<br>银叶共蝶飞<br>红树漫天染</p>
+<h3 id="冷月"><a href="#冷月" class="headerlink" title="冷月"></a>冷月</h3><p>这撒向全世界的光，照亮黑了的夜，又何必追求过多的温度。</p>
+<h3 id="变化"><a href="#变化" class="headerlink" title="变化"></a>变化</h3><p>人有人留，又到了一个里程点，又有人离去了。有些感伤。静下心来好好调整心情和时间。c++的有待提高。工程能力有待提高。不能再迟到了。</p>
+<h3 id="纯粹"><a href="#纯粹" class="headerlink" title="纯粹"></a>纯粹</h3><p>一旦陷入就错不开，离群索居，可以不用在意一切。越来越世俗，随意的，自在的，错的，对的，没想明白，理想的，叶子的思考，或许，没有思想，不用悲伤，有思想不用怀念，不用凑数，青草阳光，任意相搭，神与形，人与物，冷风吹。三省读史，零一归正。</p>
+<h3 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h3><p>as<br>11<br>忘掉<br>忘记<br>英语</p>
+<h3 id="2020"><a href="#2020" class="headerlink" title="2020"></a>2020</h3><p>调时间。</p>
+<h3 id="杭州"><a href="#杭州" class="headerlink" title="杭州"></a>杭州</h3><p>好好睡觉。</p>
+<h3 id="流年"><a href="#流年" class="headerlink" title="流年"></a>流年</h3><p>五月罗马，一般的自助餐厅。<br>一场线上演唱会。<br>高铁，有些平常了<br>缩短了时间<br>但有不一样的温度</p>
+<h3 id="compiler"><a href="#compiler" class="headerlink" title="compiler"></a>compiler</h3><p>llvm and gcc.<br>init both code.<br>go ~</p>
+<h3 id="抉择"><a href="#抉择" class="headerlink" title="抉择"></a>抉择</h3><p>留下来的理由，无。<br>离开的原因，很多。<br>所以该离开了。<br>去何方，远方。<br>万紫千红，燕子低飞。<br>可是，风来的时候，或许就发芽。<br>尖尖的样子。</p>
+<h3 id="理由"><a href="#理由" class="headerlink" title="理由"></a>理由</h3><p>想把每件事情做好。<br>系统跟应用的启动流程，start函数到main函数。qemu GDB调试。<br>自己纠结。</p>
+<p>熬夜失眠。</p>
+<h3 id="星月"><a href="#星月" class="headerlink" title="星月"></a>星月</h3><p>北极星和弯月。慢慢走，才能慢慢看。读书吧。岁月如歌。</p>
+<h3 id="随意"><a href="#随意" class="headerlink" title="随意"></a>随意</h3><p>每一本书都一个封面，或奇形怪状，鲜艳动人，或三言两语，引人遐想，亦或是暗黄无光，时痕显现。<br>字越发随意潦草，速率倒是快了些；<br>依然居无定所，但吃穿用度能随意些；<br>熬夜-失眠-补觉-熬夜，随意循环；<br>事，成功率高了些；<br>人，多了也少了些。<br>想要做的事，犹犹豫豫，还是做了。玩的很烂很烂，读档重来，没有存档。所以要玩RPG游戏，应该随时存档。<br>这一页留白许多</p>
+<h3 id="停运"><a href="#停运" class="headerlink" title="停运"></a>停运</h3><p>0 false 1 true 每次debug到最后，总是最简单的东西错了。<br>等待中，公交车停运了。<br>去了下一站，原来的站是始发站。<br>寒风凛冽，又是夏天到冬天的巨变。</p>
+<h3 id="忘"><a href="#忘" class="headerlink" title="忘"></a>忘</h3><p>如果是故事，就写一写故事。</p>
+<h3 id="梦魇"><a href="#梦魇" class="headerlink" title="梦魇"></a>梦魇</h3><p>飞絮，落叶<br>流水自东去<br>无意<br>早晨，白日当空，不想起，有心<br>掉了一半的网窗，倚在帘上<br>思索良久，无言语能解这尴尬<br>所以春暖花开<br>风很大很大</p>
+<h3 id="酒店"><a href="#酒店" class="headerlink" title="酒店"></a>酒店</h3><p>床头的灯很耀眼，住过比较多的地方以后，就会发现原来有些地方并不好。适应了白色布局之后，会有些地方显得老旧。好好计划。头脑发热会很糟糕的。</p>
+<h3 id="早睡"><a href="#早睡" class="headerlink" title="早睡"></a>早睡</h3><p>入夜该睡<br>准备考试<br>1016</p>
+<h3 id="习惯"><a href="#习惯" class="headerlink" title="习惯"></a>习惯</h3><p>忘</p>
+<h3 id="故事"><a href="#故事" class="headerlink" title="故事"></a>故事</h3><p>没了的，重写不出来。</p>
+<h3 id="圆月"><a href="#圆月" class="headerlink" title="圆月"></a>圆月</h3><p>中秋亦如一个周末，悄无声息的过去了。终于到了一个地方，有些刻意而为，怀着丝丝的期望，日剧的套路，总有一个地方会听你诉说。</p>
+<h3 id="痕迹"><a href="#痕迹" class="headerlink" title="痕迹"></a>痕迹</h3><p>窗外的雨滴<br>一点一点<br>模糊着来来往往<br>时间的画作<br>一笔一笔<br>描绘着当前<br>擦拭了模样<br>想要挡住滑落的水<br>感受到冰凉<br>不断复刻<br>不断消失<br>骤雨残花绿意盎<br>了无痕迹是佳作</p>
+<h3 id="蓝天"><a href="#蓝天" class="headerlink" title="蓝天"></a>蓝天</h3><p>隔着一层纱窗，云一直在变换，随风飘动的布料，再看一眼还是一片空空的蓝天。孤独的人总喜欢观察世界，像是很懂的样子，要么无知着，要么忙碌着，虚度着时光，像假日里无法忘记的作业。</p>
+<h3 id="明天"><a href="#明天" class="headerlink" title="明天"></a>明天</h3><p>相对而行，相望于某一刻，冬雪夏风，而后咫尺天涯，花月不了……<br>路灯下有一人，带着一把吉他，背着一个书包，提了一袋空瓶子，拿着几张白纸，想来是曲谱。<br>一心二用，总是出错。<br>看着希望离去，写不了，不想写下。<br>7*24就不用想了。<br>想来是反了，空了。<br>就当是一个很长很长的假期。<br>要按时休息。不要在散懒了。</p>
+<h3 id="2019-4-15"><a href="#2019-4-15" class="headerlink" title="2019-4-15"></a>2019-4-15</h3><p>冬去春来，一叶枯黄落，漫漫柳絮飞，风筝天上挂，蝌蚪水边戏，鱼儿湖中游，谁人桥上过，已是四月的天。</p>
+<h3 id="静安"><a href="#静安" class="headerlink" title="静安"></a>静安</h3><p>‘’噢，你也在这里吗。“</p>
+<h3 id="雨季"><a href="#雨季" class="headerlink" title="雨季"></a>雨季</h3><p>灰，白，黑。</p>
+<h3 id="20160810"><a href="#20160810" class="headerlink" title="20160810"></a>20160810</h3><p>外写了一个底层驱动的helloworld程序<br>需要串口线</p>
+<h3 id="20160808"><a href="#20160808" class="headerlink" title="20160808"></a>20160808</h3><p>学习android hal层，module stub模型<br>节日就是为了让人想起什么，做点什么。静得无所适从。</p>
+<h3 id="前行"><a href="#前行" class="headerlink" title="前行"></a>前行</h3><p>20160125 月亮转太阳<br>将物品放好，坐下来调整位子，有窗台，倚靠着，用手托着脸，暗黑暗黑的站台。来了个老奶奶，感谢一个帮她找到座位的，陌生人，然后坐下。帮她又确认一下位子。此时，帅哥，你到哪？她问。福建。摸了摸胡须。只是一位有点上年龄的大姐，一头乌黑的卷发，“老”。(已经习惯连续打上下引号和左右括号了)<br>阳光直射，鲜红，金，淡黄，轨道两旁还有积雪，远处的白瓦屋，一一退去。<br>定四个闹钟，还是第一个就醒了，然后躺到了第二个。收了衣服，升华了一半，冰冻了一半，敲了好久。人去屋空。路面有冰，小心滑倒，漫漫长长三号路。<br>山山水水，来来往往。</p>
+<h3 id="夏季"><a href="#夏季" class="headerlink" title="夏季"></a>夏季</h3><p>漆黑的夜，高高的楼，彻夜的灯火，一时的汽笛。<br>在历史长卷中，寻得，精美玉石，无双瓷器，宏伟城池，森森白骨，旧时街道，攘攘今人。<br>百年名画，一点相似。<br>走过最难忘的旅行，得到的已是一抹蚊子血，未有的还是那床前明月光。那些叫不出来的名字，就像窗外无声的大雨，一一落去。<br>雨后的阳光不再刺眼，路上的梧桐不时滴下雨点，点在心间。<br>要追好多的梦，要去好多的地方，困了也会强睁双眼的。<br>遇见，来时。</p>
+<h3 id="坠夕祭"><a href="#坠夕祭" class="headerlink" title="坠夕祭"></a>坠夕祭</h3><p>岁月增长，使时间，由数字转变为某些思绪，某些意义。<br>回忆之书，处处尘埃，轻轻翻阅，尘土飞扬，四十五度角，也是惹红了眼 。<br>永恒，留下了只是永远，愿另一端一切安好。</p>
+<h3 id="雾"><a href="#雾" class="headerlink" title="雾"></a>雾</h3><p>似有似无，一切都相隐匿，想抓到一丝，却得到一切，一切为空，几许清意，可惜可忆。霾，无色无味，却玩不起。<br>在雾霾天跑一千米，一切没变，撑完最后一步，一学期又到底了。<br>相信自己，能笑着跑过终点吗？或者继续跟着人群矛盾地走下去，想着高度，做着低度，最后祈祷着命运再三的眷顾，似是而非的自语，一切超过期望，因为你的努力配不上这一切，还可自鸣得意，洋洋自喜。未知的世界，无奈的领域，真的有勇气相信自己，下一步，是自己想要的吗？在这雾的世界，害怕，很害怕，到不了想要到的地方，所以不敢想，不愿想，悄悄地想。没方向，怎能掌舵，只任之漂流，随流而行，风雨之后，浮向一个港口，对着深夜，这一次，就这么过了吧。地球一面对着光明的太阳，一面对着黑暗的宇宙，所以它无尽的转着。人，在白天里只故着无尽的光明，只能在深夜里面对内心的黑与暗。<br>看透一切，放下一切，是为空。<br>看透一切，执着一切，是为痴。<br>能看透一切吗？无聊。<br>给自己一个目标：大二之内过英语六级，A两百题算法题，不玩自己。<br>不能流浪，就去担当，给自己一个念头！</p>
+<h3 id="残言"><a href="#残言" class="headerlink" title="残言"></a>残言</h3><p>做选择很痛苦，只是有时没得选会更痛苦。<br>身在其中，很难判断得与失<br>掌控自己  如何<br>花花世界，没有人可以帮你摆脱<br>春华秋实<br>夏炎冬寒<br>霜露之瞬，天地之固<br>一点一滴，一滴一点<br>就算一生注定平淡<br>就算一时不如人意<br>就算此刻空空也<br>下一点能改变一切</p>
+<p>遮起双眼<br>没有黑暗与光明<br>习惯活在心中的努力<br>恐惧没有回报的付出<br>能回到的只有未来<br>一场考试能决定什么<br>各有各的立场<br>经历过也无法评定<br>二十年后的自己也许失去一切<br>但这是我的选择<br>是的，那也是种选择<br>但下一天你会发现<br>那不是选择，是放弃<br>是毫无尊严，毫无努力的放弃<br>曾经一样的机会<br>这是一各机会<br>无关名利风月，至少与你我无关<br>这是拥有“选择”的机会<br>或者是更多选择的机会<br>每个人都有放弃的权利<br>每次也都有人放弃<br>所以可以成为之一<br>但为什么要成为之一<br>或许很矛盾，连自己都说服不了<br>但这不矛盾<br>主要矛盾不是这<br>只是一场考试<br>不是一定要走上这条道<br>只想说努力通过这场考试，获得多一点的机会<br>当然每条道都有每条道的风景<br>这是一个十字路口<br>但下一个却是双十字路口，是转盘<br>更多的风景<br>或许十年后同样有<br>但那是十年后<br>或许或许的或许<br>或许尝试没有懊悔，没有空虚的今夜，是个不错的决定吧<br>或许充满希望新的一天是最后仅剩的<br>但回忆至少不再苦涩<br>青春不再苍白<br>无论逝去与否<br>那些年，点缀这件小事</p>
+<p>这里的生活是怎样的呢<br>曾经，时间的节点上<br>   期待过，想过那是什么生活吗<br>   想象过，但不知如何说，老师有提过。<br>那时是这样，忘了<br>只记得黑一般的黑挺有意思的<br>真的很有意思<br>这里的生活怎样呢<br>不好表达也不会表达<br>毕竟还在其中<br>而且只是个人感受<br>只想说一句<br>虽然没学会什么<br>但世界再一次变小<br>小小的村落    蓝蓝的天<br>老师说要成为一流的人<br>老师说可以做个平凡的人<br>人是什么<br>人为什么而活<br>淡泊以明志<br>宁静以志远<br>依旧有收西川平天下的雄心<br>佐越灭吴<br>三聚家财<br>亦可泛舟，垂钓西湖<br>信仰与宿命<br>我们曾经走过</p>
+<h3 id="光年"><a href="#光年" class="headerlink" title="光年"></a>光年</h3><p>八月桂花香，香欲醉人，已是九月。十里飘香，一路花飞，伴入他乡，恰似书上光年。这一季的花，那一季的香。那一时的你，这一世的思念。</p>
+<h3 id="今晚"><a href="#今晚" class="headerlink" title="今晚"></a>今晚</h3><p>当七彩的蝴蝶<br>还在破茧<br>我们还在嬉戏<br>门前的石凳<br>当昏暗的橘灯<br>已经点亮<br>我们却找不到彼此<br>屋后的山坡<br>回到那个位置<br>回望那个小石凳<br>此时不在是你和我<br>云随风而去<br>落叶停留在心里<br>叹命运如此有趣<br>擦肩而过<br>你是如此相似<br>恨自己无能为力<br>挽不回过去<br>为什么狂风总伴暴雨<br>为什么你总在无月的夜里<br>为什么誓言总像流星般逝去<br>今夜<br>霓灯似水，年华依旧<br>滚滚红尘，皎皎明月<br>千尺楼阁，一夜秋意<br>三言两语，满天繁星<br>今夜<br>代码ABC<br>课本ABC<br>上课ABC<br>英语快成此生不换了<br>课设怎办。。。。</p>
+<h3 id="青鸟"><a href="#青鸟" class="headerlink" title="青鸟"></a>青鸟</h3><p>楼上楼，好风光<br>古人情，今朝叹。<br>千里河山路，<br>方今似一处。</p>
+<h3 id="绝迹"><a href="#绝迹" class="headerlink" title="绝迹"></a>绝迹</h3><p>那年的考试，遗憾的是字数，犹忆的是心跳。兴奋的前夜，心伤的午夜，如释的深夜。给这天意义，这一天有了意义，人言。纷纷世界，无数因果，在路上的你，总要走下去。往事回首，喃喃自语的流星。现在，依旧是考试作业严相逼，再加个英语半死不活的说，还离不开了！真的是怕什么来什么。<br>此时此刻，多少未眠人，只为那刻的重要。你的一生。真的没什么。矛盾得可笑，从来如此。<br>抛下所有的命运，像凌晨四点的小鸟，期待一刹那的红，染红天际，展翅高飞。<br>名利权色，诱惑，贪，时间。<br>这一季种子已种下，苦辣心酸，漫天花飞，伴蝶舞，当时。</p>
+<h3 id="实际"><a href="#实际" class="headerlink" title="实际"></a>实际</h3><p>雨，下在窗前，划过林立的高楼，俯视心间的幸福。事与情，金钱与生活对立而统一，现代文明的悲哀。<br>想告诉点什么，却真的不知道怎么写，只能说作业好头痛。这个环境里自己很不想输，输不起，很虔诚的想自己的未来，知道自己想到达的地方，但无法肯定自己能否达到。书成了最好的催眠工具，仅此而已。这次会怎么样。百无一用是自己啊！如何像没有情绪的程序，从头到尾。<br>文字无聊的产物。<br>五月，又是时好时坏。你可以告诉谁啊，你想告诉谁，每次都从最坏做起，都能够好好结束。</p>
+<h3 id="方巾"><a href="#方巾" class="headerlink" title="方巾"></a>方巾</h3><p>北风入夜，梦醒几人，寻去几路烟尘，烛光晶莹泪。钟声渡船，惊起一鸥，来时一水涛涛，月影斑斓思。</p>
+<h3 id="相依"><a href="#相依" class="headerlink" title="相依"></a>相依</h3><p>断了线珠子，洒落满地，捧起时，似曾相识，拾起时，满附尘埃，短了的线，没了的线，怎能串起，只能堆砌，染风凝露，某一天，细数往昔。<br>小树林下的花海，格外动人，紫色激荡，不免漂泊，孤舟难立。</p>
+<h3 id="放弃"><a href="#放弃" class="headerlink" title="放弃"></a>放弃</h3><p>筑起一道墙，围住黑暗，无法掩盖地缝隙，无奈的微微地上扬。坍塌的瞬间，沉积的泛滥，平静，筑造。逃，逃到没有未来的世界，逃到没有瞬间无言的世界，逃到现实的世界，忘了来时的路。</p>
+<h3 id="老者"><a href="#老者" class="headerlink" title="老者"></a>老者</h3><p>一把椅子，一根拐杖，一丝凌乱仅可寻到几缕黑发，刻痕般的皱纹，岁月的痕迹。没有眉毛，眼睛很清，早以不大能分辨，眼前的你，白色的嘴角，几点黑癍，坐在椅上，握着拐杖，略显大的手，厚实的衣服，对比着单薄。<br>坐着。静，静，静。思想，思忆，思念。<br>茶水，红包，搀扶着，走着，青山，白云，蓝天。<br>沙哑的声音，很低的音调。<br>莫名的感触。<br>车窗外变化的景色，下一次我又是谁。</p>
+<h3 id="日出"><a href="#日出" class="headerlink" title="日出"></a>日出</h3><p>不是所有的事物都有原因，或者不是所有的事物都能找到原因，或者不是所有人都能找到原因。<br>四点的闹钟四点半起，披衣穿鞋收被子，刷牙洗脸打热水，掩上泡面盖子，拧住水杯盖子，整理行李，掉落衣架，轻喝一口水，加了点调料，还是淡了，时间过了就冷了。<br>清了清桌面，望了望行李，拍了拍口袋，蓦然，倒腾着柜子，翻开本子，触摸着学生证，来自车票的温度，拔出钥匙，拉上包的拉链，关上灯。<br>拉箱声，同看月落，橘红灯下，路延伸，不重的更重，零度，不冷的温度，地铁，既热又麻的手。<br>候车室内，一人起身离去，坐下，七点，补觉，雾罩着远处，天原来亮了，查成绩，回去。<br>看着窗外渐渐离去的动车，突然一列车从中穿过，车离去。<br>飞逝的世界，有人追寻着定律，有人骑着青牛。<br>阳光，温暖的阳光。</p>
+<h3 id="锦绣"><a href="#锦绣" class="headerlink" title="锦绣"></a>锦绣</h3><p>碎玉浮苍穹。伤心不在十里处，灯火阑珊小树林。<br>做不到，在成绩出来时，平静后，还能平静，又是这样。准备考英语。</p>
+<h3 id="失言"><a href="#失言" class="headerlink" title="失言"></a>失言</h3><p>有些事，总是一次一次的延期，盼着明天，又盼着明天。然后，告别着今天，告别着今天。活着很好，总有很多时间挥霍，很多时间后悔，很多时间重新开始。折腾，浑浑噩噩的有过了两天，不曾注目间，绿叶已铺满枝头，红花满地，守护那一丝笑意，绿草盈野，褪去那一片苍凉</p>
+<h3 id="年轮"><a href="#年轮" class="headerlink" title="年轮"></a>年轮</h3><p>有些事还不做，我的理由什么？习惯了，很多相似的事，预料的不愿预料的，就想回忆般，一一呈现，剩下的是否还会出现？平凡的自我，能改变这一切吗？犹如命运的乞儿，戴着拷链，匍匐在其脚下，无神地看着人流的移动，冷漠着命运的冷漠，一个硬币将尊严压于黑暗，同一的硬币，下一个是否？再次抛来的硬币，旋转着将落地，伸手，伸出手去接住它，摊开，不一样的一面，接住了吗？严冬下，落下的梧桐枯叶，被尘土吞噬着。白雪旁，常青树下，耕耘过的土地，一畦绿苗。歌完，入梦。</p>
+<h3 id="元月"><a href="#元月" class="headerlink" title="元月"></a>元月</h3><p>从人挤人的车厢，到寥寥无几的车厢，这是驶到终点的列车。<br>晴天里，逛“荒地”，看新地，说小事。午过饭后，转圈圈，忆往事，听趣事：北人南雪、奈何鹊桥，描空白，绘美图！<br>登高处，斜照处，点点，急急来，徐徐动。空静到喧拥，又是一程。都市繁华，流光溢彩，众游船，小秦淮，人满华灯，红灯笼，映江流，河边柳，寒风迎，叶随飘，空余枝。<br>一天下来，又是腿疼脚痛，但又意思。</p>
+<h3 id="栏中"><a href="#栏中" class="headerlink" title="栏中"></a>栏中</h3><p>刺激的水，刺激的风，刺激的刺激。烦心的事，烦心的物，烦心的烦心。 </p>
+<p>大学，机会给很多，时间只有四年。难得的太阳，却睡过头了。 </p>
+<p>明天考英语口语，后天考1000米。星期六考汇编。上八天课。任务一个没做。 </p>
+<p>口语，九篇待背，一篇待写。十选一，合十而拜了。</p>
+<h3 id="习袭"><a href="#习袭" class="headerlink" title="习袭"></a>习袭</h3><p>浮生，荣辱胜败却依旧，不惊能有几人，风霜之后，却被水穿石。 </p>
+<p>登高望远，千马奔腾，尘土飞扬。沿途走过，几人呻吟，木叶零落。陶潜，李白，武穆。</p>
+<p>投影仪，需要一块屏幕。</p>
+<h3 id="苦思"><a href="#苦思" class="headerlink" title="苦思"></a>苦思</h3><p>丑小鸭变成白天鹅飞走了，安徒生停下笔了，望了望天。旁边的神轻叹，俯身拾起一支黑羽毛。晴空万里，白云飘动，落下一白羽。轻弓小箭，挽弓拉箭，红光穿过，拓开，红花易落，染在叶子，枯叶无声。“沙沙沙沙”，随收获的声息，带上他的战利品，他的梦，少年离去。“唉”慢慢整理一支零乱的白色羽毛，拉出其夹杂的黑发，将白羽放入匣子，在黑羽的旁边；将黑发放入另一盒子。“你来了”“我没离开”“也是，我忘了”夕阳西下月如钩，岁月依旧。帷幕落下，寻梦者。</p>
+<h3 id="无题"><a href="#无题" class="headerlink" title="无题"></a>无题</h3><p>秋天，小草依然是绿的。一切似乎没变。只是绿色中带点黄色，夜里少了几把声虫鸣。秋季花丛中各色的蝴蝶已消逝，但不悲，或许秋风懂得扑蝶孩童 林下已是蝴蝶满天，但孩童不到，风苦等，冷风生，风中古井镶着青苔……重了，丢掉，要丢哪？</p>
+<h3 id="阳光下的雪"><a href="#阳光下的雪" class="headerlink" title="阳光下的雪"></a>阳光下的雪</h3><p>雪，晶莹、明亮而不刺眼。几处小屋，静立于雪中。屋前有一小点，是一小孩。他无邪的以雪为乐，他心中有了雪。<br>后来小点消失了，独留雪与小屋相伴。<br>又是一夜东风过，独剩梨花满地开。<br>小孩不是小孩，心中的雪化了，童年的梦碎了。…无冬的世界，怎能寻觅。断了断了，何必寻。诗词何情，景图意画，细雨轻风月朦胧，何人知晓谁能解。青牛紫烟几人得。世间情故，李诗雄奇苏词豪，终不免人影对酹江月。何必叹，不想叹，怎能叹！南山下，轻风抚，陶哉。</p>
+<h3 id="知了"><a href="#知了" class="headerlink" title="知了"></a>知了</h3><p>在某天，一孩赤裸裸的来人世。不知前生做了何事，只知今生历了几件事，不知如此纷纷事，是否解，是否懂。 小时，幼稚无忧，伴笑年复年。时如秋风，直落千万笑叶。 ……</p>
+<h3 id="归去"><a href="#归去" class="headerlink" title="归去"></a>归去</h3><p>车停，上了车，知道了中国人很多。半路中得一座位，坐下。呆着，不知如何。有点困，怕错了站。前路深没于黑夜，不知何处。身旁有一女，岁相仿，常笑，不懂。正愁，时一人下车。知。车停，车走。但见归途中多一人。一条路，几处枯草伴落叶。风起声来，心颤。忽有怪声亦有光，吓。近，才知人也。狂奔狂笑，风抚之，雨慰之。黑暗中独行。</p>
+<h3 id="遥远"><a href="#遥远" class="headerlink" title="遥远"></a>遥远</h3><p>路忒远，心不坚，半途而废。</p>
+<h3 id="流响"><a href="#流响" class="headerlink" title="流响"></a>流响</h3><p> 流水，不断地流；青草，不断的枯萎。 黄蓝相比。               </p>
+<p> 转瞬间，已不在新绿，……枯黄！     </p>
+<p> 转瞬间，已不在新绿，……枯黄 ！</p>
+<h3 id="幻"><a href="#幻" class="headerlink" title="幻"></a>幻</h3><p> 这儿的风景独好，但路还未尽。停下，迷恋，只有遗憾。</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

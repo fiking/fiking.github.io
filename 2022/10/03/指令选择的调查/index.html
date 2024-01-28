@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要指令选择是代码生成中三个主要的优化问题之一 – 其它两个是指令调度和寄存器分配。指令选择器的任务是将来自目标独立表示的输入程序转换为一个特定目标的形式，期间会充分利用可以使用的机器指令。因此，指令选择是生成在特定目标机器上既正确又高效运行的代码至关重要的一部分。 尽管自 1960 年代后期以来一直在研究，但是这个领域的上一篇综合调查是写于 30 多年前的了。因为，自从它发表之后出现了许多新的方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="指令选择的调查">
+<meta property="og:url" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要指令选择是代码生成中三个主要的优化问题之一 – 其它两个是指令调度和寄存器分配。指令选择器的任务是将来自目标独立表示的输入程序转换为一个特定目标的形式，期间会充分利用可以使用的机器指令。因此，指令选择是生成在特定目标机器上既正确又高效运行的代码至关重要的一部分。 尽管自 1960 年代后期以来一直在研究，但是这个领域的上一篇综合调查是写于 30 多年前的了。因为，自从它发表之后出现了许多新的方">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_1_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_2_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_2_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_2_2.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_2.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_2.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_3.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_4.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_3.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_5.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_6.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_5.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_1.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_2.png">
+<meta property="og:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_3.png">
+<meta property="article:published_time" content="2022-10-03T06:54:48.000Z">
+<meta property="article:modified_time" content="2024-01-28T01:22:54.544Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_1_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/","path":"2022/10/03/指令选择的调查/","title":"指令选择的调查"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>指令选择的调查 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9-%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是指令选择 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%86%85%E9%83%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">编译器内部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.2.</span> <span class="nav-text">目标机器的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">编译不同方法的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E6%8C%87%E4%BB%A4%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器指令属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.2.</span> <span class="nav-text">最优指令选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E5%8F%B2%E5%89%8D%E5%8F%B2"><span class="nav-number">2.3.</span> <span class="nav-text">指令选择的史前史</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.</span> <span class="nav-text">宏展开</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%B4%E7%B4%A0%E7%9A%84%E5%AE%8F%E5%B1%95%E5%BC%80"><span class="nav-number">3.1.</span> <span class="nav-text">朴素的宏展开</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A9%E6%9C%9F%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.1.</span> <span class="nav-text">早期的方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E8%A6%86%E7%9B%96"><span class="nav-number">4.</span> <span class="nav-text">树覆盖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%A0%91%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">第一种使用树模式匹配的技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LR-%E8%A7%A3%E6%9E%90%E8%87%AA%E4%B8%8B%E8%80%8C%E4%B8%8A%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.3.</span> <span class="nav-text">使用 LR 解析自下而上覆盖树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Glanville-Graham-%E6%96%B9%E6%B3%95"><span class="nav-number">4.3.1.</span> <span class="nav-text">Glanville-Graham 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%AD%E4%B9%89%E5%A4%84%E7%90%86%E6%89%A9%E5%B1%95%E8%AF%AD%E6%B3%95"><span class="nav-number">4.3.2.</span> <span class="nav-text">使用语义处理扩展语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%B4%E6%8A%A4%E5%A4%9A%E4%B8%AA%E8%A7%A3%E6%9E%90%E6%A0%91%E8%80%8C%E8%8E%B7%E5%BE%97%E6%9B%B4%E5%A5%BD%E7%9A%84%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F"><span class="nav-number">4.3.3.</span> <span class="nav-text">维护多个解析树而获得更好的代码质量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%80%92%E5%BD%92%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E8%A6%86%E7%9B%96%E6%A0%91"><span class="nav-number">4.4.</span> <span class="nav-text">使用递归自顶向下覆盖树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95"><span class="nav-number">4.4.1.</span> <span class="nav-text">第一个方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%91%E9%87%8D%E5%86%99%E5%92%8C%E6%A0%91%E8%A6%86%E7%9B%96%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">4.5.</span> <span class="nav-text">树重写和树覆盖的说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%A6%BB%E7%9A%84%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E5%92%8C%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">4.6.</span> <span class="nav-text">分离的模式匹配和模式选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4%E6%A0%91%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">4.6.1.</span> <span class="nav-text">线性时间树模式匹配算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E6%9C%80%E4%BC%98%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">4.6.2.</span> <span class="nav-text">动态规划的最优模式选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E6%88%90%E6%9C%AC%E5%88%86%E6%9E%90%E8%BF%9B%E8%A1%8C%E6%9B%B4%E5%BF%AB%E7%9A%84%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">4.6.3.</span> <span class="nav-text">使用离线成本分析进行更快的模式选择</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DAG-%E8%A6%86%E7%9B%96"><span class="nav-number">5.</span> <span class="nav-text">DAG 覆盖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-number">5.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DAGs-%E4%B8%8A%E7%9A%84%E6%9C%80%E4%BC%98%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9%E6%98%AF-NP-%E5%AE%8C%E5%85%A8%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">DAGs 上的最优模式选择是 NP 完全问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%98%8E"><span class="nav-number">5.2.1.</span> <span class="nav-text">证明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%91%E6%A8%A1%E5%BC%8F%E8%A6%86%E7%9B%96-DAG"><span class="nav-number">5.3.</span> <span class="nav-text">树模式覆盖 DAG</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E8%A1%A8%E8%BE%BE%E5%BC%8F-DAG-%E4%B8%BA%E6%A0%91"><span class="nav-number">5.3.1.</span> <span class="nav-text">解表达式 DAG  为树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E6%89%A9%E5%B1%95%E5%88%B0-DAG"><span class="nav-number">5.3.2.</span> <span class="nav-text">将动态规划扩展到 DAG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%9C%A8-DAG-%E4%B8%8A%E5%8C%B9%E9%85%8D%E6%A0%91%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.3.3.</span> <span class="nav-text">直接在 DAG 上匹配树模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92%E9%80%89%E6%8B%A9%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.3.4.</span> <span class="nav-text">线性规划选择模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%9B%BE%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">基于图的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-number">6.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E7%9A%84%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">6.2.</span> <span class="nav-text">使用子图同构的模式匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%9B%BE%E7%9A%84%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9%E6%8A%80%E6%9C%AF"><span class="nav-number">6.3.</span> <span class="nav-text">基于图的模式选择技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E5%85%83%E5%92%8C%E4%BA%8C%E5%85%83%E8%A6%86%E7%9B%96"><span class="nav-number">6.3.1.</span> <span class="nav-text">一元和二元覆盖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-CP-%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">6.3.2.</span> <span class="nav-text">基于 CP 的技术</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-PBQP-%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="nav-number">6.3.3.</span> <span class="nav-text">基于 PBQP 的技术</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%A4%84%E7%90%86%E5%99%A8%E5%BB%BA%E6%A8%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">6.4.</span> <span class="nav-text">基于处理器建模的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CHESS"><span class="nav-number">6.4.1.</span> <span class="nav-text">CHESS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E9%80%80%E7%81%AB"><span class="nav-number">6.4.2.</span> <span class="nav-text">模拟退火</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="指令选择的调查 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          指令选择的调查
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-10-03 14:54:48" itemprop="dateCreated datePublished" datetime="2022-10-03T14:54:48+08:00">2022-10-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-28 09:22:54" itemprop="dateModified" datetime="2024-01-28T09:22:54+08:00">2024-01-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>38k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>35 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>指令选择是代码生成中三个主要的优化问题之一 – 其它两个是指令调度和寄存器分配。指令选择器的任务是将来自目标独立表示的输入程序转换为一个特定目标的形式，期间会充分利用可以使用的机器指令。因此，指令选择是生成在特定目标机器上既正确又高效运行的代码至关重要的一部分。</p>
+<p>尽管自 1960 年代后期以来一直在研究，但是这个领域的上一篇综合调查是写于 30 多年前的了。因为，自从它发表之后出现了许多新的方法和技术，所以需要对当前的文献进行新的审查。这个报告解决了这个需求，给出了一个广泛的调查，以及指令选者过时的方法和最新方法的分类。因此，这个报告取代和扩展了之前的调查，并且尝试着指出未来的研究方向。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>任何软件的每部分实现承诺 – C 写的基于 GUI 的 Windows 应用，数学计算的高性能 FORTRAN 程序，或者 Java 写的智能手机 app – 都需要一种或者另一种形式的编译器。它的核心目的是转换一个输入程序的源代码 – 相关高级编程语言写的 – 到一个等价的低级程序代码表示，其对应于特定的目标机器。程序代码转变为机器代码 – 与编译相比是一个相对容易的任务 – 然后可以在指定的目标机器上执行。最后，编译器一直是，并且很可能永远是利用现代技术的重用推动者。因此，自 1940 年代第一台计算机开始出现以来，一直在积极研究中，编译是计算机科学中最古老和研究最多的领域之一。</p>
+<p>为了达成这个任务，编译器需要处理范围广泛的中间问题。其中一些问题包括语法分析，转变为中间表示，目标独立优化，以及代码生成。代码生成是生成目标机器相关的程序代码的过程，依次由三个子问题组成 – 指令选择，指令调度，以及寄存器分配 – 本报告关注第一个问题。</p>
+<p>之前的一些在某种程度上讨论指令选择的调查是由 Cattell[45]，Ganapathi 等[116]，Leupers[169]，以及 Boulytchev 和 Lomov[33] 产生的。但是，最后一篇广泛的调查 – Ganapathi 等的 – 是 30 年前发布的。而且，经典的编译器书只是简短的讨论指令选择，因此提供的见解比较少；在构成编译器书的 4600 多页综合正文中[8，15，59，96，173，190，262]，少于 160 页 – 其中有很大的重叠，且基本上只讨论树覆盖 – 用在指令选择上。因此，需要对该领域进行新的，实时的研究。这个报告解决了这个需要，通过描述和回顾了已经存在的方法 – 包括过去和现在的 – 指令选择，因此取代和扩展了之前的调查。</p>
+<p>这篇报告的结构如下。本章剩余部分介绍和描述了指令选择的任务，比较了已经存在的方法解释了通用的问题，且简要介绍了有关代码生成的第一篇论文。然后第 2 章到第 5 章，分别讨论了指令选择的基本原则：第 2 章介绍了宏展开；第 3 章讨论了树覆盖；其在第 4 章和第 5 章扩展到了 DAG 和图覆盖。最后，第 6 章给出了一个结论结束这个报告，其中我尝试识别出未来研究的方向。</p>
+<p>这篇报告也包含了几个附录。附录 A 给出了一张表总结了本报告中涵盖的所有方法，附录 B 中有一张图标说明了文章出版的时间线。为了一些必要的背景信息，附录 C 提供了一些图的正式定义。附录 D 中包含了一些术语和概念的分类，用于整个报告，促进讨论且避免混淆。最后，附录 E 中提供了本文档的修订日志。</p>
+<h3 id="什么是指令选择-？"><a href="#什么是指令选择-？" class="headerlink" title="什么是指令选择 ？"></a>什么是指令选择 ？</h3><p>如本章一开始声明的，编译器的核心目的是将高级别源码写的程序转换成低级别机器码，其是将要执行程序的特定硬件平台特有的。这个源码可以用一些编程语言表达（如，C，Java，Haskell 等），然后硬件通常是一个特定模型的处理器。后面正在编译的程序称为<em>输入程序</em>，然后它被编译的硬件称为<em>目标机器</em>（这些定义在附录 D 中也可以找到）。</p>
+<h4 id="编译器内部"><a href="#编译器内部" class="headerlink" title="编译器内部"></a>编译器内部</h4><p>为了给指令选择一个上下文，让我们简要地检查下编译器做了哪些事情。图 1.1 给出了大部分编译器的基础设施。首先是<em>前端</em>解析，验证，然后转换输入程序的源码到一个等价形式即<em>中间表示</em>，或者简写为 IR。IR 代码是编译器内部使用的格式，它还将编译器的其余部分于特定编程语言的特征隔离开来。因此，通过简单地为每个语言提供一个前端，就可以在相同的编译器中支持多个编程语言。</p>
+<p><img src="./%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_1_1.png"></p>
+<p>执行一系列目标机器无关的优化之后 – 如，死代码消除和评估带有常量的表达式（被称为常量折叠） – IR 代码被<em>代码生成器</em>后端转换为一组机器相关的指令，称为<em>汇编代码</em>；这是允许输入程序在特定目标机器上可以执行的部分。为了做这个，我们需要决定哪个目标机器的机器指令可以用于实现 IR 代码；这是<em>指令选择器</em>的职责。对于已选择的指令，我们也需要决定它们出现在汇编代码中的顺序，这是<em>指令调度器</em>关心的事。最后，我们必须决定如何使用目标机器上可用的有限寄存器集，通过<em>寄存器分配器</em>来管理。最后两个任务超出了本报告的范围，不会在进一步详细地讨论了。</p>
+<p>指令选择器主要是要选出可以实现与输入程序相同期望行为的机器指令，然后次要目标是，要产生高效的汇编代码。我们将其重新表述为下面的子问题：</p>
+<ol>
+<li><em>模式匹配</em> – 检查何时何地可以使用的某条指令；然后</li>
+<li><em>模式选择</em> – 当多个选项存在的时候，决定当前场景中可以选择的指令。</li>
+</ol>
+<p>第一个子问题与寻找机器指令候选有关，而第二个子问题与从这些候选指令选出一个子集有关。有些方案将两个子问题合并到了一步，但大部分都是保持两者分开的，主要区别是他们如何解决模式选择的问题。通常后者被表述为一个优化问题，其中每条机器指令都被赋予了一个开销，目标是最小化已选择的指令的总开销。根据优化准则，成本通常是反映目标机器执行给定机器指令所需的周期数。</p>
+<h4 id="目标机器的接口"><a href="#目标机器的接口" class="headerlink" title="目标机器的接口"></a>目标机器的接口</h4><p>指令选择期间可以使用的有效机器指令集是由目标机器<em>指令集架构</em>（ISA）决定的。大部分的 ISAs 提供了丰富且多样的指令集，它们的复杂范围从执行简单只有一个操作的简单指令 – 如，算术加法，到高复杂的指令–如，拷贝一个内存位置的内容到另一个位置，增加一个地址指针，以及重复直到遇到某个停止值。因为指令集很少是正交的，一个特殊的操作集总是存在超过多种实现方式。例如，表达式$a + (b \times c)$ 的计算，可以通过首先执行一个 mul 指令 – 其实现了 $d\leftarrow b\times c$ – 然后紧跟着一条 add 指令实现了$e\leftarrow a + d$来计算；或者它可以通过执行一条单一的 mulacc 指令来计算，它实现了 $a \leftarrow a + (b \times c)$。</p>
+<p>根据目标机器的特性，在执行特定任务时，一些指令序列比其的更高效。对于数字信号处理器(DSPs)更是如此，其为了提高某个算法的性能，给出了许多的客制化机器指令。根据 1994 年的研究[254]，从 C 程序到目标为 DSPs 的编译器生成的汇编代码的时钟周期固有开销是手写汇编代码的 1000% 多，因为编译器未能充分利用目标机器的能力。最后，生成的机器代码的质量高度依赖于编译器利用硬件相关的特性和资源的能力，其中指令选择器是达成这一目标的关键（但是不是唯一的）组件。</p>
+<h3 id="编译不同方法的问题"><a href="#编译不同方法的问题" class="headerlink" title="编译不同方法的问题"></a>编译不同方法的问题</h3><p>如同我们在前一节看到的，ISA 由许多不同类型的机器指令组成。 但是，当前所有指令选择方法的共同特定是，没有一个可以处理 ISA 中的每一条有效指令的。最终，大多数提出新指令选择技术的论文讨论的指令集都有所不同。例如，早期文献中，“复杂机器指令”是指使用不同复杂度的方案计算内存地址的内存加载和存储指令。这些方案称为<em>地址模式</em>，使用合适的地址模式可以降低代码大小，同时提高性能。举个例子，让我们假设我们需要从一个 驻留在内存的1-字节数据的数组中的特定位置加载一个值。因此，我们想要的值的内存地址是 @A + offset，其中 @A 指的是第一个元素的内存地址，通常叫<em>基址地址</em>。一个合理获取这个值的方法是首先执行一个 add 指令来计算 @A + offset 到一些寄存器 $r_x$ ，然后执行一条 load 指令其从 $r_x$ 中获取内存地址。这样的 load 指令被认为是有<em>绝对</em>或<em>直接</em>地址模式。但是，如果ISA 提供了一条带有<em>索引</em>地址模式的 load 指令 – 其地址获取的地方是基础值加上偏移 – 这样我们就可以远离只使用一条机器指令了。相比之下，在现代指令选择方法中高效处理这样的地址模式是微不足道的，更复杂的机器指令通常是产生多个值的，或者是只能在特定场景下使用的（或不能使用的）。</p>
+<p>为了解决这个问题，使得我们可以比较指令选择的不同方案，我们将会引入定义一组属性，每个都与某类机器指令相关。</p>
+<h4 id="机器指令属性"><a href="#机器指令属性" class="headerlink" title="机器指令属性"></a>机器指令属性</h4><p><em>单输出指令</em></p>
+<p>最简单的机器指令种类是一组<em>单输出</em>的指令。这些只产生单个可见的输出，“可见”的意思是一个值可以被程序读和访问。这包含了所有实现单操作数的指令（如，加法，乘法，和位操作如 OR 或者 NOT），也包含了许多复杂的指令，其实现了几个操作数如刚才讨论的带有复杂地址模式的内存操作（如，将基址寄存器 $r_x$ 加上偏移标识的寄存器 $r_y$ 加上一个立即数得到的内存位置里的值加载到寄存器$r_d$）；只要可观察的输出值可以构成单一值，一个单输出指令就可以是任意复杂的。</p>
+<p><em>多输出指令</em></p>
+<p>如预期的，多输出指令从一个相同的输入产生了多个可观察的输出值。一个包含 divrem 指令的例子，它计算了两个输入的商和余数，算术指令也一样，除了计算结果，也设置状态标志。一个状态标志（也称为条件标志或者条件码）是每一位都表示结果的一个额外信息，如，一个进位溢出或结果是 0。因为这个原因，这样的指令总是被说是有副作用的，但是实际上这些位只不过是指令额外产生的信息，因此被认为是多输出的指令。加载和存储指令会访问内存中的值，然后增加地址指针的值，也会被认为是多输出指令。</p>
+<p><em>不相交输出指令</em></p>
+<p>从许多不同输入值产生多个可观察值的机器指令被认为是不相交输出指令。它们类似于多输出的指令，除了后者所有的输出值都是来自于相同输入值的。另一种形式说则是如果每个相关的输出形成表达式地图，所有的这些图都是相互不相交的；我们会在下一章解释这个图是如何形成的。不相交指令典型的包含 SIMD（单指令，多数据）和向量指令，其同时在许多不同的输入值上执行相同的操作。</p>
+<p><em>内部循环指令</em></p>
+<p>内部循环指令表示行为是执行一些内部循环的机器指令。例如，TI TMS320C55x [247] 处理器提供了一条 RPT k 指令，重复执行后面的指令 k 次，k 是立即数作为机器指令的一部分给出。这些指令是最难利用的指令之一，今天要利用它们要么通过客制化优化路径，要么通过编译器特殊的支持。</p>
+<p><em>相互依赖的指令</em></p>
+<p>最后一类是相互依赖的指令。这是指那些携带额外限制的指令，这些限制会在指令以特定的方式组合的时候出现。一个包含 ADD 指令的例子，这条指令来自 TMS320C55x 指令集，如果 ADD 使用特定的寻址模式，则它不能与 RPT k 指令组合在一起。如同我们将在这个报告里看到的，这是另一类大多数指令选择器都难以处理的机器指令，因为它们通常不满足基础技术所作的一组假设。此外，它们只在某些场景下出现。</p>
+<h4 id="最优指令选择"><a href="#最优指令选择" class="headerlink" title="最优指令选择"></a>最优指令选择</h4><p>当使用最佳指令选择这个术语时，大部分文献都假设 – 通常是隐式的 – 有如下的定义：</p>
+<p>定义. *一个指令选择器，能够以开销 $c_i$ 建模一组机器指令 I，是最优的，只要对任意给定输入程序 P，它选出了一个集合$S\subseteq I$ s.t. S 实现了 P，且不存在其它的集合 $S’$ 也实现了 P，其中 $\sum_{s’\in S^{‘C}s’} &lt; \sum_{s\in S^Cs}$*。</p>
+<p>换句话说，通过这个指令选择器处理和利用相同的机器指令，无法实现更低成本的汇编代码，则认为这个指令选择器是最优的。</p>
+<p>这个定义有两个缺陷。首先，“可以被建模的机器指令”的条文限制了最优性的讨论，即指令选择器是否已经极致地利用了指令的讨论限制在它能处理的指令集上。其它的，不支持的机器指令，就算能产生更高效的汇编，也被简单的忽略了。尽管这个定义使得支持相同机器指令的指令选择器可以相互比较，但是它也允许将处理不同指令集的两个指令选择器识别成都是最优的，即使其中一个比另一个明显能产生更高效的代码。忽略违规条文可以移除这个问题，但也会使得现有的所有指令选择技术都变成是次优的。除了最简单的 ISAs，对于特定的输入程序，似乎总是存在一些机器指令可以提高代码质量，但是不能被指令选择器处理。</p>
+<p>更要紧的是另一个问题，两个可比较的指令选择器可能会选择不同的指令，从指令选择的角度来看两个都可以被认为是最优的，却最终产生指令不成比例的汇编代码。例如，其中一组指令可能会使得后续的指令调度和寄存器分配能更好的运行，而另一组则不行。这强调了代码生成的一个众所周知的特性：指令选择，指令调和寄存器分配是相互关联在一起，形成一个复杂系统，来影响最终编译后的汇编代码的质量，且经常出现的是反直觉的方式。因此，为了产生真正最优的代码，三项任务需要协同解决。有许多的研究已经开始设计这样的系统了（有些本报告覆盖到了）。</p>
+<p>因此，将最优指令选择作为一个孤立概念的想法是徒劳的，然后如果一个指令选择方法宣称是“最优的”，则明智的做法是密切关注它支持的机器指令集。不幸地是，这个概念已经在编译器社区中牢牢地确立了，并且渗透到文献中了。由于这个原因 – 且没有更好的选择 – 我将在本报告中遵守这个定义，但尽量少使用它。</p>
+<h3 id="指令选择的史前史"><a href="#指令选择的史前史" class="headerlink" title="指令选择的史前史"></a>指令选择的史前史</h3><p>代码生成的早期论文是从 1960 年代早期开始出现的 [13，99，193，214]，它们主要关注基于累加寄存器的目标机器上如何计算算术表达式。对于一条指令而言，一个累加寄存器是可以同时作为输入值和目的的寄存器的（如，$a \leftarrow a + b$），在早期的机器中很流行，因为它可以用比较少的寄存器来构建处理器。虽然这个简化了硬件制造过程，但是，不容易自动生成表达式的累加寄存器和内存间的最小传输数量的汇编代码。</p>
+<p>在 1970 年代，Sethi 和 Ullman [228] 将这些想法扩展到了带有 n 个通用寄存器的目标机器上，然后给出了一个评估带有通用子表达式的算术语句的算法，可以生成尽可能少语句的代码。后来，Aho 和 Johnson[3] 扩展了这个工作，应用动态规划开发了一个代码生成的算法，可以处理带有类似间接地址等更复杂地址模式的目标机器。本报告后面将会在重新给出这个方法，因为后续许多指令选择的方法都受到这个技术的影响。</p>
+<p>这些早期技术的共同点是指令选择的问题被有效的忽略和规避。例如，Sethi 和 Ullman 以及 Aho 和 Johnson 的方法都假设了目标机器具有简洁的数学性质，没有任何的奇异机器指令和多个寄存器分类。由于没有或者很少有机器具有这样的特性，所有这些算法在实际设置中都无法直接应用。</p>
+<p>由于缺乏正式的方法，第一个指令选择器通常都是手工写的，基于临时的算法完成的。这意味着高效和可移植性之间的权衡：如果指令选择器太通用，则生成的汇编代码可能无法执行；如果它过于紧密地针对特定目标机器量身定制，则会限制编译器支持其它的目标机器。因此，移植这样的指令选择器涉及到手工修改和基础算法的重写。对于特殊的机器，带有多有个寄存器类且需要不同的指令来访问不同的类，原始的指令选择器甚至可能根本不能用。</p>
+<p>但即使指令选择器是要以有助于编译器移植的方式来构建，也不是很清楚如何实现这一目标。下一章中，我们将研究解决这个问题的第一种方法。</p>
+<h2 id="宏展开"><a href="#宏展开" class="headerlink" title="宏展开"></a>宏展开</h2><p>第一篇介绍将指令选择作为一个独立问题来处理的方法的论文出现在 1960 年代后期。在这些设计中，指令选择通过在由输入程序组成的代码上进行模板匹配来驱动。命中后，使用匹配的程序字符串作为参数，执行相对应的宏。每种语言结构，共同构成了表达输入程序的编程语言，通常都有自己的宏定义，可以输出目标机器合适的汇编代码。多个语言构造也可以合并成单个模板，从而更好地利用指令集。对于一个给定的输入程序，对于一个给定的输入程序，指令选择器将会以遍历输入程序的程序方式运行，将代码与模板匹配，然后执行匹配后的宏。如果一些文本无法匹配到任何的模板，则指令选择会失败，然后报告一个错误，表明它无法为特定的输入程序，产生特定的目标机器上的有效汇编代码（这种情况最好不要发生）。</p>
+<p><img src="./%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_2_1.png"></p>
+<p>因此，模板匹配的过程对应与前一章描述的模式匹配问题，在多个匹配宏间选择的过程对应于模式选择的问题。但是，据我所知，所有的宏展开的指令选择器都是立即选择首先匹配到的宏，从而使得后一个问题变得轻而易举。</p>
+<p>通过保持这些宏的实现与核心实现的分离 – 核心指的是指令选择中模板匹配和宏执行的部分 - 减少了将编译器移植到不同目标机器的工作量，较早的时候，整体的方式经常要重写整个代码生成器的后端。</p>
+<h3 id="朴素的宏展开"><a href="#朴素的宏展开" class="headerlink" title="朴素的宏展开"></a>朴素的宏展开</h3><h4 id="早期的方法"><a href="#早期的方法" class="headerlink" title="早期的方法"></a>早期的方法</h4><p>我们将直接应用刚描述过的原理的指令选择器称为<em>朴素宏展开</em> – 主要是因为下面的原因。首先，这种实现的宏要么手写 – 如 Ammann 等人 [11,12] 开发的 PASCAL 编译器，或者通过机器相关的描述文件自动生成。这种文件通常使用专用的语言描述，这些年出现了许多这样的语言和工具（有些也消失了）。</p>
+<p>其中一个例子是 SIMCMP，一个由 Orgass 和 Waite [200] 开发的宏处理器，它被设计成有利于自举的形式。SIMCMP一行一行地读取它的输入，与可用的宏模板逐行比较，然后执行第一个匹配上的宏。图2.1给出了此类宏的一个例子。</p>
+<p><img src="./%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_2_1.png"></p>
+<p>另一个例子是GCL（Generate Coding Language），它是Elson和Rake[78]开发的语言，用于PL/1编译器从抽象语法树（ASTs）生成机器代码。一个AST是一个源码基于图的表示，它通常形似一个树形（附录C提供了图、树、节点、边和其它本文会遇到的相关术语的精确定义）。这些树最重要的一个特性是只有语义有效的输入程序会被转成AST，这简化了指令选择器的任务。但是，宏展开的基本原理是保持不变的。</p>
+<p><em>使用中间表示替代语法树</em></p>
+<h2 id="树覆盖"><a href="#树覆盖" class="headerlink" title="树覆盖"></a>树覆盖</h2><p>如同我们在前一章见到的，基于宏展开的大部分指令选择器的主要限制是，展开的范围限制在了表达式树的单一 AST 或者 IR 节点上了。这有效地排除了对许多机器指令的利用，导致了产生的代码质量低。另一个问题是宏展开指令选择器通常将模式匹配和模式选择合并到单步里去了，因此无法考虑机器指令的组合，然后选择产生最”高效“汇编代码的那个。</p>
+<p>这些问题可以通过采用另一种指令选择原理来解决，称为<em>树覆盖</em>。这个也是文献中能找到的大部分指令选择技术的原理，从而导致这章是本报告中最长的章节。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>让我们假设输入程序是用一组表达式树表示的，这个我们在上一章中已经很熟悉了（见第 10 页）。让我们进一步假设每条机器指令都可以类似地建模成另一个表达式树，然后为了区分通过输入程序建立的表达式树和通过机器指令建立的，我们将后者称为树模式，或简称为模式。然后指令选择的任务就可以归约成寻找一组树模式，使得表达式树上的每个节点都至少被一个模式覆盖了。这里我们可以清楚地看到模式匹配和模式选择组成了指令选择中的两个问题：对于前者，我们需要寻找哪些是适合给定表达式树的树模式；然后对于后者，我们会从这些模式中选出一个子集，生成表达式树的一个有效覆盖。对于大部分目标机器而言，会存在大量的重叠 - 即，一个树模式可能是局部或者全匹配的，节点会被表达式树的另一个模式匹配 - 我们通常希望尽可能少地使用树模式。这有两个原因：</p>
+<ul>
+<li>争取最少数量的模式意味着选择较大的树模式而不是较小的。这反而使得可以利用更复杂的机器指令，其通常可以生成更高质量的代码。</li>
+<li>已选择的模式之间的重叠数量是有限的，意味着输入程序中相同操作只在需要的时候被重新实现成多条机器指令。将冗余工作保持到最低限度是提高性能和减少代码大小的另一个关键因素。</li>
+</ul>
+<p><img src="./%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_2_2.png"></p>
+<p>作为一个通用化的最优方案，通常不会定义成最小的已选择模式的数量；而是定义为最小的已选择模式的总开销。这样允许选择的模式开销可以适应所需优化的标准，虽然模式数量和总开销之间总是有强的相关性。但是，如同第 1 章强调的，被认为是指令选择的最佳解决方案的，不一定是最终汇编代码的最佳解决方案。而且，我们只能考虑存在合适的树模式的机器指令。寻找树匹配问题的最优方案不是一个平凡的任务，如果只允许某些模式组合存在，它会变得更少。可以确定的是，大多数人都很难相处一种有效的方法可以找到所有的有效树模式匹配。因此，我们从探索解决第一个方法开始，其可以解决模式匹配的问题，但不一定可以处理模式选择的问题，然后逐渐过渡到可以做到这些事情。</p>
+<h3 id="第一种使用树模式匹配的技术"><a href="#第一种使用树模式匹配的技术" class="headerlink" title="第一种使用树模式匹配的技术"></a>第一种使用树模式匹配的技术</h3><p>1972 年和 1973 年 Wasilew[255] 和 Weingart[256] 发表了已知的第一篇使用树模式匹配来描述代码生成技术的论文（由于缺乏第一手资料，我们在本报告中将仅讨论两者中的前者）。根据 [45，116] Weingart 的设计使用了单个模式树 – Weingart 称这个为<em>歧视网</em> - 它是从一个声明性的机器描述中自动派生出来的。使用单个树，Weingart 认为，是一种紧凑而有效的表示方式。然后构建 AST 的过程被扩展成同时将每个新的 AST 节点压入栈上。当一个新节点出现时，通过比较栈上的节点和模式树种的当前节点的子节点，逐步遍历模式树。当一个搜索过程到达模式树的叶子节点时，就找到了一个模式匹配，于是输出匹配关联的机器指令。</p>
+<p>比起早期的宏展开指令选择器（即，DavidsonFraser 之前的那些），Weingart 的方法扩展了机器指令以支持那些扩展到多个 AST 节点的指令。但是，这个技术实际应用中遇到了几个问题。首先，对于特定的目标机器，构造模式树满足高效的模式匹配被证明是困难的；众所周知，Weingart 特别与 PDP-11 作斗争了。第二，它假设目标机器上至少存在一条机器指令与 AST 上的一个特定节点类型对应，但是对于某些特定编程语言和目标机器的组合，事实证明并非如此。Weingart 通过引入额外的模式部分地解决了这个问题，称为转换模式，它使得 AST 上不匹配的部分被转换成，有希望被某些模式匹配的形式，但是这个不得不手动做，有可能会使得编译器陷入无限循环中。第三，就像它的前辈宏扩展一样，一旦找到匹配项，该过程就会立即选出一个模式。</p>
+<p>另一个早期的模式匹配技术是由 Johnson [143] 开发的，实现在 PCC（可移植的 C 编译器）上了，它是一个著名的系统，是第一个与 Unix 一起发布的标准 C 编译器。Johnson 基于 Snyder[233] 早期做出的 PCC – 它是我们在上一章的 2.2.2 节讨论过的 – 但是用基于树重写的技术替换了朴素宏展开的指令选择器。对于每个机器指令，表达式树是和重写规则，子目标，资源需求，以及逐字输出的汇编字符串一起形成的。这些信息通过一个机器描述给出，如图 3.1，允许多个简单的模式浓缩成一个简单的声明。</p>
+<p>然后模式匹配相对就直接了：对于表达式树中一个给定的节点，这个节点与每个模式的根节点比较。如果匹配上，则对模式中的相关子树都做类似的检查。只要模式中的所有叶子节点都可达，则找到一个匹配。因为这个算法 – 图 3.2 给出了它的伪代码 – 展示了二次方的执行时间，尽量减少冗余检查的数量是有帮助的。这是通过维护一组代码目标来完成的，这些目标以整数的形式编码到了指令选择器中。因为历史原因，这个整数被称为<em>cookie</em>，每个模式都有相关的 cookie 表明它在哪个场景下是有效的。如果 cookies 和模式都匹配上，则尝试分配模式所需的任意资源（如，如果一个模式可能会需要任意数量的寄存器）。如果成功，则输出相应的汇编字符串，然后表达式树中的已匹配节点被替换成重写规则指定的单个节点。匹配重写的规则一直重复直到表达式树只由单个节点组成，这意味着整个表达式树已经成功地被转成汇编代码。但是，如果没有模式匹配上，指令选择器会进入一个启发式模式，其中表达式树会被部分地重写直到找到一个模式。例如，为了匹配一个  a = reg + b 的模式，一个 a += b 的表达式首先被重写为 a = a + b，然后另一个规则尝试强制一个操作数放入寄存器中。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_1.png" class="" title>
+
+
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_2.png" class="" title>
+
+
+<p>虽然它在当时是很成功的，但是 PCC 有几个缺点。就像 Weingart，Johnson 的技术使用了启发式重写规则来处理不匹配的场景。缺乏形式化的验证方法，当前的规则集总是存在不足的风险，并可能会导致编译器永远无法终止某些输入程序。Reiser [215] 还指出了，其所研究的 PCC 版本仅支持具有最大高度为 1 的一元和二元模式，因此，排除了许多带有复杂地址模式的指令。最后，PCC – 以及目前为止讨论的所有其它方法 – 在选择模式时依旧坚持着<em>第一匹配第一个使用</em>的原则。</p>
+<h3 id="使用-LR-解析自下而上覆盖树"><a href="#使用-LR-解析自下而上覆盖树" class="headerlink" title="使用 LR 解析自下而上覆盖树"></a>使用 LR 解析自下而上覆盖树</h3><p>如之前所述的，第一种方式中的一个常见缺陷是（i）他们应用了最贪婪的模式选择，（ii）且通常缺乏正式的方法论。相反，语法分析 – 这是解析输入程序源码的任务 – 可以说是最好理解的编译领域了，且它的方法也产生了完全由表驱动的解析器，这种解析器非常快速且资源高效的。</p>
+<h4 id="Glanville-Graham-方法"><a href="#Glanville-Graham-方法" class="headerlink" title="Glanville-Graham 方法"></a>Glanville-Graham 方法</h4><p>1978 年 Glanville 和 Graham [121] 提出了一篇开创性的论文，描述了语法分析技术是如何可以用到指令选择上的。后续的实验和评估表明这种设计 – 我们将其称为 Glanville-Graham 方法 – 被证明比当代方法[9, 116, 126, 127]更简单、更通用。而且，由于其表驱动的性质，汇编代码可以快速地生成（虽然第一个实现与当时使用的其它指令选择器相当）。最后，Glanville-Graham 方法已经被认为是这个领域最重要的突破之一了，并且这些想法以某种方式影响了许多后来的技术。</p>
+<p><em>将机器指令表示为语法</em></p>
+<p>首先，移除算术表达式中必要括号而不会导致歧义的一个已知方法是使用<em>波兰前缀表示法</em>。例如，$1+(2+3)$ 可以写成$+1+2\ 3$，含义是相同的。Glanvile 和 Graham 意识到使用这种形式机器指令可以被表达成一个基于 BNF（Backus-Naur 范式）的上下文无关语法。这个概念在大多数编译器书本中都有很好的描述 – 我推荐的[8] – 因此我们只进行一个简短的介绍。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_1.png" class="" title>
+
+
+<p>一个上下文无关的语法由一组<em>终结符</em>和<em>非终结符</em>组成，这两个我们都称为<em>符号</em>。我们将会通过不同的书写方式来区分两者，总是以首字母大写的方式来书写终结符（如，Term），而非终结符整个都是小写的形式（如，nt）。对于每个非终结符都存在一个或多个如下形式的<em>产生式</em>：<br>$$<br>lhs \rightarrow Right\ hand\ Side …<br>$$<br>产生式基本上指定了如何用另一个非终结符（左侧）替换一组特定符号组合（右侧）。由于非终结符可以出现在产生式的两边，因此大部分语法允许无限的替代链，这是上下文无关语法一个强大的特性。从递归的角度而言，也可以将非终结符视为递归的场景，而终结符当作是停止递归的场景。产生式也被称为<em>产生规则</em>或者<em>规则</em>， 尽管它们通常可以互换而不会引起混淆，但是我们将在本报告中保持一致，仅使用第一个术语，因为规则的含义略有不同。</p>
+<p>为了将一组指令建模为上下文无关语法，给每条指令添加一条或多条规则。我们称这个规则集合为<em>指令集语法</em>。每条规则包含了一个产生式，开销，和一个动作。产生式的右侧表示要在表达式树上匹配的树模式，左侧包含的非终结符，用来表示执行机器指令的结果的特征（如一个特定的寄存器类型）。此处的开销就含义明了的，而动作通常是输出一个汇编字符串。我们用一个带注释的示例更简洁地说明规则的结构：</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_2.png" class="" title>
+
+
+<p>在大多数的文献中，<em>规则</em>和<em>模式</em>通常是有相同含义的。但是，在这篇报告中，处于语法上下文的一条规则是一个包含产生式，开销，和动作的三元组，而一个模式指的是出现在规则中的产生式的右侧内容。</p>
+<p><em>树解析</em></p>
+<p>指令集语法给我们提供了一个形式化建模机器指令的方法，但是它没有解决模式匹配和模式选择的问题。对于这个问题，Glanville 和 Graham 应用了一个已知的技术，<em>LR parsing</em>（左到右，最右边归约）。因为这个技术主要与语法解析相关，所以应用到树上的相同方法通常称为<em>树解析</em>。我们继续举一个例子。</p>
+<p>让我们假设我们有下面的指令集语法</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_3.png" class="" title>
+
+
+<p>然后我们想要产生如下表达式树的汇编代码<br>$$<br>+\ c\ <em>\ a\ b<br>$$<br>使得表达式的结果最终在寄存器中。如果 a，b，和 c 都是整形，则我们可以假设表达式树上的每个节点都是 Int 类型，</em>，或者 +；这些将会是我们的终结符。</p>
+<p>在将表达式树转换为终结符序列后，我们从左到右依次遍历每一个。在这个过程中，我们要么将刚刚遍历到的符号放到栈上，或者通过一个<em>规则归约</em>替换当前栈上的符号。一个<em>归约</em>操作有两部分组成：首先根据出现在规则右侧的内容弹出符号。数量和顺序必须与一条有效的归约规则匹配。弹出后，出现在左侧的非终结符将被压入到栈上，同时也会输出与规则相关联的汇编代码（如果有）。对于一个给定的输入，执行规则归约也可以被表示成一个<em>解析树</em>，演示了用于解析这颗树的终结符和非终结符。现在，回到我们的用例，如果我们用 s 表示一个<em>转换</em>，以及用 $r_x$ 表示一个<em>归约</em>，其中 x 是归约规则的数量，则表达式树 ”+ Int(c) * Int(a) Int(b)“ 的一个有效树解析是：<br>$$<br>S\ S\ S\ r_3\ r_2\ S\ r_3\ r_1<br>$$<br>证明这个式子作为一个习题留给读者解决。对于这个特定的树解析，相关的解析树和产生的相关汇编代码如下：</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_4.png" class="" title>
+
+
+<p>剩下的问题是如何知道何时<em>转换</em>以及何时<em>归约</em>。这个可以通过查阅特定语法生成的<em>状态表</em>来。这个表是如何生成的已经超出了本报告的范围，但是会在图 3.4 中给出一个例子，它是由图 3.3 中的指令集语法生成的。然后图 3.5 给出了一个使用这个状态表执行指令选择器的过程。图 3.3 中的一些产生式里出现的下标是语义限定词，它用于表达可能会出现在机器指令中的语法限制。例如，所有的双地址算术机器指令都将结果存储到作为输入提供的寄存器中的一个，然后使用语法限定词它可以表达为 $r_1 \rightarrow + r_1\ r_2$，表明目的寄存器必须与第一个操作数相同。为了让这个信息在解析期间是有效的，解析器将其与它相关联的终结符或非终结符符号一起放到栈上。Glaville 和 Graham 也整合了一个寄存器分配器到他们的解析器中，因此，给出了整个代码生成的后端。</p>
+<p><em>解决冲突和避免阻塞</em></p>
+<p>一个指令集语法通常是由二义性的，意味着相同的表达式树可能会存在多个有效的树解析，这会导致解析器可能会存在一个可以执行移位也可以执行归约的情况。这被称为移位归约冲突，是一个非正交的 ISA 会出现的结果。为了解决这种冲突，Glaville 和 Graham 的状态表生成器总是选择移位。直观上，这会有利于较大的模式而不是较小的模式，因为一个移位推迟了模式选择的决策，同时允许有关表达式树的更多信息堆积到栈上。</p>
+<p>同样地，也可能存在一个归约归约冲突，即解析器在一个归约选择规则的时候存在两个或多个选择。Glaville 和 Graham 通过选择有最长右侧的规则来解决这个问题。如果语法包含的规则仅在它们的语法限定词上不同，则仍然存在超过一条规则可以归约（在图 3.3 中，规则 5 和 6 就是两条这样的规则）。解析期间里可以解决这个问题，方法是在这个期间里按它们出现在语法中的顺序检查语法限制（例如，参考图 3.4 中的状态 ）。但是，如果这个集合中的所有规则都是有语法限制的，则会出现解析器无法选择任意一条规则的情况。这种情况称为语义阻塞，必须要提供一条默认的规则才能解决这个问题，这条规则会在除它以外的所有情况都失败的情况下被调用。这种回退规则通常使用多个，较短的机器指令来模拟比较复杂的规则的效果，然后 Glanville 和 Graham 设计了一个精妙的技巧来自动推导它们：对于每个语义约束规则，树解析是在表示该规则右侧的表达式树上进行的，然后使用为实现该树而选择的机器指令来构成回退规则。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_3.png" class="" title>
+
+
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_5.png" class="" title>
+
+
+<p><em>优势</em></p>
+<p>通过依赖状态表，Glanville-Graham 形式的指令选择器是完全表驱动的，由基本上是一系列表查找组成的核心实现。故而，指令选择器产生汇编代码需要花费的时间是线性于表达式树的大小的。尽管表驱动代码生成的想法并不新颖 – 我们在之前的章节中已经见过一些了 – 但是早期的尝试为产生表提供一个自动化的过程都失败了。此外，许多与模式选择相关 的决策都是在状态表生成时解决移位-归约冲突和归约-归约冲突来预先计算的，这会使得编译更快。</p>
+<p>Glanville-Graham 方法的另一个优势是它的形式化基础使得自动化验证的方式成为可能。例如，Emmelmann [80] 提出了证明指令集语法完整性的方法，这个方法是第一批验证方法中的一个。直观上，Emmelmann 自动化证明法是寻找所有的可以出现在输入程序但不能被指令选择器处理的表达式树。让我们将指令集语法表示为 $G$，描述表达式树的语法表示为$\tau$。如果我们进一步用 $L(x)$ 来表示所有能被语法 $x$ 接受的树的集合，则我们可以通过检查 $L(\tau)/L(G)$ 是否生成非空集来确定指令集语法是否完整。Emmelmann 认识到这个交叉可以通过创建一个<em>生成自动机</em>来计算，这个自动机本质上是实现了只接受这组反例中的树的语言。Brandner [34] 最近扩展了这个方法来处理包含称为<em>谓词</em>的动态检查的产生式 – 我们将在探索属性语法时简短地讨论 - 通过拆分终结符来暴露这些隐藏的特性。</p>
+<p><em>劣势</em></p>
+<p>虽然 Glanville-Graham 方法解决了几个当前的指令选择技术的问题，但是它也有自己的劣势。首先，由于解析器只能对语法进行推理，因此关于特定值或者范围的任何限制都必须赋予它自己的非终结符。与限制结合则每个产生式就可以只匹配到单个的树模式，这通常意味着，对于带有几个地址或者操作数模式的多功能机器指令的规则对于每个这样的结合都要重复一份。但是，对于大部分的目标机器，这被证明时不可行的；在 VAX 机器的场景中 – 基于 CISC 的架构开始于 1980 年代，每条机器指令都接受多个操作数模式 [48] – 因此一个指令集语法将会包含超过八百万条规则[127]。重构 – 通过非终结符表达共享特征来合并相似规则的任务 – 会将这个数量降低到大约只有千条规则左右，但是这个不得不做得非常小心，从而避免对代码质量有负面的影响。第二，因为解析器从左往右遍历没有回溯，所以必须在其它任意操作数可以观察到前，先输出一个操作数的汇编代码。这会导致一个比较坏的决策，在之后会取消然后输出另外的代码。因此，设计一个紧凑的指令集语法 – 其也会产生好的代码质量 – 语法作者必须对指令选择器的内部工作有广泛的了解。</p>
+<h4 id="使用语义处理扩展语法"><a href="#使用语义处理扩展语法" class="headerlink" title="使用语义处理扩展语法"></a>使用语义处理扩展语法</h4><p>在纯的上下文无关语法中，是完全无法处理语义信息的。例如，用 reg 非终结符表示一个明确的寄存器是做不到的。Glanville 和 Graham 通过将信息放到栈上来解决这个限制，但即使这样，他们修改后的 LR 解析器也只能使用简单的等式比较进行推理。Ganapathi 和 Fischer [112, 113, 114, 115] 通过将传统的上下文无关语法替换为更强大的语法集即属性语法，来解决这个问题。就像 Glanville-Graham 方法，我们将只会在顶层讨论它是如何工作的；对细节感兴趣的读者建议去进一步了解相关的论文。</p>
+<p><em>属性语法</em></p>
+<p>属性语法 – 或者他们也称为<em>词缀语法</em> – 是 Knuth 在 1968 年引入的，他将上下文无关语法扩展成带有属性的。属性用于存储，操纵，以及在解析期间传播关于独立的终结符和非终结符的额外信息，然后一个属性要么是合成的要么是继承的。使用解析树作为参考点，带有同步属性形式的节点的值来自于它的子节点的属性，带有继承属性的节点的值拷贝自子节点的值。因此，合成属性的信息沿着树向上流动，而继承属性的信息沿着树向下流动。故我们通过 $\uparrow$ 和 $\downarrow$ 分别区分合成属性和继承属性， 这两个会标注为特定符号的前缀（如，一个 reg 非终结符的 x 合成属性写为 reg $\uparrow$ x）。</p>
+<p>然后这个属性用在谓词和动作里。谓词用于检查一个规则的适用性，动作用于产生新的合成属性。因此，当建模机器指令的时候，我们使用可以谓词来表示约束，使用动作来表明效果，如代码输出和结果会被存储到什么寄存器里。让我们看个例子。</p>
+<p>在图 3.6 中，我们看到一组建模三个字节加法机器指令的规则：一个增量版本 incb（将寄存器递增 1，由规则 1 和 2 建模）；一个两地址的版本 add2b（加两个寄存器和存储结果到其中一个操作数中，由规则 3 和 4 建模）；一个三地址版本 add3b（结果可以存储到其它地方，由规则 5 建模）。自然地，incb 指令只能被用到其中一个操作数是 1 的场景下，这个值是通过谓词 <em>IsOne</em> 强制限制的。此外，因此这条指令破坏了这个寄存器的前一个值，只有后续的指令不会在使用到这个旧值，才可以使用这条指令；这被谓词 <em>NotBusy</em> 强制执行。然后 EMIT 动作输出相关的汇编代码。因为加法是可交换的，我们需要两条规则来使得机器指令适用于这两种情况。类似地，我们在 add2b 指令上也有两条规则，但是谓词被替换成了<em>TwoOp</em>，它会检查是否其中一个操作数是赋值目标，或者这个是否后续不需要了（即，它不忙了）。 因为，最后一条规则没有任何的谓词限制，所以它也作为默认规则，从而防止出现我们之前讨论的在覆盖 Glanville-Graham 方法时出现的语义阻塞的情况。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/figure_3_6.png" class="" title>
+
+
+<p><em>优缺点</em></p>
+<p>使用谓词就不需要在为了表达特定的值和范围而引入新的非终结符，这使得指令集语法更加简明。在 VAX 机器的场景中，属性的使用导致了语法大小只有 Glanville-Graham 方法需要的一半，并且没有大量的重构[113]。属性语法也促进了机器描述的增量开发：它可以从实现最通用的规则开始，以实现生成正确但效率低下的代码的指令集语法。然后处理更复杂的机器指令的规则可以增量地添加，因此可以平衡实现工作量和代码质量。另一个很好的特性是其它的优化例程，如常量折叠，可以表示为语法的一部分，而不是单独的组件。</p>
+<p>但是，为了允许属性和 LR 解析器一起使用，必须限制指令集语法的属性。首先，只有合成属性可以出现在非终结符中。这是因为 LR 解析器是自底向上，从左往右的构造解析树的，从叶子开始，向上延伸到根部。因此，用于指导子树构建的继承值只有在子树已经创建之后才可用。第二，因为谓词可能会使得一条规则对规则归约无效，所以所有的动作必须出现在产生式的最右侧；否则，可能会导致无法取消的不正确效果。第三，与 Glanville-Graham 方法一样，解析器必须对一个子树做出决定，而不考虑可能出现在右侧的兄弟子树。因此，如果所有的子树事先都是有效的，则它可以提高汇编代码的质量，这是由于使用了 LR 解析的又一个限制。后来 Ganapathi [111] 做了一个解决这个问题的尝试，使用 Prolog 来实现指令选择器 – Prolog 是一个逻辑编程语言 – 但这导致了指数级的最坏运行时间。</p>
+<h4 id="维护多个解析树而获得更好的代码质量"><a href="#维护多个解析树而获得更好的代码质量" class="headerlink" title="维护多个解析树而获得更好的代码质量"></a>维护多个解析树而获得更好的代码质量</h4><p>因为 LR 解析器只对表达式树进行了一次遍历 – 因此只产生了许多可能的解析树中的一个 – 产生的汇编代码严重地依赖于指令集语法来指导解析器寻找到 “好的” 解析树。</p>
+<p>Christopher 等人[52] 尝试解决这个问题，通过使用 Glanville-Graham 方法的概念，但是扩展了解析器以生成所有的解析树，然后选择能生成最好汇编代码的那个。这是通过将原来的 LR（1）解析器替换为 Earley 的算法 [74] 来达成的，虽然这个方法某种程度上提高了代码质量 – 至少理论上 – 但它是以枚举出所有解析树为代价的，这在实际中是非常昂贵的。</p>
+<p>在 2000 年，Madhavan 等人[181] 扩展了 Glanville-Graham 方法来获得一个最优的模式选择，同时据称保留了 LR 解析的线性时间复杂度。通过引入一个新版本的 LR 解析[230]，之前在找到一条匹配规则会直接执行的归约，现在允许推迟任意的步数。因此，指令选择器本质上还是追踪了多个解析树，允许它在做出可能证明是次优决定之前，可以收集足够多的关于输入程序的信息。换句话说，类似于 Christopher 等人的，Madhavan 等人的设计也会覆盖所有的解析树，但会立即丢弃掉被确实是产生低效汇编代码的解析树。为了有效地做到这点，该方法还引入了离线开销分析，我们将在后面的 3.6.3 节中讨论到这个。最近，Yang [266] 提出了一个相似的技术，涉及到<em>解析树仙人掌</em>[sic]的使用，其中偏离的解析树从公共主干分支出来，从而减少了需要的空间。但是，两种的基本原则仍然禁止建模许多典型的目标机器特性，如多输出指令。</p>
+<h3 id="使用递归自顶向下覆盖树"><a href="#使用递归自顶向下覆盖树" class="headerlink" title="使用递归自顶向下覆盖树"></a>使用递归自顶向下覆盖树</h3><p>到目前为止检查过的树覆盖方法 – 特别是那些基于 LR 解析的 – 都是自底向上操作的：指令选择器从覆盖表达式树的叶子节点开始，然后基于这些决策，它随后覆盖了剩余的子树直到它到达根，沿途不断匹配和选择适用的模式。这绝不是唯一的覆盖方法，因为它也可以自上而下地完成。有这样一种方法，指令选择器从根节点开始覆盖表达式树，然后递归向下进行匹配。最后，语义信息的流动（如，会存储结果的特定寄存器）也是不同的：自底向上的指令选择器让这些信息沿着表达式树向上扩散 – 通过辅助的数据结构或者树重写 – 而自顶向下的实现会实现决定这个并向下推进。因此，后者被认为是目标驱动的，因为模式选择是由一组额外的需求引导的，而这些需求必须由所选的模式满足。因为，这反过来会对子树产生新的需求，所以大部分的自顶向下的技术都是使用带有回溯的递归实现的。这是必须的，因为某些模式的选择可能会导致低级别的表达式树变得无法被覆盖。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_3_5.png" class="" title>
+
+
+<h4 id="第一个方法"><a href="#第一个方法" class="headerlink" title="第一个方法"></a>第一个方法</h4><p><em>手段-目的分析指导指令选择</em></p>
+<p>据我所知，Newcomer[194] 是第一个开发了使用自顶向下覆盖的方法来解决指令选择问题的人。在他 1975 的博士论文中，Newcomer 提出了一个设计，能详细地找出所有覆盖给定表达式树的模式的组合，然后选出一个最小开销的。Cattell[45] 也在他的调查文章中描述了这些，这是本次讨论的主要来源。</p>
+<p>机器指令被建模成<em>T-operators</em>，其基本上是附带了成本和属性的树模式。这个属性描述了各种限制，如哪个寄存器可以用于操作数上。也有一组指令选择器用于执行输入程序必要的转换的 T-operators – 随着我们的进一步讨论这个需求会变得清晰。使用这个工具集，该方案将 AST 作为期望的输入，然后按之前说的自顶向下的方法转换它：指令选择器尝试为 AST 的根节点找到所有匹配的模式，然后进一步递归地覆盖每个匹配剩余的子树。模式匹配是使用我们以前知道的一种直接技术完成的（见 25 页图 3.2），然后为了高效，所有的模式都根据它们的根节点类型进行标注。因此，这个过程的结果是一组模式序列，其中每个都覆盖了整个 AST。然后，检查每个序列是否每个模式的属性都是等于<em>首选属性集</em>（PAS），其因此对应于目标。否则，指令选择器将尝试使用 T-operators 转换重写子树直到属性匹配上。为了指导这个过程，Newcomer 应用了一个启发式规则称为<em>手段目的分析</em>，它是 Newell 和 Simon [195] 在 1959 年介绍的。 手段-目的分析背后直观上是递归地最小化数量差异 – 如何计算的没有在 [45] 中提到 – 在当前状态（即，子树现在的样子）和目标状态（它应该成为的样子）之间的。为了避免无限循环，当转换过程到达搜索空间中的特定深度，它就会停止。如果成功，则应用的转化会被插入到模式序列中；否则丢弃掉序列。从被找到的模式序列中，选出总开销最低的，随后是代码输出。</p>
+<p>作为手段-目的分析的应用，Newcomer 的方法是开创性的，让它可以指导输入程序的修改过程直到它可以在特定目标机器上实现，而不需要特地采用特定目标机制。但是，这个设计并非没有缺陷的。首先，这个设计几乎没有实际的应用，因为它只能处理算术表达式。第二，用于建模机器指令的 T-operators 和转换相同，也不得不手动构造，这是非平凡的，阻碍了编译器的可移植性。第三，由于搜索空间的截断，转换输入程序的过程可能会过早地结束，导致指令选择器无法生成任何的汇编代码。最后，事实证明除了最小的输入树外，搜索策略的代价太高因而无法在实践中使用它。</p>
+<p><em>让手段-目标分析在实际中可用</em></p>
+<p>Cattel 等人[44，47，176]后来提高和扩展了 Newcomer 的工作，使之成为一个更实用的框架，被实现在产生质量编译器-编译器（PQCC）中，Bliss-11 编译器的衍生版本，最初是由 Wulf 等人实现的 [264]。他们的方法不是在编译输入程序的时候执行手段-目的分析，而是在生成编译器本身的时候将其作为预处理步骤 – 更类似于 Glanville-Graham 方法。</p>
+<p>模式由一组模板表示，这些模板使用递归组合形成，因此类似于指令集语法中的产生式。但是不像 Glanville 和 Graham 以及 Granapathi 和 Fischer 的设计，模板不是手写的，而是根据特定的机器描述自动生成的。每个机器指令描述为一组机器操作，其描述了指令的效果，因此类似于前一章中的 Fraser [102] 介绍的 RTLs。 然后这些效果被一个称为 CGG（代码生成器的生成器）的分离工具用于创建模板，而模板被指令选择器所使用。为了产生与机器指令直接对应的平凡模板，CGG 也会产生一组单节点模式和一组结合了多个机器指令的巨大模式。前者保证了指令选择器可以为所有的输入程序生成汇编代码，因为任意的表达式树都可以简单的被覆盖；而后者可以降低编译时间，因为比起多个小的匹配，直接匹配一个大的模式更快。为了实现这个，CGG 组合使用了手段-目的分析和启发式规则，其应用了一组公式（如，$\neg\neg E\Leftrightarrow E,\ E+0\Leftrightarrow E,\ \neg(E_1 \ge E_2) \Leftrightarrow E_1\lt E_2$）来操作和合并存在的树模式。但是，不保证“感兴趣”的树模式都是永远适用的。一旦生成，则指令选择器就会以贪婪的，自顶向下的方式执行，它总是选择与表达式树中的当前节点相匹配的最小开销的模板（模板匹配使用的方法与 Newcomer 的方法完全相同）。如果出现平局，则指令选择器会选择内存加载次数最少的模板。</p>
+<p>与之前讨论的基于 LR-解析的方法相比，Cattell 等人的方法也由优缺点。主要的优点是无论提供了模板是什么，产生的指令选择器总是能够为所有可能的输入树生成有效的汇编代码。至少在 Granapathi 和 Fischer 的设计中，语法设计者必须保证这个正确性。缺点是它的速度相当的慢：基于树解析的指令选择器在模式匹配和模式选择两个方面都是线性时间复杂度的，而 Cattell 等人的指令选择器不得不单独的匹配每个模板，在最坏时间复杂度下是需要2次方的时间。</p>
+<p><em>最近的技术</em></p>
+<p>据我所知，最近唯一使用这种递归自顶向下的方法进行树覆盖的方案是 Nymeyer 等人的[197, 198]。在 1996 和 1997 两篇文章中，Nymeyer 等人描述了一个方法，A* 搜索 – 另一个控制搜索空间的策略（见[219]）– 和自底向上重写系统理论相结合的方法，或者简称为 BURS。我们将会在本章的后续内容中详细地讨论 BURS 理论 – 着急的读者可以直接跳到 3.6.3 节中 – 当下只要提到基于 BURS 的语法允许的转换规则就足够了，如会包含将 $X\ +\ Y$ 重写为 $Y\ +\ X$ 的规则，这可能会简化和减少表达机器指令需要的规则数。但是，作者没有给出任何的实验数据，从而难以判断 A*-BURS 理论的组合是否是在实际中可以应用的技术。</p>
+<h3 id="树重写和树覆盖的说明"><a href="#树重写和树覆盖的说明" class="headerlink" title="树重写和树覆盖的说明"></a>树重写和树覆盖的说明</h3><p>在这个时候，有些读者可能会觉得树重写 – 其中模式被迭代地选择以重写表达式树，直到它由某个目标类型的单个节点组成 – 与树覆盖是完全不同的 – 其中合适的节点会被选出来覆盖表达式树中的所有节点。事实它们确实存在着些许不同，但是对于使用树重写表达的问题是有效的方法，对于等价的用树覆盖表达的问题也是有效的，反之亦然。因此可以认为两者是可以互换的。但是我认为树重写是解决树覆盖问题的一种方案，而树覆盖才是基本的原则问题。</p>
+<h3 id="分离的模式匹配和模式选择"><a href="#分离的模式匹配和模式选择" class="headerlink" title="分离的模式匹配和模式选择"></a>分离的模式匹配和模式选择</h3><p>在前面讨论树覆盖方法里，模式匹配任务和模式选择任务被统一到了同一个步骤里。虽然这个允许代码生成在单阶段就可以完成 – 一个已经过时的潮流[227] – 但它通常也使得指令选择器无法考量到模式组合之间的影响。通过将这两个关注点分开，并且允许指令选择器在表达式树上运行多次，使得它可以在做出不明智决定之前，就收集到足够多的所有可用模式的信息。但是除了 LR 解析，目前我们看到的所有模式匹配器都是二次方复杂度的算法实现。幸运地是，我们可以做得更好。</p>
+<h4 id="线性时间树模式匹配算法"><a href="#线性时间树模式匹配算法" class="headerlink" title="线性时间树模式匹配算法"></a>线性时间树模式匹配算法</h4><p>这些年来，已经发现了许多算法可以找到一组给定树模式在另一个给定树能匹配到的所有情况（例如[51,55,73,140,149,210,211,229,257,265]）。但是在树覆盖中，大部分的模式匹配算法都是源自字符串模式匹配方法的。它是由 Karp 等人[149] 在 1972 年首次发现的，然后 Hoffmann 和 O’Donnell [140] 扩展这些思想形成基于树。的指令选择技术最常用的算法。所以为了树的指令模式匹配，让我们首先探索下字符串是怎么做的。</p>
+<p><em>匹配树和匹配字符串是相同的</em></p>
+<p>Aho、Corasick[5] 和 Knuth 等人[160] 引入的算法最常见地是用于字符串匹配。其它独立的发现是在 1975 年和 1977 年分别发表的，两个算法操作方式是相同的，因此它们的方法几乎是相同的。直观上看是，当一个有重复模式的子字符串局部匹配失败，匹配器不需要总是返回到匹配初始开始的位置的输入字符。这里有个内置的图表演示了子字符串 abccbd 匹配上输入字符串 abcabcabd 的情况。箭头表示正在处理的字符。首先，子字符串从输入字符串的开头开始匹配，直到最后一个字符串（位置 5）。当它失败的时候，不是直接返回到位置 1 从头开始重新匹配，而是匹配器记住了子字符串的前三个字符（abc）已经在这个时候匹配上了，因此继续匹配位置 6，尝试匹配子字符串的第四个字符。因此，所有子字符串情况都可以在线性时间里找到。后面以 Aho 和 Corasick 的方法继续我们的讨论，因为它可以匹配多个子字符串，而 knuth 等人的算法只考虑了单个字符串（虽然它也可以简单地扩展成处理多个字符串的场景）。</p>
+<p>Aho 和 Corasick 的算法依赖三个函数 – <em>goto</em>，<em>failure</em>，和<em>output</em> – 其中第一个实现了一个状态机，后面两个是简单的查找表。它们是如何构造的已经超出了本篇的范围 – 读者可以查阅相关的论文 – 但是我们会用一个例子演示它们是如何工作的。在图 3.7 中，我们会看到匹配字符串 he，she，his 和 hers 的相关函数。当一个字符从输入字符串 shis 读取到，它首先作为 <em>goto</em> 函数的参数，这个状态机被初始化到状态 0 上。s 作为输入时它转换成了状态 3，然后 h 会使得它停止在状态 4 上。但是，对于下一个输入 i，不存在从当前状态出去的相关边。在这个时候，会去调用 <em>failure</em> 函数，它表明状态机应该回退到状态 1。我们在这个状态重试 i，它会让我们到达状态 6，接着用最后输入的字符就可以转换到状态 7。对于这个状态，<em>output</em> 函数也表明了我们可以找到这个模式的一个匹配字符串 his。</p>
+<p><em>Hoffmann-O’Donnell 算法</em></p>
+<p>Hoffmann  和 O’Donnell [140] 开发了两个算法，包含了 Aho 和 Corasick 与 Knuth 等人的想法。在他们 1982 年的文章中，首次提出了一个 $O(np)$ 的算法以自顶向下的方式匹配树模式，然后是一个 $O(n + m)$ 自底向下算法以线性模式匹配交换更长的预处理时间（<em>n</em> 是主题树的大小，<em>p</em> 是树模式的数量，<em>m</em> 是找到的模式数量）。</p>
+<p>字母的模式匹配 – 因为它的线性运行行为所以应用最广泛 – 是比较简单的，如图 3.8 所示：从叶子节点开始，每个节点都被标记了一个标识符，表示与该节点的子树根匹配的一组模式。我们称这个集合为 <em>matchset</em>。赋给一个特定节点的标签是可以被检索到的，通过将子节点的标签作为表的索引即可，它对于当前节点的类型是特定的。例如，表示加法节点的表完成查找用的是一张表，而表示减法节点完成查找用的是另一张表。表的大小取决于节点拥有的孩子数量，如二元操作节点有个二维表；而表示常量的节点有个零维的表，因此只有一个值组成。第 41 页图 3.9 （g）也提供了一个全的标签例子。然后通过随后的自顶向下遍历检索匹配集。</p>
+<p>因为 Hoffmann 和 O’Donnell 引入的自底向上算法对指令选择有了历史性的影响，所以我们会花费一些时间讨论标签的查找表是如何生成的细节。</p>
+<p><em>定义</em></p>
+<p>我们从介绍一些定义开始，为了帮助我们理解，我们使用两个树模式，分别出现在图 3.9 （a）和（b）中的 I 和 II。首先，我们认为模式 I 和 II 构成了我们的<em>模式簇</em>，由带有符号 a、b、c 和 v 的节点组成，其中 a 节点确定由两个子孩子，b，c 和 v 没有。v 符号是一个特殊的 <em>nullary</em> 符号，表示一个可以匹配任何子树的节点。这些符号共同构成了模式簇的<em>子母表</em>，我们将其表示为 $\sum$。字母表必须是有限的并且需要<em>排序</em>，意味着 $\sum$ 中的每个符号都有一个<em>排序函数</em>，它给出了每个给定符号的子孩子数量。因此，在我们的场景中，$ rank(a) = 2$ 且 $ rank(b) = rank(c) = rank(v) = 0$。遵循 Hoffmann 和 O’Donnell 的论文的术语，我们也引入了一个概念 $\sum -term$，定义如下：</p>
+<ol>
+<li>对于所有的 $ i \in \sum$，$rank(i) = 0$，i 是一个 $sum-term$。</li>
+<li>如果 $ i(t_1, … , t_m) \in \sum $ 其中 $m = rank(i) &gt; 0$，则 $i(t_1, …, t_,m)$ 是一个 $\sum -term$ 提供者。</li>
+<li>除此之外，其它的都不是 $\sum -term$。</li>
+</ol>
+<p>因此，一个树模式是一个$\sum -term$，则允许我们将模式 I 和模式 II 写为 $a(a(v, v), b)$ 和 $a(b, v)$。$\sum -term$ 是有序的 – 如，$a(b, v)$ 是不同于 $a(v, b)$ 的 – 意味着如加法之类的联结操作必须通过模式复制处理，就像在 Glanille-Graham 方法里一样。</p>
+<p>我们也介绍如下定义：如果任意包含模式 p 的匹配集都包含另一个 q，则模式 p 被认为是<em>归入</em>到模式 q 里的（写作$p \geq q$。例如，给定两个模式 $a(b, b)$ 和 $a(v, v)$，我们有$a(b, b)  \beq a(v, v)$，因为，无论何时 b 节点被匹配上，v 节点显然也会被匹配上。根据这个定义，所有的模式都可以归入自己。一个模式 p 严格地归入另一个模式 q （写为 p &gt; q），当且仅当$p \beq q$ 且 $p \neq q$。最后，一个模式 p 立即归入另一个模式 q（写作 p &gt; i q），当且仅当，不存在其它模式 r 使得 $ p &gt; r $ 且 $ r &gt; q $。为了完备性，如果 p 和 q 的匹配集中没有出现相同的模式，则认为两者是<em>不一致的</em>；如果存在一个树可以匹配 p 但不能匹配 q，且存在另一个树可以匹配 q 但不能匹配 p，则认为两个是<em>独立的</em>。不包含对立模式的模式簇被称为<em>简单模式簇</em>，然后我们的模式簇是简单的，因为不存在一个树可以都匹配上模式 I 和模式 II 两个模式。</p>
+<p><em>为简单模式簇生成查找表</em></p>
+<p>简单模式簇的概念是比较重要的。通常，每张查找表的大小是模式簇大小的指数，生成这些表的时间也是一样的。但是，Hoffmann 和 O’Donnell 确认了简单模式簇的可潜在匹配集的数量是等于模式的数量，每个这样的匹配集可以用一个简单树模式表示 – 即出现在这个匹配集中最大的模式。直观来讲：如果一个模式簇是简单的 – 意味着它缺乏独立的模式 – 则对于任意匹配集合中的每对模式，它必定有一个模式可以归入其它模式。最后，对于每个匹配集，我们可以在该匹配集中出现的模式之间形成包含顺序。例如，假设我们有一个包含 m 个模式的匹配集，我们可以将这些模式排列成$p_1 &gt; p_2 &gt; … &gt; p_m$。因为包含的“最高”次序的模式（即，包含了匹配集中所有的其它模式的模式）只能出现在一个匹配集中 – 否则簇中就出现了两个模式是成对独立的 – 我们可以使用模式的标签表示整个匹配集。同时也要记住的是，沿着表中一个维度的下标也会成为赋给当前节点子孩子的标签，从而成为表达式树的标签。最后，如果我们假设标签 1 和标签 2 分别表示子模式 b 和 $a(v, v)$，则一个有效的查找表 $T_a[1, 2]$ 意味着我们当前站在一个树 t 的树根下，其中最大的可以被匹配上的模式是 $a(b, a(v, v))$，且赋给这个节点的标签是最大模式的标签，可以被 $a(b, a(v, v))$ 归约。如果我们知道包含的顺序，那么我们可以轻松地检索到该模式。</p>
+<p>为了找到包含的顺序，我们首先枚举出所有的出现在我们的模式簇里的单独子树。在我们的场景中，这包含了 $v, b, a(v, v), a(b, v)$ 和 $a(a(v, v), b)$，我们将其表示成 S。然后，我们给每个子模式赋一个按顺序的编号，从 0 开始。这些表示可以在模式匹配期间使用的标签，因此它们之前的顺序不是很重要。</p>
+<p>下面我们构造 S 的<em>归纳图</em>，表示为 $\overline{G}_S$，其中每个节点 $n_i \in \overline{G}_S$ 表示一个子图 $s_i \in S$，每条直接边 $n_i \to n_j$ 表示 $s_i$ 归入 $s_j$。对于我们的模式集，我们最终得到了图 3.9（c）中所示的包含图，这是我们使用图 3.10（a）中给出的算法产生的。这个算法的基本运行过程如下：一个模式 p 只归入另一个模式 q，当且仅当 p 的根和 q 的根是相同的符号，然后 p 的每个子树归入 q 中相应的子树。为了检查一个树是否可以归入另一个，我们会简单地检查 $\overline{G}_S$  中的相关节点是否存在一条边。因为任意模式都可以归入自己，我们从添加所有的循环边开始，检查一个模式是否可以归入另一个，如果存在一个则添加一条边，然后一直重复直到 $\overline{S}$ 稳定为止。幸运地是我们可以最小化检查的次数，即通过先把 S 中的子模式按照高度升序排序，然后按顺序比较子模式。一旦我们有了$\overline{G}_S$，通过给$\overline{G}_S$中的节点标记一个拓扑序，我们找到所有模式的归入顺序，对于这个存在着一些已知的方法（拓扑序的定义可以在附录 C 中找到）。</p>
+<p>现在我们通过图 3.10（b）概述的算法生成了查找表；在我们的例子中，它给我们的是图 3.9（d）（e）和（f）的表。从一个表从空模式初始化开始，算法增量地更新带有匹配了相关树的下一个大模式的标签条目。因为我们以包含的递增顺序迭代模式，每个条目的最后一次赋值将会是匹配了我们模式簇的最大模式。</p>
+<p>总之，因为模式需要被排序，我们需要复制包含了可交换操作的模式，通过交换操作数的子树完成。但是，做这个产生的模式是成对独立的，因此破坏了模式簇的简单属性。这个场景下，本算法也能产生可用的查找表，但是选择只能在包含一个可交换模式的匹配集中进行，没有其它的了（这取决于表生成期间最后使用了 S 中的哪个子模式）。最后，不是所有的匹配集实例都能在模式匹配期间找到，这可能会反过来妨碍到最优的指令选择。</p>
+<p><em>压缩查找表</em></p>
+<p>Chase[49] 开发了一个压缩最后查找表的算法，进一步提高了 Hoffmann 和 O’Donnell 的表生成技术。关键的见解是查找表通常包含冗余信息，因为许多行和列都是重复的。例如，从我们之前的例子中的 $T_a$  里可以清楚地看到，图 3.11（a）中也提供具体的信息。通过引入一组<em>下标映射</em>，通过映射索引映射表中相同的列或行到查找表中同一列或者同一行，可以删除掉冗余。然后，查找表可以减小到只包含最少量的信息，如图 3.11（b）所示。用 $\tau_a$ 表示$T_a$ 的压缩版本，相关的索引映射是$\mu_{a, 0}$ 和 $mu_{a, 1}$，然后我们通过$T_i[l_0, …, l_m]$ 和 $T_i[\mu_{i,0}[l_0], …, \mu_{i,m}[l_m]]$。</p>
+<p>表压缩对于某些模式簇也会有额外的收益，查找表可能是很庞大的，甚至可能一开始就无法构造出来。幸运地是，Chase 发现了它们可以在生成的时候就被压缩掉，从而突破了可以生成多大的查找表的限制。Cai 等人 [40] 提高了 Chase 的算法的渐进复杂度边界。</p>
+<h4 id="动态规划的最优模式选择"><a href="#动态规划的最优模式选择" class="headerlink" title="动态规划的最优模式选择"></a>动态规划的最优模式选择</h4><p>一旦可以在线性时间内找到整个表达式树的所有可能匹配集后，解决线性时间内最优模式选择问题的技术也开始出现了。根据资料，Ripken [216] 是第一篇提出最佳指令选择的可行方法的论文，它是 1977 年的技术报告给出的。Ripken 的方法是基于 Aho 和 Johnson 的动态规划算法 – 在第一章中有提到 – 然后扩展它来处理有多种寄存器类型和地址模式的实际指令集。为了简洁起见，今后我们会将动态规划简称为 DP。</p>
+<p>尽管 Ripken 似乎是第一个提出基于 DP 的最优指令选择器设计的人，但它仅是一个提议。第一次对这种系统进行实际尝试的是 Aho 等人[6, 7, 245]。</p>
+<p><em>TWIG</em></p>
+<p>在 1985 年 Aho 和 Ganapathi 给出了一个称为 CGL （代码生成器语言）的语言，它里面是通过属性语法描述（见图 3.12 的例子）树模式的，然后由 TWIG 编译器生成器处理。就像 Ripken，生成的指令选择器选择最优模式集是用的 Aho 和 Johnson DP 算法的一个版本，在表达式树上进行遍历：一遍自顶向下，跟着是一遍自底向上，最后是另一遍自顶向下。在第一遍里，使用 Aho-Corasick 字符串匹配算法的一种实现找到所有的匹配集[5]。第二遍应用 DP 算法选择模式，然后最后一遍输出相关的汇编代码。我们继续研究 DP 算法，因为我们已经对如何做树模式匹配相当熟悉了。</p>
+<p>图 3.13 简单地概述了 DP 算法。对于表达式中的每个节点，我们维护一个数据结构，记录将节点归约到特定非终结符所需的最低成本，以及可以进行这个归约的规则。记住在匹配集中找到一个模式，对应于出现在指令集语法（3.3 节讨论过的）中的一个产生式的右侧。应用一条规则的成本是规则本身的成本加上使用这条规则归约子节点到任意非终结符的成本之和。因此，成本是单调递增的。也可能发生不只是一条规则被应用到当前节点上，也可能是多条。当语法包含<em>链式规则</em>的时候就会出现这种情况，这种规则的产生式的右侧由单个非终结符组成。例如，一个终结符 A 到 c 的产生式可以通过 $ c \to A $ 完成，也可以通过一系列的规则调用完成，如：<br>$$<br>\begin{align}<br>b&amp; \to A \<br>b&amp;^{‘} \to b\<br>c&amp; \to b^{‘}<br>\end{align}<br>$$</p>
+<p>因此，算法必须获取这些链式规则，并在所有依赖于它们的规则之前检查它们。这称为计算<em>传递闭包</em>。</p>
+<p>当已经计算好根节点的成本，则我们可以选择最廉价的规则集，从而将整个表达式树归约到期望的非终结符上。图 3.14 概述了选择算法：对于一个给定的目标，由非终结符表示的，选择最廉价的可用的规则来归约当前的节点。然后为出现在被选中的规则右边的非终结符做相同的事，从而变成相关子树的目标。这个算法也可以正确地应用到链式规则上，和应用到一条规则上一样，从而可以以不同的目标在同一个节点上调用 SELECTANDEMIT。但是，需要注意的是，由于模式可以任意大，因此必须采取措施来选择正确的子树，它可以出现在表达式树里当前节点的位置到往下几个层级。</p>
+<p><em>DP 对 LR 解析</em></p>
+<p>比起基于 LR 解析的方案，DP 方案具有几个优势。首先，归约冲突由成本计算算法自动处理了，因此移除了 LR 解析需要的规则排序，它会影响 LR 解析的代码质量。第二，会导致 LR 解析卡在无限循环的规则循环不在需要显式地打破。第三，机器描述可以做得更简洁，因为只有成本不同的规则可以合并到一条单一规则上；再次使用 VAX 机器作为例子，Aho 等人表示只需要使用 115 条规则就可以实现整个 TWIG 规范，它是使用 Ganapathi 和 Fischer 的基于属性指令集语法支持相同机器的一半大小。</p>
+<p>但是，该方法要求代码生成问题具有最优子结构的性质 – 即，通过解决每个最优子问题可以生成最优的代码。这种场景不是经常存在的，因为有些模式集的总和是大于另一些被选择模式的，但它们实际却可以生成更好的汇编代码。例如，让我们假设我们需要选择模式来实现一组可以相互独立执行的操作。指令集提供了两个选择：要么使用两条机器指令，每条花费 2 个周期；或者只使用一条 3 周期的指令。如果第一个选择中的两条指令是顺序地执行则第二个选择更有效。但是，如果指令调度能够并行化这些指令，则第一个选择更好。这进一步突出了孤立地考虑最佳指令选择的问题，如我们在第一章讨论的。</p>
+<p><em>进一步实现</em></p>
+<p>TWIG 后续的几个提升是由 Yates 和 Schwartz[267] ，还有 Emmelmann 等人[79] 完成的。Yates 和 Schwartz 通过将 TWIG 的自顶向下方法替换为 Hoffmann 和 O‘Donnell 提出的更快的自底向上算法，以及扩展属性来支持更强的谓词，提高了模式匹配率。Emmelmann 等人修改了运行的 DP 算法，使其可以在前端构建 IR 树时运行，并且前端也将辅组函数的代码直接内联进 DP 算法来降低固有开销。Emmelmann 等人在称为 BEG 的系统中实现了他们的改进方案（后端生成器），这个修改版本当前应用于 CoSy 编译器中[23]。</p>
+<p>Fraser 等人 [104] 在称为 IBURG 的系统中做了相似的改进，变得比 TWIG 更简单且更快 – 比起 TWIG 3000 行的 C 代码，IBURG 只需要 950 行代码，并以 25 倍的速度生成质量相当的汇编代码 – 已经被应用到几个编译器中（如，RECORD [174，184]，和 REDACO[162]）。Gough 和 Ledermann [124，125]  后面在一个名为 MBURG 的实现中对 IBURG 进行了一些小的改进。IBURG 和 MBURG 都被用不同的编程语言重新实现过，如基于 Java 的 JBURG [243]，和用 C– 实现的 OCAMLBURG [246]。</p>
+<p>根据 [42, 173]，Tjiang [244] 后来将 TWIG 和 IURG 的想法整合进了一个新的实现称为 OLIVE – 这个名字是 TWIG 的一种副产品 – 做了一些额外的改进，如允许规则使用任意的成本函数而不是固定的，数值类的值。这允许指令选择有更多的功能，如可以通过设置无限的成本使得可以让规则动态的失效，这可以通过上下文进行控制。OLIVE 被用于 SPAM [247] 的实现中 – 一个定点的 DSP 编译器 – Araujo 和 Malik [16] 在尝试将指令选择和调度以及寄存器分配三者相结合的尝试中使用了它。</p>
+<h4 id="使用离线成本分析进行更快的模式选择"><a href="#使用离线成本分析进行更快的模式选择" class="headerlink" title="使用离线成本分析进行更快的模式选择"></a>使用离线成本分析进行更快的模式选择</h4><p>在刚才讨论过的动态规划方法中，可以动态地计算选择一个模式需要的规则成本，只要规则匹配是完全表驱动的。后来发现可以提前进行它的这些计算，然后以表的形式进行表示，因此可以在模式匹配的时候提高模式选择的速度。我们将这种方式称为<em>离线成本分析</em>，它意味着成本计算可以提前到生成编译器的时候进行，而不用在输入程序编译的时候进行。</p>
+<p><em>扩展匹配集标签带上成本</em></p>
+<p>为了可以用离线成本分析，我们需要扩展标签，让其不但可以表示匹配集，也有模式在特定目标下达成最小覆盖成本需要的信息。为了区分这两个，我们将扩展后的标签形式称为<em>状态</em>。一个状态本质上是目标，模式和成本三者的特定组合的一个表示，其中每个可能的目标 <em>g</em> 被关联到一个模式<em>p</em> 和一个相关的成本<em>c</em>。这个上下文中的目标通常决定了一个表达式的结果必须出现的地方（如，一个特定的寄存器类型，或内存等），而在语法术语中它意味着每个非终结符被关联到一条规则和一个成本上。这种组合使得：</p>
+<ol>
+<li>对于任意表达式，它们的根节点都被标记了一个特定的状态；</li>
+<li>如果根节点的目标必须是 <em>g</em>，</li>
+<li>则通过在根节点选择模式<em>p</em>，整个表达式树可以以最小的成本进行覆盖。与目标是其它的相比，这个覆盖的相对成本是等于 <em>c</em> 的。</li>
+</ol>
+<p>理解这里的一个关键点是，一个状态并不一定需要携带如何最优化覆盖整个表达式树的信息，实际上如果这样子尝试的话，将需要无数的状态。而是状态只需要表示足够的关于如何覆盖可以出现在任意表达式树的不同关键形状的信息即可。为了进一步解释这个，让我们观察大部分（如果不是全部）目标架构是如何操作的：在两条机器指令执行期间，数据是通过存到寄存器或者存到内存进行同步的。数据出现在特定位置的方式通常不影响之后的机器指令的执行。因此，根据可用的机器指令，通常可以在某个关键的地方断掉表达式树，且不影响代码指令。这会产生有许多更小的表达式树的森林，每个在根上都有特定的目标，然后它们可以独立地最优覆盖。换句话说，状态集只需要能共同表示表达式树可以做的所有分割的所需的信息即可。当然，表达式树并不需要在模式选择之前就真的切分成小块了，但按这种方式来考虑它，可以帮助我们理解为什么我们通过有限的状态就能获取最优的模式选择。<br>因为一个状态是一个标签的简单扩展形式，用状态标记表达式的过程与之前（见 39 页的图 3.8）完全一样，因为我们只需要替换查找表。然后，就像图 3.15 一样完成模式选择和代码生成，它或多或少与结合动态规划的算法是相同的（与第 45 页的图 3.14 相比）。但是，我们还没有描述如何计算这些状态。<br><em>第一个应用离线成本分析的技术</em><br>根据 [26]，模式选择进行离线成本分析的想法第一次是由 Herry [138] 1984 年的博士论文引入的，然后 Hatcher 和 Christopher [134] 是第一个尝试实际应用它的。但是，这种方法似乎不太为人所知，因为很少有文献引用它。</p>
+<p>他们 1986 论文描述，Hatcher 和 Christopher 的方法是 Hoffmann 和 O‘Donnell 工作的扩展。直观上是要找可以应用到某些表达式树的哪些规则，这些表达式树的根节点已经赋了一个标签<em>l</em>，这样子整个表达式树可以以最低成本规约到一个给定的非终结符上 nt。Hatcher 和 Christopher 认为最优的模式选择，我们可以考虑每一对标签 <em>l</em> 和非终结符 nt，然后总是应用可以规约最大表达式树 $T_i$ 的规则，这就表示<em>l</em>以最低的成本变成了 nt。在 Hoffmann 和 O’Donnell 的设计中，只有一个空的符号可以匹配任意的子树，$T_l$ 等于匹配集中出现的最大模式，但是为了适配指令集语法，Hatcher 和 Christopher 的版本每个非终结符都包含一个空。这意味着不得不遍历匹配集中出现的所有模式才能找到 $T_l$。然后，我们为了每一对模式，计算将一个较大模式 p 转换到一个可包含的，更小的模式 q（即，p &gt; q）需要的成本。这个成本通过使用其它模式递归地重写 p 直到它等于 q，它最后会被标注到包含图中，让这个转换成本等于所有应用到的模式的和。我们用函数 $reducecost( p \to^{<em>}) q$。根据这个信息，我们通过找到规则 r，来找回将 $T_l$ 的最低成本归约变成目标 g 的规则<br>$$<br>reducecost(T_l \to^{</em>} g) = reducecost(T_l \to^{*} tree\ pattern\ of\ r) + cost\ of\ r.<br>$$<br> 这要么选出 l 匹配集出现的最大模式，要么存在与其它模式组合的具有较低成本的较小的模式。虽然我们添加了许多的注解，但主要思想还是来自 Hatcher 和 Chritopher 的方法。</p>
+<p>通过将已选择的规则编码到一张额外的表供模式选择期间查询，我们构造了一个完整的表驱动指令选择器，它同时也执行最优的模式选择。Hatcher 和 Christopher 也增强了算法可以检索匹配集，从而包含具有交叉操作的重复模式，然后可以从一些匹配集中省略它们。但是如果存在完全独立的模式，则 Hatcher 和 Christopher 的设计并不总是保证表达式树可以最优地覆盖完。此外，还不清楚代表标签的最大表达式树的最优模式选择是否是所有表达式树的最优模式选择的精确近似。</p>
+<p><em>使用 BURS 理论生成状态</em></p>
+<p>一个不同的更广为人知的生成状态的方法是 Pelegri-Llopart 和 Graham [202] 开发的。在他们重要的 1988 年论文中，Pelegri-Llopart 和 Graham 证明了树重写的方法总是可以让所有的重写发生在树的叶子节点上，因此产生了<em>自底向上重写系统</em>（简称 BURS）。我们将这样的规则集称为<em>BURS语法</em>，它们类似于之前已经见过的语法，除了 BURS 语法允许多符号 – 包括终结符 – 出现在生成式的右边。图 3.16（a）给出了这种语法的一个例子，Dold 等人[71，273]后面用抽象状态机开发了一个方法来证明 BURS 语法的正确性。</p>
+<p>使用这个理论，Pelegri-Llopart 和 Graham 基于给定的 BURS 语法开发了一个算法，用于计算最优模式选择所需的表。方法如下：对于一个给定的表达式树 E，和一条边，它表明特定重写规则在子树上的应用。图 3.16（b）给出了一个这种图的例子。设定一些节点作为目标（即，树重写期望的规则），然后从 LR 图中选出一个子图称为<em>唯一不可逆  LR 图</em>（UI LR），这样子重写的可能性是最小的。寻找 UI LR 图是一个 NP-完全的问题，因此 Pelegri-Llopart 和 Graham 应用一个启发式，迭代地移除被视为是“有用的”的节点。然后每个 UI LR 对应一个状态，通过为所有可以作为输入的可能的表达式树生成相应的 LR 图，我们可以找到所有必须的状态。</p>
+<p><em>实现有限数量的状态</em></p>
+<p>为了获取最优的模式选择，</p>
+<h2 id="DAG-覆盖"><a href="#DAG-覆盖" class="headerlink" title="DAG 覆盖"></a>DAG 覆盖</h2><p>就像我们在前一章节见到的，树匹配的原理带有一些缺点：无法合适地表达公用子表达式，且无法建模许多机器特性如多输出指令。因为这些限制是由于完全依赖树结构导致的，我们可以通过将树覆盖扩展到 DAG 覆盖来放开它们。</p>
+<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p>如果我们移除树中的每对节点都必须只能有一条路径，我们会获得一个新的图形称为<em>有向无环图</em>，通常称为 DAGs。则现在的节点允许有多个输出边，因此表达式的中间值可以在相同的图里共享和重复使用，也会包含多个根节点。为了区分表达式的树建模和 DAG 建模，我们称后者为 <em>表达式</em> DAGs。一旦能构成这种形式后，指令选择的过程就可以应用我们从前一章学到的模式匹配和模式选择的相同原则来处理。当模式允许多个根节点，我们可以建模和利用大的机器指令集，例如多输出的指令，像 divmod 其可以同时计算商和余数。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_1.png" class="" title>
+
+
+<h3 id="DAGs-上的最优模式选择是-NP-完全问题"><a href="#DAGs-上的最优模式选择是-NP-完全问题" class="headerlink" title="DAGs 上的最优模式选择是 NP 完全问题"></a>DAGs 上的最优模式选择是 NP 完全问题</h3><p>不幸地是，DAGs 给我们的这种普遍性收益和建模能力的成本是复杂性的的大幅提升。在树上选择一个最优的模式集是可以在线性时间里完成的，但在 DAGs 做相同的事情确是一个 NP 完全的问题。Bruno 、 Sethi [38] 和 Aho 等人[4] 在 1976 年已经证明了这个问题，虽然两者都更关心指令调度和寄存器分配的最优性。在 1995 年，Proebsting [206] 给出了最优指令选择的简洁证明，后来在 2008 年 Koes 和 Goldstein [161] 重新形式化了它。我们会在本文中描述 Koes 和 Goldstein 的证明。请注意完成这个是不需要涉及模式匹配任务的 – 就像我们会看到的，如果模式由树组成，则可以在多项式的时间里完成这个。</p>
+<h4 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h4><p>这个思路是将 SAT（布尔可满足性）问题精简为一个最优（即，最低开销）DAG 覆盖问题。SAT 问题用来判断一个<em>合取范式</em>（CNF）中的布尔公式是否可以被满足。一个 CNF 表达式是如下形式的公式<br>$$<br>(x_{11}\vee x_{12} \vee …) \wedge (x_{21} \vee x_{22} \vee …) \wedge …<br>$$<br>变量 $x$ 可以通过 $\neg x$ 取反。因为这个问题已经被证明是 NP-完全的了[62]，所有 SAT 可以多项式时间归约成的问题$\chi$，都会使得 $\chi$ 是 NP-完全的。</p>
+<p><em>将 SAT 建模为覆盖问题</em></p>
+<p>首先我们将一个 SAT 问题实例 $S$ 转换为 DAG。直观上，如果我们可以用单元开销的模式覆盖 DAG，则总开销等于节点的数量（假设每个变量和操作都产生一个新节点），那么存在对变量的真值赋值式，公式对其求值为 $T$。因为这个目的，DAG 中的节点可以是 ${ \vee, \wedge,\neg,v, \square, \diamond }$ 类型。我们定义 $type(n)$ 作为节点 $n$ 的类型。分别称 $\Box$ 类型的节点和 $\diamond$ 类型的节点为<em>box 节点</em> 和<em>stop 节点</em>。我们也定义了$children(n)$ 作为 $n$ 的子节点集。对于每个布尔变量 $x \in S$ ，我们创建两个节点 $n_1$ 和 $n_2$，则 $type(n_1) = v$ ，$type(n_2) = \square$，且有一条直连边 $n_1 \rightarrow n_2$。我们对每个二元布尔操作符 $op \in S$ 都做相同的操作，创建两个节点 $n_{1}^{‘}$ 和 $n_{2}^{‘}$，则 $type(n_{1}^{‘}) = op$ ，$type(n_{2}^{‘}) = \square$，且有一条直连边 $n_{1}^{‘} \rightarrow n_{2}^{‘}$。我们通过操作数的箱子节点，将操作符与它的输入操作数 $x$ 和 $y$ 连接在一起，即两条边 $n_x \rightarrow n_{1}^{‘}$ 和 $n_y \rightarrow n_{1}^{‘}$ 其中$type(n_x) = type(n_y) = \Box$。对于一元操作 $\neg$， 我们显然只需要一条这样的边，并且因为布尔 <em>or</em> 和 <em>and</em> 是可交换的，所以边排布的顺序与相关操作符节点的顺序是无关紧要的。最后，只有 box 节点会多于一条输出边。</p>
+<p>通过简单地遍历布尔公式，我们可以在线性时间里构造 DAG。图 4.1（b）给出了一个 SAT 问题转换为 DAG 覆盖问题的例子。</p>
+<p><em>布尔操作作为模式</em></p>
+<p>然后我们构造一组树模式 $P_{SAT}$， 它允许我们去推断如何设置 <em>S</em> 中的变量，从而可以满足表达式（见图 4.1（a））。如果值假定被设置为 $T$（true），则模式的形成会有一个 box 节点作为叶子。而且，如果操作的结果判定为 <em>F</em>（false），则模式会有一个 box 节点作为根。确定它的一个方式是，如果模式中的一个操作符<em>消费</em>一个 box 节点，则值必须设置为<em>T</em>；然后如果操作符<em>产生</em>了一个 box 节点，则结果必须设定为<em>F</em>。为了强制整个表达式求值为<em>T</em>，唯一个包含 stop 节点（即，$\diamond$ 类型）的模式也消费了一个 box 节点。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_2.png" class="" title>
+
+
+<p>除了节点类型可以出现在表达式 DAG 中，模式也会使用额外的类型节点，我们称它为<em>锚节点</em>。现在，我们认为一个带有根 $p_r$ 的树模式匹配了一个节点$v\in V$，其中 <em>V</em> 是表达式 DAG $D = (V, E)$ 中的节点集，当且仅当：</p>
+<ol>
+<li>$type(v) = type(p_r)$,</li>
+<li>$|children(v)| = |children(p_r)|$，且</li>
+<li>$\forall c_v \in children(v), c_r \in children(p_r) : (type(c_r) = \bullet) \vee (c_r 匹配 c_v)$。</li>
+</ol>
+<p>换句话说，除了可以在任意节点匹配的锚节点外，树模式的结构必须对应于已匹配的子图结构。我们也采用了两个新的定义：$matchset(v)$，它是 $P_{SAT}$ 中匹配 $v$ 的模式集合；还有$m_{p_i \rightarrow v}(v_p)$，它是 DAG 节点$v \in V$，对应于已匹配模式 $p_i$ 中的模式节点 $v_p$ 。最后，我们说一个 DAG $D = (V, E)$ 可以被映射函数$f : V \rightarrow 2^T$ 从 DAG 节点到模式<em>覆盖</em>，当且仅当$\forall v \in V$：</p>
+<ol>
+<li>$p \in f(v) \Rightarrow p$ 匹配 $v$ 且 $p \in P_{SAT}$，</li>
+<li>$in-degree(v) = 0 \Rightarrow |f(v)| &gt; 0$，且</li>
+<li>$\forall p \in f(v)$，$\forall v_p \in  p$ <strong>s.t.</strong> $type(v_p) = \bullet \Rightarrow |f(m_{p_i -\rightarrow v}(v_p))| &gt; 0$。</li>
+</ol>
+<p>第一个约束强制每个选定的模式都匹配了且都是实际的模式。第二个约束强制了停止节点的匹配，且第三个约束强制了剩余 DAG 的匹配。因此，$D = (V，E)$ 的一个最优覆盖是覆盖 $D$ 的映射 $f$，和最小的<br>$$<br>\sum_{v\in V} \sum_{p \in f(v)} cost(p)<br>$$<br>其中 $cost(t)$ 是模式 $p$ 的开销。</p>
+<p><em>DAG 覆盖的最优方案 $\Rightarrow$ SAT 的方案</em></p>
+<p>现在我们假定，如果这个最优覆盖的总开销等于 DAG 中非盒子节点的数量，则对应的 SAT 问题就成立了。因为 $P_{SAT}$ 中的所有模式恰好只覆盖一个非盒节点，且有相等的单元开销，然后如果 DAG 中每个非盒节点仅被一个模式覆盖，所以只需查看选择了哪个模式来覆盖变量节点，我们就可以简单地推断出布尔变量的真值分配。</p>
+<p>因此，我们证明了一个 SAT 问题实例可以在多项式时间里归约成一个最优 DAG 覆盖问题实例，从而得到解决。故而，最优的 DAG 覆盖 – 也就是基于 DAG 覆盖的最优指令选择 – 是 NP-完全的。</p>
+<h3 id="树模式覆盖-DAG"><a href="#树模式覆盖-DAG" class="headerlink" title="树模式覆盖 DAG"></a>树模式覆盖 DAG</h3><p>Aho 等人的[4] 是第一篇提供在 DAGs 操作的代码生成方法的文章。在他们发表于 1976 年的文章中，Aho 等人提出了一些简单的，贪心的启发式，以及一个最优的代码生成器，其为一个可交换的单寄存器机器生成代码。但是，他们的方法假定了表达式节点到机器指令是一对一映射的，所以有效地规避了指令选择的问题。</p>
+<p>因为最优模式选择的 DAG 指令选择在计算上是复杂的，所以第一个基于这个原理的第一个合适的方法，使用了 DAGs 来建模输入程序的表达式，但仍将模式作为树。通过这个，则开发者可以采用来自树覆盖的已知的，线性时间的方法，并将它们扩展到 DAG 覆盖。然后根据上一章我们讨论的方法，通过解决掉公共子表达式，我们可以将表达式 DAGs 转为树。我们称这个为<em>解DAG</em></p>
+<h4 id="解表达式-DAG-为树"><a href="#解表达式-DAG-为树" class="headerlink" title="解表达式 DAG  为树"></a>解表达式 DAG  为树</h4><p>有两种方法可以将表达式 DAG 解DAG 为树。第一种方法是拆分共享节点的边（即，重用发生的地方），产生一组不相连接的表达式树，这些表达式树可以独立地使用通用树覆盖技术进行覆盖。通过强制将根节点在前一个共享节点的表达式树的结果写到一个特殊的位置（通常是主存），维护树之间的隐式连接。然后它们可以被其它的表达式树使用，故需要增强这些表达式树来反映这个新的输入源。使用这个方法的一个实现例子是 DAGON，它是 Keutzer[156] 开发的一个技术粘合器，将技术独立的描述映射到电路。第二个方法是在节点重用出现的地方复制一下节点， 这也可能会产生许多的树。两个概念都在图 4.2 中标明了。</p>
+ 
+  <img src="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/s_4_3.png" class="" title>
+
+
+<p>尽管解 DAG技术允许在 DAG 上使用基于树覆盖的技术来完成指令选择，但它是以牺牲性能为代价的：过于激进的边拆分阻碍了大模式的应用，因为它产生了许多小的树；同时太激进的节点复制会导致低效的汇编代码，因为有许多的操作在最后的程序中是不需要重复执行的。而且，拆分的 DAG 的中间结果必须被强制存储，这对于异构内存寄存器架构来说是比较麻烦的。Araujo 等人验证了最后一个问题 [17]。</p>
+<p><em>拆分和复制的平衡</em></p>
+<p>Fauth 等人[92，191] 在 1994 年提出了通过平衡节点复制和边拆分，尝试改善解 DAG 的不足。实现在了 CBC （通用总线编译器）中，它的指令选择器应用了一个倾向于复制直到开销被认为太高，这个算法才变为拆分的启发式规则。复制还是拆分的决定是通过比较两个解决方法的代价来确定的，会选择最廉价的那一个。成本是通过表达式 DAG 中的节点数量和沿着每条执行路径执行的期望节点数之间的加权和计算的（分别是代码大小和执行时间的粗略估算）。一旦完成，每个会产生的表达式树会被一个带有扩展匹配条件支持的 IBURG 的升级版覆盖（见 46 页）。但是，只是用一种方法而不使用其它的，产生的实验数据太有限了，无法判断这个技术比起将表达式 DAGs 直接转换成树的方式的效果如何。</p>
+<p><em>带有协同寄存器分配目标地选择指令</em></p>
+<p>在 2001 年 Sarkar 等人 [222] 开发了一个指令选择的贪心算法，有一个目的就是降低<em>寄存器压力</em> – 即，汇编代码需要的空寄存器的数量 – 从而可以促进后续的指令调度和寄存器分配。因此，如果选择了一条指令，比起通常的执行周期数量，每条机器指令的成本反映的是指令导致的寄存器压力的数量（这篇文章没有详细地给出成本的计算公式）。完成指令选择首先是表达式 DAG – 表达式 DAG 已经可以通过额外的数据依赖增强成图 – 的解 DAG 成森林，通过拆分的方式，然后在每个表达式树上应用传统的树覆盖方法。有一个启发式规则可以用来决定在哪些地方执行这些削减。当选择了一个模式，由多个节点组成的模式覆盖的那些节点被归约成一个<em>超级节点</em>。然后，算法检查结果图是否包含任意的环；如果它包含，则这个覆盖是非法的，因为它存在循环的数据依赖。然后，修改削减并重复这个过程，直到完成有效的覆盖。</p>
+<p>Sarkar 等人在 Jalapeño 上 – IBM 开发的一个基于寄存器的 Java 虚拟机 – 实现了他们的寄存器敏感的方法，在一小部分问题集上达成了 10% 的性能提升，因为比起默认的指令选择器，它使用了更少的溢出指令。</p>
+<h4 id="将动态规划扩展到-DAG"><a href="#将动态规划扩展到-DAG" class="headerlink" title="将动态规划扩展到 DAG"></a>将动态规划扩展到 DAG</h4><p>在 1999 年的论文中，Ertl [85] 给出了一个方法，不需要将 DAGs 分解成树，就可以在 DAGs 上应用传统的树覆盖方法。这个想法首先是在 DAG 上做一个自底向上地遍历，就像它是一棵树一样。然后使用我们在前一章的 3.6.2 节中讨论的传统的动态规划方法计算成本。因此，每个节点会被标记上与 DAG 通过节点复制先被归约成树时的节点相同的成本。但是，Ertl 意识到，如果几个模式都将相同的节点归约到相同的非终结符，则到这个非终结符的归约可以在规则中共享，其中的符号出现在产生式的右手边。然后可以在代码输出期间利用这个，对于每个非终结符都只生成一次汇编代码。这可以降低代码大小同时提升性能，因为降低了冗余操作的数量。图 4.3 给出了这个场景的一个示例图。在那里我们可以看到加法操作会被实现两次，因为它被两个分离的模式覆盖了两次，它们分别将子树降低到不同的非终结符上。另一方面，Reg 节点两次都被降低到相同的非终结符上（即，reg），因此可以在出现这个符号的模式规则之间共享。通过适当的数据结构，可以在线性时间里完成共享。</p>
+<p>对于某些指令集语法，Ertl 的方法能保证得到最优的模式选择，Ertl 设计了一个名为 DBURG 的检查器，可以识别出不属于这类的语法。DBURG 的基本原理是检查每个局部最优的决策是否也是全局最优，然后在所有可能输入的 DAG 上进行一个归纳证明。为了高效地实现 DBURG，Ertl 使用了 BURG 的思路来实现（因此名命名也类似）。</p>
+<p><em>进一步发展</em></p>
+<p>最近，Koes 和 Goldstein[161] 扩展了Ertl 的主意，提供了一个类似与 Fauth 等人的启发式规则，即在复制的地方拆分表达式 DAG 会被认为对代码质量有负面影响的。类似于 Ertl，Koes 和 Goldstein 的算法会先执行一个类似于树自底向上遍历的过程选出最优的模式，忽略输入是 DAG 的事情。然后，在多个模式重叠的地方会计算两个成本：<em>重叠成本</em>，这是令模式重叠然后在最终汇编插入操作的副本的成本估算；<em>子表达式消除成本</em>，在相同的地方换成拆分边的成本估算。如果，<em>子表达式消除成本</em>低于<em>重叠成本</em>，则发生重叠的节点被标记为<em>固定的</em>。一旦这类节点全部都被处理了，会在表达式树上执行第二遍自底向上的 DP，这个时候任何模式都不允许跨过固定节点（即，一个固定节点只能在模式的根节点匹配上）。最后，一个自顶向下的过程输出汇编代码。Koes 和 Goldstein 也比较了他们自己的实现，即 NOLTIS 和<em>线性规划</em>的实现的比较，发现 NOLTIS 在测试用例里选择到最优模式匹配可以达到 99.7%。</p>
+<h4 id="直接在-DAG-上匹配树模式"><a href="#直接在-DAG-上匹配树模式" class="headerlink" title="直接在 DAG 上匹配树模式"></a>直接在 DAG 上匹配树模式</h4><p>不像上面的方法 – 在覆盖前将表达式 DAG 转为树 – 存在一些直接在 DAG 上匹配树模式的技术。</p>
+<p><em>使用类 Weingart 模式树</em></p>
+<p>在 1994 年的一篇极具影响的论文里，Liem 等人[179, 201, 205] 给出了一个设计，在 CODESYN 中实现了，CODESYN 是一个非常知名的代码分析系统，也是嵌入式开发系统 FLEXWARE 的一部分。这个方案用到了和 Weingart[256] 相同的模式匹配技术 – 我们在上一节讨论的 – 即合并所有可用的树模式到单一模式树。使用一个$O(nm)$ 模式匹配器，按顺序遍历表达式 DAG 上的模式树可以找到所有的匹配集。然后用我们之前知道的动态规划技术做模式选择（虽然没有说明它们是如何适配 DAG 的）。但是，由于使用了单一模式树，这个方法是否可以扩展成处理 DAG 模式是值得怀疑的。</p>
+<p><em>LLVM</em></p>
+<p>另一种 DAG 上直接树匹配的方法是应用在知名的 LLVM [167] 编译器基础设施上。根据 Bendersky[30] 的一篇博客 – 这是写作的时候除了 LLVM 代码本身唯一一篇文档 – 指令选择器基本上是一个贪心的 DAG-到-DAG 的重写器，它将机器无关的基本块 DAG 表示重写为机器相关的 DAG 表示。对于包含在表达式 DAG 中的分支和跳转的操作，进行模式匹配和其它任意节点都是相同的。模式被限制为树形式，用机器描述的格式来表示，其允许将共同特性分解到抽象指令中。使用一个成为 TABLEGEN 的工具，然后机器描述被展开成完整的树模式，其可以被匹配器生成器处理。这个匹配器生成器首先执行模式上的词法分析：先降低复杂度，它是模式大小和一个常数的和（常数可以用于调整给特定指令更高的优先级）；然后增加成本；最后增加输出模式的大小。一旦排序好，每个模式都被转换成了递归的匹配器，本质是一个检查模式是否可以匹配表达式 DAG 中的一个给定节点的一个小程序。然后这个生成的匹配器被编译为字节码格式，汇编成一张匹配表，在指令选择期间进行查找。表被重新排布了从而可以按词法顺序检查模式。当找到一个匹配，会贪心地选择模式，已匹配的子图被替换为已匹配模式的输出（通常是单节点）。</p>
+<p>虽然功能强大且使用广泛，但是 LLVM 指令选择器有几个缺点。主要的一个缺点是任意无法被 TABLEGEN 处理的模式，都必须通过客制化 C 函数手写完成。因为模式被严格限制为树形状，包含了所有的多输出模式。此外，贪心方式会对代码质量有不好的影响。</p>
+<p>我们可以发现上述讨论过的方法共同和频繁出现的缺点是它们都是孤立地处理形状为树的模式。因此我们继续看的技术也是建模为 DAG 形式的。</p>
+<h4 id="线性规划选择模式"><a href="#线性规划选择模式" class="headerlink" title="线性规划选择模式"></a>线性规划选择模式</h4><h2 id="基于图的方法"><a href="#基于图的方法" class="headerlink" title="基于图的方法"></a>基于图的方法</h2><p>即使是我们上一章研究的 DAG 覆盖，比起树覆盖有更通用和更强大的形式，它仍然不足以处输入程序和机器指令的所有方面。例如，for 循环语句导致的控制流无法建模成表达式的一部分，因为它需要循环，这违背了 DAGs 的定义。通过移除这个限制，我们最终得到最通用的形式，即图覆盖。</p>
+<h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p>就像 DAG 覆盖是树覆盖更通用的形式一样，图覆盖也是 DAG 覆盖更通用的形式。通过允许输入程序的两个语句采用任何通用的形状，指令选择可以从之前的局部范围扩展开 – 即，从覆盖一个表达式树或 DAG – 到一个全局范围，它包含了整个函数中的所有表达式，因为图形能够建模控制流。这被称为<em>全局指令选择</em>，理论上它使得指令选择器可以跨基本块边界移动操作，从而可以更好地利用具有大模式的复杂机器指令，否则这些指令是无法用上的。对于现代机器，功耗和热辐射是变得越来越重要的因素，解决这些问题的一个关键方法是使用更少的，且更大的指令，它们比起使用更多更小的指令的功耗会更小。</p>
+<p>但是，从 DAG 模式到图模式的转变，由于模式匹配变成了 NP-完全的问题，我们不能够再采用树和 DAG 的模式匹配技术；图 5.1 给出了在使用不同图形时的模式匹配和最优模式选择的不同时间复杂度。此外，我们需要应用到通用子图同构算法，因此从研究一些这样的算法开始。</p>
+<h3 id="使用子图同构的模式匹配"><a href="#使用子图同构的模式匹配" class="headerlink" title="使用子图同构的模式匹配"></a>使用子图同构的模式匹配</h3><p>子图同构的问题是去识别一个任意的图$G_a$ 是否可以通过反转，扭曲或者镜像变成另一个图 $G_b$ 的子图。在这个场景中，我们说$G_a$ 是 $G_b$ 的<em>同构子图</em>，并且确定它是个已知的 NP-完全问题[58]。因为同构子图在许多其它的领域都可以找到，所以对这个问题进行了大量的研究（见例子[60， 87，88，109，129，139，163，234，248]）。在这节中，我们会专注于 Ullman 算法和另一个常用算法 VF2。</p>
+<h3 id="基于图的模式选择技术"><a href="#基于图的模式选择技术" class="headerlink" title="基于图的模式选择技术"></a>基于图的模式选择技术</h3><h4 id="一元和二元覆盖"><a href="#一元和二元覆盖" class="headerlink" title="一元和二元覆盖"></a>一元和二元覆盖</h4><h4 id="基于-CP-的技术"><a href="#基于-CP-的技术" class="headerlink" title="基于 CP 的技术"></a>基于 CP 的技术</h4><h4 id="基于-PBQP-的技术"><a href="#基于-PBQP-的技术" class="headerlink" title="基于 PBQP 的技术"></a>基于 PBQP 的技术</h4><h3 id="基于处理器建模的方法"><a href="#基于处理器建模的方法" class="headerlink" title="基于处理器建模的方法"></a>基于处理器建模的方法</h3><p>在前一章中，我们看到了一种微代码生成的方法，其建模了目标处理器的整个数据链路，而不仅仅只是可用的指令集。这里我们将会关注依赖于相同建模方案但解决了指令选择更传统的问题的技术。</p>
+<h4 id="CHESS"><a href="#CHESS" class="headerlink" title="CHESS"></a>CHESS</h4><p>在 1990 年，Lanneer 等人[166] 开发了一个方案，其在后来被 Van Praet 等人[249, 250]用在了他们实现的 CHESS 上，这是一个知名的针对 DSPs 和 ASIPs 的编译器，是一个欧洲项目的成果。</p>
+<p>将 CHESS 和 MSSQ 比较时 –  MSSQ 我们在 4.3.5 节中解读过了– 有两个显著的不同。首先，在 MSSQ 中处理器的数据链路是由手工写的描述文件提供的，而 CHESS 中数据链路是由基于 nML 格式的文件自动生成的[90，91]，这减少了人力需求。</p>
+<p> 第二，打包的方法 – 即合并能并行执行的操作 – 是不同的：在 MSSQ 中，指令选择器依赖于 DAG 覆盖，通过寻找数据路径模型图中的子图来覆盖表达式树，然后在模式选择之后，一个后续的例程尝试调度选择好的指令使其并行化。与之相反的是， CHESS 采用了更渐进的方式，制定了一个<em>链接图</em>，其中每个节点表示表达式图中的一个操作（允许包含循环）。节点由可以执行这个操作的功能单元标注着。在 DSP 处理器上，功能单元通常被分组为功能构建块（FBBs），然后为每对潜在的能在相同的 FBB 中执行的节点对在链接图中添加一条边（这被称为链接）。在然后一个启发式的算法尝试去收缩链接图中的节点，通过选择一条边，接着用一个新节点替换两个节点，然后删除不能在再与新节点的操作在同一个 FBB 上执行的边。这个过程会一直迭代直到没有节点能在压缩的，然后链接图中剩余的每个节点都构成一个包。后来这个作者在 [249] 中扩展了这个方法，通过分支限界搜索在所有可能的包中进行选择，允许表达式图中相同的操作出现在多个包中。</p>
+<p>通过链接图逐步构建包的方式，Van Praet 等人的方法能够将整个函数建模为表达式图和跨基本块边界的包操作。它的集成特性也允许为复杂的架构生成汇编代码，让它适合于 DSPs 和 ASIPs 等这类数据路径通常是非常的规律的结构，因为它是基于图的，所以它似乎可以扩展到建模具有内部循环的机器指令。但是，尚不清楚这种方式如何处理相互依赖的机器指令。</p>
+<h4 id="模拟退火"><a href="#模拟退火" class="headerlink" title="模拟退火"></a>模拟退火</h4><p>另一个尽管不是很常见的技术是由 Visser [251] 提出的。就像 MSSQ 和 CHESS 一样，Visser 的设计是一种集成的代码生成技术，但是应用了模拟退火理论来提高效果。 </p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在这章中，我们研究了许多基于图覆盖的指令选择技术。比起仅在树或者 DAG 上有作用的设计，基于图的指令选择器更强大，因为输入程序和机器指令模型可以采用任意的图形。这也使得可以进行全局指令选择，因为表达式图可以建模输入程序的整个函数，而不只是单个基本块，从而能够产生更高效的汇编代码（如 Eckstein等人展示的）。</p>
+<p>但是，图的模式匹配也变成了一个 NP-完全的问题，故而比起 DAG 覆盖只有一个 NP-完全的问题，最优图覆盖需要有两个 NP-完全的问题组成。因此，我们很有可能只会看到这种方法只应用到用户能够负担得起长编译时间的编译器中（如，在性能，代码大小，能源消耗或它们几个的组合上有极高需求的嵌入式系统中）。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/09/29/%E8%87%AA%E5%8A%A8%E5%AD%98%E5%82%A8%E4%BC%98%E5%8C%96/" rel="prev" title="自动存储优化">
+                  <i class="fa fa-chevron-left"></i> 自动存储优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/" rel="next" title="ASIPs 的指令集定义和指令选择">
+                  ASIPs 的指令集定义和指令选择 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

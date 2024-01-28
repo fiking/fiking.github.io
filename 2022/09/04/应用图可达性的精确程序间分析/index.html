@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要本篇论文给出了一大类程序间数据流-分析的问题如何在多项式时间里通过将其转换为一种特殊的图可达问题进行解决的方法。唯一的限制是数据流事件集合必须是有限集的，且数据流函数必须分布在合并操作上（并集或者交集）。这类问题包括–但不限于–经典的分离问题（也被称为“产生&#x2F;去掉” 或者“位-向量”问题）–如，到达顶点，有效表达式，或者存活变量。此外，我们的技术可以处理的问题种类还包含许多非问题，包括真实存活">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用图可达性的精确程序间分析">
+<meta property="og:url" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要本篇论文给出了一大类程序间数据流-分析的问题如何在多项式时间里通过将其转换为一种特殊的图可达问题进行解决的方法。唯一的限制是数据流事件集合必须是有限集的，且数据流函数必须分布在合并操作上（并集或者交集）。这类问题包括–但不限于–经典的分离问题（也被称为“产生&#x2F;去掉” 或者“位-向量”问题）–如，到达顶点，有效表达式，或者存活变量。此外，我们的技术可以处理的问题种类还包含许多非问题，包括真实存活">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_1.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_1.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_2.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_1.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_2.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_4.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_3.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_5.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_4.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_5_2.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_6.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_2.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_7.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_8.png">
+<meta property="og:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_9.png">
+<meta property="article:published_time" content="2022-09-04T15:44:46.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.949Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="program analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/","path":"2022/09/04/应用图可达性的精确程序间分析/","title":"应用图可达性的精确程序间分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>应用图可达性的精确程序间分析 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E7%9A%84-IFDS-%E6%A1%86%E6%9E%B6"><span class="nav-number">3.</span> <span class="nav-text">分布式过程间数据流分析问题的 IFDS 框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">过程间数据流分析作为图可达问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E7%A4%BA%E5%88%86%E9%85%8D%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">表示分配函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E5%88%B0%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.2.</span> <span class="nav-text">从数据流分析问题到可实现路径可达问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E5%AE%9E%E7%8E%B0%E8%B7%AF%E5%BE%84%E5%8F%AF%E8%BE%BE%E9%97%AE%E9%A2%98%E7%9A%84%E9%AB%98%E6%95%88%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">一个可实现路径可达问题的高效算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E8%A1%A8%E7%AE%97%E6%B3%95%E7%9A%84%E5%BC%80%E9%94%80"><span class="nav-number">6.</span> <span class="nav-text">制表算法的开销</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">7.</span> <span class="nav-text">初步实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">8.</span> <span class="nav-text">相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E5%88%B6%E8%A1%A8%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="nav-number">9.</span> <span class="nav-text">附录：制表算法的运行时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">10.</span> <span class="nav-text">引用</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="应用图可达性的精确程序间分析 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          应用图可达性的精确程序间分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-09-04 23:44:46" itemprop="dateCreated datePublished" datetime="2022-09-04T23:44:46+08:00">2022-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/program-analysis/" itemprop="url" rel="index"><span itemprop="name">program analysis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>20k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>18 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本篇论文给出了一大类程序间数据流-分析的问题如何在多项式时间里通过将其转换为一种特殊的图可达问题进行解决的方法。唯一的限制是数据流事件集合必须是有限集的，且数据流函数必须分布在合并操作上（并集或者交集）。这类问题包括–但不限于–经典的分离问题（也被称为“产生/去掉” 或者“位-向量”问题）–如，到达顶点，有效表达式，或者存活变量。此外，我们的技术可以处理的问题种类还包含许多非问题，包括真实存活变量，拷贝传播，和可能未初始化变量。</p>
+<p>结果有一个初步的 C 程序（查找可能的未初始化变量）实验研究给出。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文给出了如何找到一个精确的方案，从而能在多项式时间里解决一大类程序间数据流分析的问题。与程序内的数据流分析作比较，程序内的“精确”意味着“满足所有路径”[20]，而一个精确的程序间分析算法必须提供“满足所有有效路径”的解决方案。（一条路径是有效的，当它满足一个事实，即一个过程完成后会返回到最近一次调用它的调用点上[31, 15, 6, 24, 21, 29]–见第二节。）</p>
+<p>此前精确过程间数据流分析的工作可以分为下面的几类：</p>
+<ul>
+<li>针对特定独立问题的多项式时间的算法（如，常量传播[5, 14]，流敏感概要信息[6]，以及指针分析）。</li>
+<li>针对有限类问题的多项式时间的算法：局部可分问题（经典的“位向量”或“生成/去掉”问题的过程间版本），包括了到达定值，有效表达式，和存活变量[22]。</li>
+<li>针对非常通用类问题的算法[10,31,21]。</li>
+</ul>
+<p>第三类相关的工作集中在通用性，但没有提供多项式时间的算法。</p>
+<p>与之前的工作相比，本文提供了一个多项式时间的算法，用于找到一类通用的过程间数据流分析问题的精确解。这类由所有满足如下条件的问题组成，首先它的数据流事件 D 是有限集，然后它的数据流函数（其是在 $2^D \rightarrow 2^D$里）分布在连接操作符上，（并集或者交集，取决于特定问题）。我们称这类问题为过程间，有限的，分布的，子问题，或简称为 IFDS 问题。所有的局部分离问题都是 IFDS 问题。此外，许多具有实际重要性的不可分离的问题也是 IFDS 问题 – 例如：真实存活变量[13，拷贝常量传播[12, pp.660]，以及可能的未初始化变量。</p>
+<p>我们的结果基于两个观点：</p>
+<p>（i） 通过严格限制领域为原子事件的幂集和分布式的数据流函数，我们可以高效地创建一个简单的函数表示，其可以归结过程的影响（通过支持从输入到输出的高效查找）。对于局部分离问题，总结函数的表示是稀疏的。这使得我们的算法与之前针对这类问题的大部分高效算法性能相同，同时不会失去通用性。</p>
+<p>（ii）与通过确定主程序的每次迭代开销乘以迭代次数来计算我们算法的最坏情况时间复杂度的方式相比，我们可以将算法成本分解为三个贡献方面，然后限制每个方面操作的总开销（见附录）。</p>
+<p>我们算法最重要的部分可以总结为如下：</p>
+<ul>
+<li>在第三节中，我们表明通过将 IFDS 问题转换为特定的图可达问题，可以精确地解决所有的 IFDS 问题：沿过程间可实现路径的可达性。与有向图中的普通可达问题相比（如，传递闭包），可实现路径可达性问题在哪些路径需要考虑方面涉及到一些限制。一条可实现路径模仿程序执行的调用-返回结构，只考虑“返回”可以与相对应的“调用”匹配的路径。</li>
+<li>在第四节中，我们给出了可实现-路径可达性问题的一个新的多项式时间算法。这个算法时间复杂度是$O(ED^3)$；这个算法渐进快于这个问题之前已知的最好算法[16]，这个最好算法的时间复杂度是$O(D^3\sum\limits_{p} Call_pE_p + D^4\sum\limits_p Call_p^3)$。</li>
+<li>如第五节讨论的，新的可实现-路径可达性算法是自适应的，当应用于有严格形态的普通类问题实例时有更好的渐进性能。例如，对于局部分离问题的通用场景，算法性能有一个渐进地提高。我们的工作涵盖了 knoop 和 Stefan 的工作[22]，因为我们的算法可以处理更多种类的问题，同时在局部分离问题上，我们的算法与 Knoop-Steffen 算法使用的时间是相同的 – $O(ED)$。</li>
+<li>通过将每个过程间数据流分析看作是本质上一个大型过程间问题，过程间数据流分析问题可以获得一个不精确（过于保守的）的答案。在图可达的术语中，这相当于要考虑所有的路径，而不是只考虑过程间可实现路径。对于 IFDS 问题，我们可以限制获得更精确（可实现路径）答案需要的额外开销。在局部可分离问题的重要特定场景中，两种方法都能在 $O(ED)$ 时间里获得，不会有“惩罚”。在分布式的场景中，惩罚是 D 的一个因子：我们可实现-路径可达性算法的运行时间是$O(ED^3)$，然而所有路径可达性方法可以在 $O(ED^2)$ 的时间里找到。但是，在第六节的初步实验报告中，有个 D 的范围是 70-142 的相关例子，看到的惩罚最多是 3.4 倍。</li>
+<li>Callahan 给出了几个 “过程间流敏感副作用问题”的算法[6]。尽管这些问题（从某些技术立场上）与 IFDS 数据流分析问题的性质略有不同，但是第四节的算法作个小的自适应就可以应用到这些问题上，同时它渐进快于 Callahan 给出的算法。此外，我们的算法可以从 Callahan 问题自然推广到一些系列分布的流敏感副作用问题上。（这个以及其它的相关工作在第七节中讨论。）</li>
+<li>可实现-路径可达性问题也是过程间问题切片的核心问题，之前这个问题最快的算法是 Horwitz，Reps，和 Binkley[16] 给出的。本文描述的可实现-路径可达性算法产生了一个改进的过程间切片算法 – 它的时间是渐进快于 Horwitz-Reps-Binkley 算法的。已经发现这个算法比 Horwitz-Reps-Binkly 算法运行快了六倍[28]。</li>
+<li>我们的数据流分析算法已经被实现和用于分析几个 C 程序了。初步的实验结果在第六节中给出。</li>
+</ul>
+<p>这里的空间限制，我们只能以简写的形式给出上述的材料。全部的细节 – 本文给出的所有定理的证明 – 大量的附加材料，都可以在 [27] 中找到。</p>
+<h2 id="分布式过程间数据流分析问题的-IFDS-框架"><a href="#分布式过程间数据流分析问题的-IFDS-框架" class="headerlink" title="分布式过程间数据流分析问题的 IFDS 框架"></a>分布式过程间数据流分析问题的 IFDS 框架</h2><p>IFDS 框架是 Sharir 和 Pnueli 的“函数式方法”在过程间数据流分析的一个变种[31]，结合一个扩展，其类似于 Knoop 和 Steffen 为了处理带有局部变量和参数的递归过程而提出的方法[21]。这些框架将过程内数据流分析问题的“满足所有路径”的 Kildall 原则，推广成了过程间数据流分析问题的 “满足所有有效路径”的方法。</p>
+<p>IFDS 框架尽可能地设计得通用（特别是，为了支持带有过程调用，参数，以及全局和局部变量的语言）。任意可以在这个框架里特化的问题，都可以被我们的算法高效地解决；语义正确是另一个正交问题。问题的设计者想要获得我们结果的优势，需要遵循两个义务：（1）编码问题，使得它可以满足我们框架的条件；（ii）表明编码与编程语言的语义是一致的[9, 10]。在 IFDS 框架中编码一个问题可能会涉及语义的丢失。例如，在一个语言中，参数是通过引用传递的，则在有别名的问题实例中，可能会丢失精度。但是，在寻找解法获得这个 IFDS 问题的结果的过程中，不在会导致更多的精度丢失了。</p>
+<p>为了给出 IFDS 框架，我们需要如下的定义：</p>
+<p><strong>定义 2.1.</strong>  在 IFDS 框架中，使用有向图 $G^* = (N^*, E^* )$ 表示一个程序称为 <strong>超图</strong>。$G^*$ 由一组流图 $G_1, G_2, \cdots$ （每一个对应一个过程）集合组成，其中一个 $G_{main}$ ，表示程序的主过程。每张流图 $G_p$ 由一个唯一的 <strong>start</strong> 节点 $s_p$，和一个唯一的<strong>exit</strong> 节点$e_p$。流图中的其它节点以通常的方式表示过程中的语句和谓词，而过程调用表示为两个节点，一个 <strong>调用</strong> 节点和一个“返回点“节点。（过程 $p$ 的调用节点和返回点节点集合中的每一个，都重复地由 $Call_p$ 和 $Ret_p$ 表示；超图中的所有调用和返回点节点集合都重复地表示为 Call 和 Ret。）</p>
+<p>除了连接每个独立的流图内的节点的普通过程内的边，对于每个过程调用，其表示为调用节点 c 和返回点节点 r，$G^*$ 都有三条边：</p>
+<ul>
+<li>一条过程内的从 c 到 r 的 <strong><em>call-to-return-site</em></strong> 边；</li>
+<li>一条过程间从 c 到被调用过程的 start 节点的边 <strong><em>call-to-start</em></strong> 边；</li>
+<li>一条过程间从被调用过程 exit 节点到 r 的 <strong><em>exit-to-return-site</em></strong> 边。</li>
+</ul>
+<p>（包含 call-to-return-site 边从而 IFDS 框架能够处理带有局部变量和参数的程序。在 call-to-return-site 和 exit-to-return-site 边上的数据流函数允许保存在调用点上的局部变量信息和保存在被调用函数结束点的全局变量的信息相结合。）</p>
+<p>当要讨论时间和空间开销的时候，我们使用表示集合的名字来表示集合的大小。例如，我们使用 $Call$，而不是$|Call|$，来表示图 $G^*$ 中的调用节点的数量。（关于这个约定，有两个小的偏差，我们使用 $N$ 和 $E$ 来重复地表示 $|N^*|$ 和$|E^*|$）。</p>
+<p>例如，图 1 给出了一个例子和它的超图$G^*$。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_1.png" class="" title>
+
+
+<p><strong>定义 2.2.</strong> 一条从节点 m 到节点 n 长度为 j 的路径是 j 条边的序列（可能为空），其将表示为$[e_1, e_2, \cdots, e_j]$，因此对于所有的 i，$1 \leq i \leq j -1$，边 $e_i$ 的目的是边 $e_{i + 1}$的源。</p>
+<p>一条”（过程间）有效路径“的概念抓住了一个观点，即 $G^*$ 不是所有的路径都表示潜在的执行路径：</p>
+<p><strong>定义 2.3.</strong> 令 $G^*$ 中的每个调用节点都有一个给定的唯一下标 $i$。对于每个已标记的 call 节点$c_i$，通过”$(_i$” 符号标记 $c_i$ 的call-to-start 出边。通过”$)_i$”符号标记相对应的 return-site 节点的 exit-to-return-site 入边。</p>
+<p>对于相同过程中的每个节点对 m，n，一条从 m 到 n 的路径是一条**<em>同级别有效路径**</em>，当且仅当路径中一系列已标记的边是一个产生自非终结符 match 的平衡括号语言的字符串，由如下的上下文无关语法得到：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_1.png" class="" title>
+
+
+<p>对于超图 $G^*$ 中的每对 m，n 节点，一条从 m 到 n 的路径是一条**<em>有效路径**</em>，当且仅当路径中被标记边的序列是产生自非终结符 valid 的语言中的一个字符串，由如下的语法得到（其中 matched 如上定义）：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_2.png" class="" title>
+
+
+<p>我们将从 m 到 n 的所有有效路径的集合表示为 $IVP(m, n)$。</p>
+<p>在 IFDS 数据流分析框架的公式中（见如下 2.4-2.6 定义），从 m 到 n 的同级有效路径将会被用来获得 m 到 n 传递的影响，其中 m 和 n 是在一个相同过程中的，通过一系列执行步骤，这期间其调用栈可能暂时变得更深 – 因为调用 – 在最终返回到它的原始深度前，至少不会比原来的深度浅。一条从 $s_{main}$ 到 $n $ 的有效路径，将会用于捕获来自 $S_{main}$ 的转换效果，即程序的 start 节点，到 n 通过一些执行步骤序列。注意到，通常，这样的执行序列将会以一定数量的调用栈上的活动记录结束；这些对应于语言 L（有效）的一个字符串中“未匹配的”$(_i$ 。</p>
+<p><strong>例如</strong>，在图 1 中给出的超图 $G^*$ 中，路径$[S_{main} \rightarrow n1, n1 \rightarrow n2, n2\rightarrow s_p, s_p \rightarrow n4, n4\rightarrow e_p, e_p \rightarrow n3]$ 是一条（同级）有效路径；但是，路径$[s_{main} \rightarrow n1, n1\rightarrow n2, n2\rightarrow s_p,s_p \rightarrow n4,n4\rightarrow e_p, e_p \rightarrow n8]$ 不是一条有效路径，因为返回边 $e_p \rightarrow n8$ 与前驱调用边$n2\rightarrow s_p$ 不相关。</p>
+<p>现在我们定义一个 IFDS 问题实例的概念：</p>
+<p><strong>定义 2.4.</strong> 一个过程间，有限，分布，子问题的一个实例 IP （或简称为 IFDS 问题）是一个五元组，$IP = (G^*, D, F, M, \sqcap)$，其中</p>
+<p>（i）$G^*$ 是定义 2.1 定义的超图。</p>
+<p>（ii）D 是一个有限集。</p>
+<p>（iii）$F\subseteq 2^D \rightarrow 2^D$ 是一个分布式函数的集合。</p>
+<p>（iv）$M : E^* \rightarrow F$ 是从 $G^*$ 的边到数据流函数的映射。</p>
+<p>（v）汇合操作 $\sqcap$ 要么是合并，要么是取交集。</p>
+<p>本文剩余的部分，我们只考虑汇合操作是合并的 IFDS 问题。不难证明，汇合操作未交集的 IFDS 问题总是可以通过与合并的 IFDS 问题对偶的方式处理（即，通过将问题变成互补的合并问题）。通俗讲，如果“必须是 X”的问题是一个交集 IFDS 问题，则“可能不是 X”的问题就是一个并集 IFDS 问题。因此，对于每个节点 $n \in N^*$， “必须是 X“ 的问题的解决方案是”可能不是 X“的问题的解决方案的互补（关于 D）。</p>
+<p><strong>例如.</strong> 图1中，超图用”可能未初始化的变量“的问题的数据流函数进行标注。”可能未初始化变量“问题是要确定，对于每个$n \in N^*$ ，在执行到达 n 之前可能的未初始化程序变量的集合。变量 $x$ 在 n 可能是未初始化的， 可能是因为有一条 x-未定义的有效路径到达了 n，或者因为一条到达 n 的有效路径上 x 最后一个定义使用了一些可能未定义的变量 y。例如，图 1 中与边 $n6 \rightarrow n7$ 相关联的数据流函数会添加 a 到可能未初始化变量的集合中，当 a 或者 g 在节点 n6 之前是在未初始化变量的集合中。</p>
+<p>为了简化介绍，我们假设定义 2.4 中有一个数据流事件的单一全局空间 D。为了说明的目的，这个假设设定得比较严格；更通用的设定是，对于每个过程 p，都可能存在一个不同的数据流事件的空间，$D_p$，不会额外的困难[27]。第六节中讨论的我们实现的 IFDS 框架，支持更通用的设定。</p>
+<p><strong>定义 2.5.</strong>  令$IP = (G^*, D, F, M, \sqcap)$ 是一个 IFDS 问题实例，然后令$q = [e_1, e_2, \cdots, e_j]$ 是$G^*$ 上的一条非空路径。这个与 q 相关的路径函数，表示为 $pf_q$，是函数$pf_q =_{df} f_j \circ\cdots\circ f_2\circ f_1$，其中对于所有的 $i$ ，$1\leq i \leq j$，$f_i = M(e_i)$。对于空路径的路径函数是一个恒等函数，$\lambda x.x.$</p>
+<p><strong>定义 2.6.</strong> 令$IP = (G^*, D, F, M, \sqcap)$ 是一个 IFDS 实例。IP 的 <strong>满足所有有效边</strong> 的解决方案由如下定义值 $MVP_n$ 汇集组成：<br>$$<br>MVP_n = \sqcap_{q \in IVP(s_{main}, n)}pf_q(\top) \ \ 对于所有的 n \in N^* 成立。<br>$$</p>
+<h2 id="过程间数据流分析作为图可达问题"><a href="#过程间数据流分析作为图可达问题" class="headerlink" title="过程间数据流分析作为图可达问题"></a>过程间数据流分析作为图可达问题</h2><h3 id="表示分配函数"><a href="#表示分配函数" class="headerlink" title="表示分配函数"></a>表示分配函数</h3><p>在这节中，我们说明如何用紧凑的方式表示 $2^D \rightarrow 2^D$ 里的分发函数 – 每个函数可以表示成一张图，最多有 $( D + 1)^2$ 条边（或者，等价地说，作为一个有 $(D+1)^2$ 边的邻接矩阵）。在本节中，我们假设 $f$ 和 $g$ 表示 $2^D\rightarrow 2^D$ 中的函数，$f$ 和 $g$ 分布在 $\cup$ 上。</p>
+<p><strong>定义 3.1.1</strong> $f$ 的表示关系 $R_f \subseteq (D\cup {0}) \times(D\cup{0})$，是一个二元关系（即，图），其定义如下：<br>$$<br>\begin{align}<br>R_f =_{df}\ &amp;{(0, 0)} \<br>\cup&amp;{(0, y) | y \in f(\empty)} \<br>\cup&amp;{(x, y) | y \in f({x}) 且 y \notin f(\empty)}.<br>\end{align}<br>$$<br>$R_f$ 可以认为是一张有 $2(D+1)$ 个节点的图，其中每个节点表示 $D$ 中的一个元素（除了两个 0 节点，其（大概）表示 $\empty$）。</p>
+<p><strong>例子.</strong>  下面的表给出三个函数和它们的表示关系：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_1.png" class="" title>
+
+
+<p>值得注意的是，定义 3.1 的一个结果是$(x, 0)$  是不存在边的，其中$x\in D$。</p>
+<p>定义 3.1 的另一个结果是表示关系中的边获得一类“包含属性”。即，对于 $y\in (D\cup {0})$，如果有一条$(0, y)$的边，则对于任意的$x \in D$ 都不存在$(x, y)$ 边的。例如，在一个常量-函数 a 里，边$(0, a)$ 包含了边 $(a, a)$ 和 $(b, a)$ 的需求。</p>
+<p>表示关系 – 以及事实上，$(D \cup{0}) \times(D\cup{0})$ 中所有的关系 – 都可以解释成 $2^D\rightarrow 2^D$。如下：</p>
+<p><strong>定义 3.2.</strong> 给定一个关系 $R\subseteq (D\cup{0}) \times(D\cup{0})$，它的解释$[[R]] : 2^D\rightarrow2^D$ 是一个函数，定义如下：<br>$$<br>\begin{align}<br>[[R]] =_{df} \lambda X.&amp;({y\ |\ \exists x\in X 有(x, y)\in R})\<br>&amp;\cup{y | (0, y)\in R}) - {0}.<br>\end{align}<br>$$<br><strong>定理 3.3.</strong> $[[R_f]] = f$。</p>
+<p>我们的下一个任务是给出两个表示关系 $R_f$ 和 $R_g$ 的关系组合与函数组合 $g\circ f$ 是如何联系在一起的。</p>
+<p><strong>定义 3.4.</strong> 给定两个关系$R_f\subseteq S\times S$ 和 $R_g\subseteq S\times S$，它们的组合 $R_f;R_g \subseteq S\times S$  定义如下：<br>$$<br>R_f;R_g =_{df} {(x, y) \in S\times S | \exists z\in S 有 (x, z)\in R_f 和 (z, y)\in R_g}.<br>$$<br><strong>定理 3.5.</strong> 对于所有的 $f, g\in2^D\rightarrow2^D, [[R_f;R_g]] = g\circ f$.</p>
+<p>定义 3.4 和 定理 3.5 意味着$2^D\rightarrow2^D$ 中的任意两个分布式函数的组合都可以表示为最多有$(D+1)^2$ 条边的图（关系）。换句话说，$2^D\rightarrow 2^D$ 里的分布函数是可以“压缩的”：任意这样的函数以及其任意两个这样的函数组合表示用的图的大小是有边界的！</p>
+<p><strong>推论 3.6.</strong> 给定一组函数$f_i : 2^D \rightarrow 2^D$，对于$1 \leq i \leq j$，<br>$$<br>f_j\circ f_{j - 1}\circ \cdots\circ f_2\circ f_1 = [[R_{f_1};R_{f_2};\cdots;R_{f_j}]].<br>$$</p>
+<h3 id="从数据流分析问题到可实现路径可达问题"><a href="#从数据流分析问题到可实现路径可达问题" class="headerlink" title="从数据流分析问题到可实现路径可达问题"></a>从数据流分析问题到可实现路径可达问题</h3><p>在这节中，我们给出如何将 IFDS 问题转为 “可实现路径” 图可达问题。特别的，对于一个 IFDS 问题的每个 IP 实例，我们构造一张图$G^#<em>{IP}$，和它里面的一个可实现路径可达问题的实例。$G^#</em>{IP}$ 的边对应于 $G^*$ 的边上的数据流函数的表示关系。因为函数组合和组合表示-关系图中的路径之间的关联（引理 3.6），所以路径问题可以看成是与 IP 等价的：数据流事件 d   可以存在于超图节点 n 中，当且仅当有一条从 $G^#<em>{IP}$ 中的显式节点（其表示 $\empty$ 保存在 main 过程的起始节点这个事实）到 $G^#</em>{IP}$ 中的节点，有一条可实现路径，表示事件 d  在节点 n 上（见定理 3.8）。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_2.png" class="" title>
+
+
+<p><strong>定义 3.7.</strong> 令$IP = (G^*, D, F, M, \cup)$ 是一个 IFDS 问题实例。我们以如下的方式定义 IP 的爆炸图，表示为$G^#<em>{IP}$：<br>$$<br>\begin{align}<br>G^#</em>{IP} = &amp;(N^#, E^#), 其中 \<br>N^# &amp;= N^# \times (D \cup {0}) \<br>E^# &amp;= {&lt;m, d_1&gt;\rightarrow&lt;n, d_2&gt; | (m, n)\in E^* \<br>&amp;且 (d_1, d_2)\in R_{M(m, n)}}.<br>\end{align}<br>$$<br>$G^#<em>{IP}$ 中的节点是一对 $&lt;n, d&gt;$；$N_p$ 中的每个节点 n “爆炸”成 $G^#_{IP}$ 中的 $D+1$ 个节点。$E^*$ 中的每条带有数据流函数$f$ 的边$e$，根据表示关系$R_f$，“爆炸”成 $G^#_{IP}$ 的一些边。数据流-问题 IP 对应$G^#</em>{IP}$ 中的一个单源“可实现-路径”可达性问题，其中的源节点是$&lt;S_{main}, 0&gt;$。</p>
+<p><strong>例如.</strong> 图 2 给出了图 1 的“可能未初始化变量”问题对应的实例的爆炸图。</p>
+<p>在本文的其余部分，我们使用术语“（同级别）可实现路径“和”（同级别）有效路径“来指代爆炸超图和超图中两个相对应的概念。对于“可实现路径”和“有效路径”，这个想法是，并非每条路径都对应于潜在的执行路径：强加在路径上的限制模仿程序执行的调用-返回结构，只有“返回“与相对应的”调用“匹配的路径是允许的。但是，术语”可实现路径“总是用于爆炸超图中的路径连接；而术语”有效路径“总是用于超图中的路径连接。</p>
+<p>现在我们陈述本节的主体定理，定理 3.8，它表明了一个 IFDS 问题实例 IP 是与图 $G^#_{IP}$ 中的可实现路径可达问题等价的：</p>
+<p><strong>定理 3.8.</strong>  令$G^#_{IP} = (N^#，E^#)$ 是 IFDS 问题实例 $IP = (G^*，D，F，M，\cup)$ 的爆炸超图， 令 n 是 $N^#$ 中的一个程序点。然后，$d\in MVP_n$ 当且仅当图 $G^#_{IP}$ 中有一条从节点$&lt;S_{main}, 0&gt;$ 到节点$&lt;n, d&gt;$ 的可实现路径。</p>
+<p>这个定理的实际结果是，通过解决图$G^#_{IP}$ 的可实现路径可达问题，我们可以找到 $IP$ 的满足所有有效路径的解决方法。</p>
+<p><strong>例如.</strong> 图 2 给出的爆炸超图，它对应于图 1 中的可能未初始化变量问题的实例，封闭的圆圈表示节点是从 $&lt;S_{main}，0&gt;$ 沿可实现路径可到达的。 开放圆圈节点表示沿可实现路径不可达。（例如，节点$&lt;n8, g&gt;$ 到节点$&lt;n9, g&gt;$ 要可达，只能沿着从$&lt;S_{main}, 0&gt;$出发的不可实现路径。）</p>
+<p>此信息表明数据流分析问题的全部有效路径解决方案中的节点值。例如，在满足所有有效路径解决方案中，$MVP_{e_{p}} = {g}$。（即，变量 $g$ 是在执行到达过程 p 的退出节点之前唯一可能未初始化的变量。）在图 2 中，这个信息可以通过确定存在一条从$&lt;S_{main}, 0&gt;$ 到 $&lt;e_{p}, g&gt;$ ，的可实现路径来获得，但不能从$&lt;S_{main}, 0&gt;$ 到 $&lt;e_{p}, a&gt;$ 中获得。</p>
+<h2 id="一个可实现路径可达问题的高效算法"><a href="#一个可实现路径可达问题的高效算法" class="headerlink" title="一个可实现路径可达问题的高效算法"></a>一个可实现路径可达问题的高效算法</h2><p>在这一节中，我们给出了我们关于可实现路径可达问题的算法。这个算法是个动态规划的算法，它将某些种类的同级可实现路径制成表格。如第五节和附录中讨论的，算法的运行时间是问题各种参数的多项式，且它渐进快于问题之前最好的已知算法。</p>
+<p>我们称为 <strong>制表算法</strong> 的算法在图 3 中给出。这个算法使用了下面的函数：</p>
+<ul>
+<li><em>returnSite</em>：映射调用节点到它相应的调用点节点；</li>
+<li><em>procOf</em>：映射节点到它的闭包过程的名字；</li>
+<li><em>calledProc</em>：映射调用节点到被调用过程的名字；</li>
+<li><em>callers</em>：映射一个过程名到一组调用它的调用节点。</li>
+</ul>
+<p>制表算法使用一个名为 PathEdge 的集合来记录存在的 <em>path edges</em>，其代表了图 $G^#_{IP}$ 中同级可实现路径的子集。特别的，一条 path edge 的源总是形如$&lt;s_p, d_1&gt;$ 的一个节点，表示存在一条从节点$&lt;s_{main}, 0&gt;$ 到$&lt;s_p, d_!&gt;$ 的可执行路径。换句话说，一条从$&lt;s_p, d_1&gt;$ 到 &lt;n, d_2&gt;的 path edge 代表一条从节点&lt;s_{main}，0&gt; 到 $&lt;n, d_2&gt;$ 的可实现路径的后缀。</p>
+<p>制表算法使用一个名为 SummaryEdge 来记录存在的 <em>summary edges</em>，其表示从形如$&lt;n, d_1&gt;$ 的节点到$&lt;returnSite(n), d_2&gt;$的同级可实现路径，其中$n\in Call$。就正在解决的数据流问题而言，summary edges 代表了（部分） 调用前数据流值如何决定调用后数据流值的信息。</p>
+<p>制表算法是一种 worklist 算法，累积 path edges 集和 summary edges 集。path edges 初始集合表示 0-长度同级可实现路径，$&lt;s_{main} , 0&gt;$ 到 $&lt;s_{main}, 0&gt;$（见 line[2]）。ForwardTabulateSLRPs 过程中的主循环的每次迭代（[10]-[39]行），算法会推断外加的 path edges （和 summary edges）的存在。制表算法推断额外 path edges 存在使用的配置在图 4 中描绘出来了。</p>
+<p>一旦知道从$&lt;s_{main},0&gt;$ 到 $&lt;s_p, d&gt;$ 有一条可实现路径，路径边$&lt;s_p, d&gt; \rightarrow &lt;s_p, d&gt;$ 被插入到 WorkList 中（[14] - [16] 行）。这个例子中，路径边$&lt;s_p, d&gt; \rightarrow &lt;s_p, d&gt;$ 一条从$&lt;s_{main}, 0&gt;$到$&lt;s_p, d&gt;$ 可实现路径的 0-长度后缀。（仅将相关的$&lt;s_p, d&gt; \rightarrow &lt;s_p, d&gt;$ 插入到 WorkList 的想法，类似于在抽象解释期间避免不必要函数应用的想法，也被称为”b必要信息的混乱迭代“[10]，或”最小函数-图方法“[18]。）</p>
+<p>然后重要的是注意图 3 中 [26]-[28] 行的作用，它只在发现一条新的总结边时执行：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_4.png" class="" title>
+
+
+<p>不像 $E^#$ 中的边，SummaryEdge 里的边是实时插入的。[27] 行的目的是重启一个过程，其查找从$&lt;S_{procOf(c)}, d_3&gt;$ 开始的同级可实现路径，就像总结边$&lt;c, d_4&gt; \rightarrow &lt;returnSite(c), d_5&gt;$ 总是一直都在。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_3.png" class="" title>
+
+
+<p>制表算法（[6]-[8]行）的最后一步是为每个 $n\in N^*$ 创建值$X_n$，主要通过聚集 $G^#_{Ip}$ 中与 n 关联的节点集进行的，这些节点它们是 ForwarfTabulateSLRPs 过程发现的路径边的目标：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_5.png" class="" title>
+
+
+<p>如上面提到的，$&lt;s_{procOf}, d_1&gt; \rightarrow &lt;n, d_2&gt;$ 在 PathEdge 里的事实暗示了存在一条从$&lt;s_{main}, 0&gt; 到 $ $&lt;n, d_2&gt;$ 的可实现路径。于是，通过定理 3.8，当制表算法终结的时候，$X_n$ 的值是 IP 的满足所有有效路径解法中的节点 n 的值。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/figure_4.png" class="" title>
+
+
+<p><strong>定理 4.1.</strong> （制表算法的正确性。）</p>
+<p>制表算法总是会停止的，并且在停止的时候，$对于所有的 n\in N^*, X_n = MVP_{n}$。</p>
+<h2 id="制表算法的开销"><a href="#制表算法的开销" class="headerlink" title="制表算法的开销"></a>制表算法的开销</h2><p>制表算法的运行时间会依赖于它应用的数据流分析问题的类型而变化。我们之前已经提到了局部分离问题；它对于定义 h-稀疏问题也有用：</p>
+<p><strong>定义 5.1</strong> 一个问题是<em>h-稀疏</em> ，如果所有的问题都有如下的属性：对于普通过程内的边或一条 call-to-return-site 边上的每个函数，从非-0 节点发出的函数里表示关系的边的总数最多是 $hD$。</p>
+<p>通常，控制流的节点表示独立语句或者谓词时（而不是基础块），且没有别名，我们估计大部分的分布问题时 h-稀疏的（且$h &lt;&lt; D$）：每个语句只改变执行状态的一小部分，也只访问执行状态的一小部分。数据流函数是状态语义的抽象，因此”接近于“特性函数，因此它们的表示关系大致只有 $D$ 条边。对于许多时间感兴趣的问题$h\leq 2$ （见[27]）。</p>
+<p><strong>例如.</strong> 当控制流图的节点表示独立语句或者谓词，且没有别名，每个可能未初始化问题实例时 2-稀疏的。只有那些与赋值语句关联的是非标识函数。这种函数的表示关系的每个非-0 节点的出度最多有两个：一个变量初始化状态会影响自己，然后最多有一个其它变量是分配给的变量。</p>
+<p>在分析制表算法的过程中，我们假设所有的原始集合操作是单位开销的。这是可以达到的，例如，通过 [27, pp.20] 描述的表示方式。</p>
+<p>表 5.2 总结了六个不同类型问题的制表算法的行为是如何的（就最坏情况渐进运行时间而言）：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_5_2.png" class="" title>
+
+
+<p>制表算法在分布问题上的运行时间的分析细节在附录中给出。其它五类问题的边界也来自那里给出的简化讨论。</p>
+<p>制表算法需要的内存组成包括图 $G^#_{IP}$ 的存储，和三个集合 WorkList，PathEdge，和 SummaryEdge，其边界分别是$O(ED^2)$，$O(ND^2)$，$O(ND^2)$ 和$O(Call\ D^2)$。</p>
+<h2 id="初步实验结果"><a href="#初步实验结果" class="headerlink" title="初步实验结果"></a>初步实验结果</h2><p>我们进行了一个初步的研究来确定制表算法的可行性。在研究中，我们与安全，但朴素的可达性算法进行了精度和所需时间的比较，这些算法会考虑爆炸图中的所有路径，而不是只有可实现路径。两个算法都是用 C 实现的，使用一个分析 C 程序的前端，为可能未初始化问题生成相关的爆炸超图。（前端当前的实现不考虑指针造成的别名。）</p>
+<p>研究使用了四个 C 程序用例：<em>struct-beauty</em>，Unix <em>struct</em> 程序的”美化“过程[3]；<em>twig</em>，一个代码生成器的生成器[2]；<em>ratfor</em>，一个将结构化 Fortran 方言转为标准 Fortran [19] 的预处理器[19]；以及一个 C-解析器，一个 lex/yacc-generated 生成的 C 解析器。测试是在 Sun SPARCstation 10 Model 30 上进行的，它有一个 32 MB 的内存。</p>
+<p>下面一张表给出了源码（C，lex ，和 yacc 的行数），以及表示数据流图和爆炸超图大小的参数。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_6.png" class="" title>
+
+
+<p>实际上，大部分的$E^#$ 的边是$&lt;m, d&gt; \rightarrow &lt;n, d&gt;$ 形式的，我们的实现利用了这一点，以紧凑的方式表示这些边。</p>
+<p>下面的表比较了制表算法和朴素算法的开销和精度。运行时间是“user cpu-time + system cpu-time”；在每个用例中，时间是每十次运行的平均值。</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/table_2.png" class="" title>
+
+
+<p>制表算法报告的使用可能未初始化变量的数量是朴素算法报告的数量的 9% 到 99%。因为可能未初始化变量问题是 2-稀疏的，制表算法和朴素算法的渐进开销分别是$O(Call \ D^3)$ 和$O(ED)$，在这些例子中 $D$ 的范围从 70 到 142；但是获得更精确解法的惩罚范围从 1.3 到 3.4。因此，初步的实验结果建议满足所有有效路径的过程间分析问题的解法的额外精度，可以通过制表算法获得，其开销在可接受的范围里。</p>
+<h2 id="相关工作"><a href="#相关工作" class="headerlink" title="相关工作"></a>相关工作</h2><p><em>先前的过程间数据流分析框架</em></p>
+<p>IFDS 框架是基于更早的由 Sharir 和 Pnueli [31]、Knoop 和 Steffen [21] 定义的过程间数据流分析框架。它以 Sharir-Pnueli 框架为基础，加上三个修改：</p>
+<p>（i）数据流域被限制成一个子域 $2^D$，其中 $D$ 是一个有限集；</p>
+<p>（ii）数据流函数被限制为分布式函数；</p>
+<p>（iii）从一个调用节点到相应返回点节点的边带有相关的数据流函数。</p>
+<p>条件（i）和（ii）的限制使得 IFDS 框架不如 Sharir-Pnueli 框架通用。但是，条件（iii）推广了 Sharir-Pnueli 框架，允许它覆盖到了递归过程有局部变量和参数的编程语言（这个 Sharir-Pnueli 框架是做不到的）。（另一个不同的推广到处理带有局部变量和参数的递归过程的框架是 knoop 和 Steffen [21] 提出的。）</p>
+<p>IFDS 问题可以通过一系列先前的算法解决，包括“消除”，“迭代”和 Sharir 和 Pnueli [31]提出的“调用-串”算法，还有 Cousot 和 Cousot [10] 的算法。但是，对于通用的 IFDS 问题，迭代和调用-串算法在最糟糕的场景下需要指数的时间。Knoop 和 Steffen 给出的算法类似于 Sharir 和 Pnueli 的“消除”算法[21]。除了一些其它的因素，Sharir-Pnueli 的算法和 Knoop-Steffen 消除算法的效果取决于函数表示的方式。[31] 和 [21] 没有讨论表示方式。但是，即使使用了表示关系（3.1 节定义的），对于分布式和 h-稀疏的问题，他们的算法仍不如制表算法的高效，因为 Sharir-Pnueli 和 Knoop-Steffen 的算法是将函数作为整体操作的。</p>
+<p>Holley 和 Rosen 调查了“合格的”数据流分析问题，其中“资格”是一个指定了流图中，只有某些路径会被考虑的[15]。他们应用了一个“扩张”阶段，有些类似于我们爆炸超图的创建。但是，Holley 和 Rosen 没有利用分布性来作逐点扩张，因此，对于 IFDS 问题，每个流图节点，他们都会创建 $2^D$ 个点，与我们方法中只使用 D 个点相反。因此，对于过程间问题，Holley-Rosen 方法等价于（不切实际的）Sharir-Pnueli 的调用-串方法。</p>
+<p>Reps 调查了使用演绎数据库（即，带有自下而上的评估引擎的逻辑程序）来实现局部分离过程间数据流问题[29] 。这个方式可以视为逐点制表方法。虽然当前论文没有使用逻辑编程术语，但是制表算法有个逻辑程序的简单实现。因此，本文的另一个贡献是展示了如何将来自于局部分离问题的逻辑编程方法扩展成一类 IFDS 问题。</p>
+<p><em>使用图可达数据流分析和不动点的逐点计算</em></p>
+<p>我们的工作证明 Sharir-Pnueli 和 Knoop-Steffen 框架中的一大类子问题可以视为图可达问题。通过归约数据流分析问题到可达性问题来解决它们的相关其它工作，已经由 Kou[23] 以及 Cooper和 Kennedy [7,8] 完成了。在每个场景中，数据流分析问题的解决，首先从程序流图派生出一张图，以及解决数据流函数，然后在图上通过传播简单标记执行可达性分析。（与标准的迭代技术相比，它会在流程图上传播一组值。）</p>
+<p>Kou 的论文只解决了过程内问题。虽然他只讨论了存活变量的问题，但是他的想法可以直接用在所有分离的过程内问题。Cooper 和 Kennedy 展示了如何将某些流不敏感的过程间数据流分析问题转为可达性问题。因为他们只处理流不敏感问题，解决方法只涉及普通可达性，而不是更复杂的沿可实现路径的可达性问题。</p>
+<p>Zadeck 开发了过程里的数据流分析算法，基于将一个问题分为许多独立问题的想法（如，在可分离问题的场景下，以“每位”为基础）[32]。虽然我们的将问题“爆炸”成爆炸超图的技术，会转换局部分离问题到一些独立的“每个事件”的子问题，但是这个技术不会为 h-稀疏 和通用的分布 IFDS 问题生成独立的子问题。例如，在 2-稀疏可能未初始化变量问题，一个给定变量可能会被其它任意变量传递影响的。尽管如此，这些问题可以被制表算法高效地解决。</p>
+<p>图可达问题也可以被认为是不动点的逐点计算的实现，这个已经被 Cai 和 Paige[4] 以及 Nielson 和 Nielson[26, 25]。定理 3.3，我们将数据流分析问题转换为可达性问题的基础，类似于 Cai 和 Paige 的引理 14；但是，Cai 和 Paige 为表示分布函数定义的关系，是没有包容性的。虽然它不改变制表算法的渐进复杂度，但是，使用带有包容性的关系降低了爆炸超图中的边的数量，所以降低了制表算法的运行时间。</p>
+<p>Cai 和 Paige 表明不动点的逐点计算可以将非常高级别语言（SQ+）编写的程序编译成高效的可执行文件。这表明寻找满足所有有效路径方案的问题可能可以表达为 IFDS 问题，作为一个 SQ+ 顶点程序，然后自动编译它到达成本文中建立的边界的实现（即，进入制表算法）。</p>
+<p>Nielson 和 Nielson 调查了通用定点查找算法的开销边界，通过将成本计算为“（迭代的 #）x （每次迭代的开销）”。他们主要的贡献是给出了基于计算固定点的函数和域的属性来限制迭代次数的公式。他们的“严格和附加”函数的公式可以自适应我们的（非严格的）分布式函数的上下文，并且用来表示制表算法的迭代次数最多为 $ND^2$。单次迭代的开销是$O(Call\ D^2 + k D^2)$，其中控制流图中一个节点的最大出度。因此，这种方式给出了 $O((ND^2)\times(Call\ D^2 + k D^2))$ 这个制表算法的总成本的一个边界，这相对与我们的 $O(ED^3)$ 边界是劣势的。</p>
+<p>与之相比，我们给出的制表算法的开销边界是通过将算法开销分为三个贡献方面获得的，然后限制每个方面执行的操作总成本（见附录）。</p>
+<p>另一个逐点制表的例子是 Landi 和 Ryder 的算法，用于单级指针的过程间别名分析[24]。他们给出的算法类似于制表算法。IFDS 架构限制是 return-site 节点上的信息只能被表示为相对应 call 节点和适当 exit 节点的信息汇聚。因为在单级指针问题上，return-site 节点的合并函数不会汇聚，所以这个问题不能满足 IFDS 框架。</p>
+<p><em>流敏感副作用分析</em></p>
+<p>Callahan 调查了两种流敏感副作用问题：必定-修改 和 可能-使用[6]。对于每个过程 p，必定-修改问题是识别 p 中的一个调用期间必定被修改的变量；可能-修改问题是识别 p 中的一个调用期间哪个变量在修改前被使用了。Callahan 的方法涉及构建一张<em>程序总结图</em>，它由一组图表组成，这些图表示过程内 start，exit，call，和 return-site 节点间的到达定值信息–伴随着过程间的链接信息。 </p>
+<p>虽然根据定义 2.4，必定-修改和可能-使用两个问题不是 IFDS 问题，但它们可以视为和 IFDS 问题十分相关的问题。基本的区别是 IFDS 问题会总结在<em>所有调用上下文</em> 中的程序点必须为真的内容，而必定-修改和可能-使用两个问题总结了独立于其调用上下文的过程的影响。即，Callahan 的问题涉及涉及从独立过程的 start 节点开始的有效路径，而不仅仅是从主程序开始的 start 节点。必定-修改问题实际是一个“同级有效路径”问题，而不是一个“有效路径”问题；每个过程必定-修改的值只涉及从这个过程开始节点到它的退出节点的同级有效路径。最后，Callahan 问题可以视为两类更一般问题中的问题：一类是分布有效路径问题，另一类是分布同级别有效路径问题。</p>
+<p>本文中利用的方法是将分布有效路径数据流分析问题转为爆炸超图中的可实现路径可达问题。通过类似于第 3 节中给出的变换，</p>
+<p>（i）分布有效路径问题可以被提取为可实现路径问题；</p>
+<p>（2）分布同级有效路径问题可以被提取为同级有效路径问题。</p>
+<p>特别是，可能-使用问题是个（i）类中的局部分离问题；必定-修改问题是（ii）类中的局部分离问题。</p>
+<p>采用这种通用观点的收益是，只要做轻微地修改，制表算法就可以用于解决上述两类问题中的所有问题（如，分布和h-稀疏问题，局部分离也是相同的一个）。修改过的算法有着和制表算法相同的渐进运行时间。尤其是，对于局部分离问题–如必定-修改和可能使用–运行时间的边界在$O(ED)$。这是对 Callahan 给出的算法的渐近改进：构建程序总结图的最坏情况开销是 $O(D\sum\limits_{p} Call_{p}E_{p})$；给定程序总结图，计算必定-修改或可能-使用的最坏情况开销是$O(D\sum\limits_{p}Call_{p}^2)$。</p>
+<p><em>过程间数据流分析的按需算法</em></p>
+<p>按需数据流分析的目标是确定一个给定的数据流事件是否在一个给定点中存在（这会最小化为其它程序点计算辅助数据流信息的数量）。IFDS 框架的一个收益是允许过程间数据流分析的按需算法可以简单的实现[27，17]。</p>
+<p><em>IDE 框架</em></p>
+<p>最近，我们将 IFDS 框架推广到了更大范围的问题，称为 IDE 框架。在 IDE 框架中，数据流事件是一些符号有限集到（可能是无限的）一些值集的映射（“环境”），并且数据流函数是分布的环境转换[30]。（“IDE”表示过程间分布环境问题。）IDE 问题是 IFDS 问题的适当超集，其中某些 IDE 问题（包括各种过程间常量传播的变种）是不能编码成 IFDS 问题的。</p>
+<p>虽然我们应用到 IDE 问题的转换类似于 IFDS 问题使用的，但转换问题的结果是一个可实现路径的总结问题，而不是一个可实现路径的可达问题。即，在一张转换图上，我们不在只考虑一个纯的可达问题，也考虑沿（可实现）路径应用函数获得的值。（转换后的 IFDS 问题和转换后的 IDE 问题之间的关系，类似于普通的图可达问题和计算路径总结的泛化问题之间的关系，这类泛化问题有，最短路径问题，封闭半环路径问题等[1]。）解决 IDE 问题的算法类似于制表算法，是一个动态规划的算法。</p>
+<h2 id="附录：制表算法的运行时间"><a href="#附录：制表算法的运行时间" class="headerlink" title="附录：制表算法的运行时间"></a>附录：制表算法的运行时间</h2><p>这节中，我们会给出表 5.2 给定的关于分布问题的制表算法上的开销边界的推导过程。</p>
+<p>比起计算图 3中的[10]-[39]行的循环的最坏场景每次迭代的开销乘以循环次数，我们将算法开销分为三方面贡献，然后限定每个方面执行的操作的总开销。尤其是，制表算法的开销可以分为</p>
+<p>（i）WorkList 中的操作的开销，</p>
+<p>（ii）在调用点安装总结边的开销（图 3 中的[21]-[32]行）</p>
+<p>（iii）“关闭”步骤的开销（图 3 的 [13]-[20] 行和[33]-[37]行）。</p>
+<p>因为一条路径边最多只被插入到 WorkList 一次，所以每个工作表操纵操作的开销都可以放入总结-边-安装步骤或者闭包步骤；因此，我们不需要提供单独的工作表操作开销统计。</p>
+<p>制表算法可以理解为 $k+1$ 同时半动态多源可达问题–每一个是程序的一个过程。对于每个过程 p，这个源–我们称之为<strong>锚点</strong>–是形如$&lt;s_p, d&gt;$ 的$N^#$ 的$D+1$ 个节点。多源可达问题的边关联的 $p$ 是<br>$$<br>\begin {align}<br>&amp;{&lt;m, d_1&gt; \rightarrow&lt;n,d_2&gt; \in E^# | m,n \in N_p 且 m\rightarrow n 是一条过程里的边或者一条call-to-return-site 边} \<br>\cup &amp;{&lt;m,d_1&gt; \rightarrow &lt;n, d_2&gt; \in SummaryEdge | m \in Call_p}.<br>\end {align}<br>$$<br>换句话说，过程 p 关联的图是过程 p 的“爆炸流图”，增加了 p 的调用点的总结边。可达问题是半动态的（只是插入），因为在算法的过程中，会添加新的总结边，但是不会删除总结边（或其它任意边）。</p>
+<p>首先，我们转向在一个调用点上计算安装总结边的开销的边界（图 [21]-[32] 行）。为了表示这个边界，引入一个表示过程间数据流传播的“带宽”的量 $B$ 是有帮助的：特别是，B 是所有的 call-to-start 边和 exit-to-return-site 边的最大值，这些边是（i）call-to-start 边的表示关系中的非-0 节点的最大出度；（ii）exit-to-return 边的表示关系中的非-0节点的最大入度。（最坏情况下，B 是 D，但它通常是一个小的常数，对于大部分问题它是 1。）</p>
+<p>对于每条总结边$&lt;c, d_4&gt; \rightarrow&lt;returnSite(c),d_5&gt;$，[24]-[29] 行上的条件语句将会执行几次（在[10]-[39]行上的循环的不同迭代上）。尤其是，每次制表算法查找形如$[&lt;c,d_4&gt;\rightarrow&lt;s_p, d_1&gt;, &lt;s_p, d_1&gt;\rightarrow&lt;e_p, d_2&gt;, &lt;e_p, d_2&gt;\rightarrow&lt;returnSite(c), d_5&gt;]$（+）的三边路径时都会执行 [24] 行，这由图 4 中的标记了“[25]行”的框图给出的。</p>
+<p>当我们考虑给定调用点 $c: {&lt;c, d_4&gt;\rightarrow&lt;returnSite(c), d_5&gt;}$ 的所有总结边的集合，[24] 行的执行可以分为三类：</p>
+<p>$d_4 \neq 0 且 d_5 \neq 0$</p>
+<p>  $(d_4, d_5)$ 对的选择最多只有$D^2$，对于每个这样的对，最多只有 $B^2$ 个可能形如（+）的三边路径。</p>
+<p>$d_4 = 0 且 d_5 \neq 0$</p>
+<p>  $d_5$ 最多只有 $D$ 个选择，然后对于每个选择最多只有$BD$ 个可能的形如（+）的三边路径。</p>
+<p>$d_4 = 0 且 d_5 = 0$</p>
+<p>  形式（+）只有一个可能的三边路径。</p>
+<p>因此，[24] 行所有执行的总开销的边界是$O(Call\ B^2D^2)$。</p>
+<p>因为，[24] 行上的测试，对于每个可能的总结边，[25]-[28] 行上的代码将只执行一次。尤其是，对于每条总结边，在 [26]-[28] 行上的循环的开销边界是 $O(D)$。因为总结边的数量边界是 $Call\ D^2$，所以[25]-[28] 行的总开销是$O(Call\ D^3)$。因此，制表算法期间的安装总结边的总开销边界是$O(Call\ B^2D^2 + Call\ D^3)$。</p>
+<p>为了限定关闭步骤的总开销，基本的观察是制表算法对“获得”一条路径 $&lt;s_p, d_1&gt;\rightarrow&lt;n,d_2&gt;$，只做一定数量的”尝试“ 。第一次尝试成功–$&lt;s_p, d_1&gt;\rightarrow&lt;n, d_2&gt;$ 被插入到 PathEdge；其它剩余的尝试都是冗余的（但似乎不可避免）。尤其是，在一个节点$n\notin Ret$ 的场景中，制表算法获得一条路径$&lt;s_p, d_1&gt;\rightarrow&lt;n,d_2&gt;$的唯一方式是，有一条或多条形如$[&lt;s_p, d_1&gt;\rightarrow&lt;m,d&gt;,&lt;m, d&gt;\rightarrow&lt;n,d_2&gt;]$的两边路径，其中$&lt;s_p, d_1&gt;\rightarrow&lt;m, d&gt;$ 在 PathEdge 中，$&lt;m,d&gt;\rightarrow&lt;n, d_2&gt;$ 在$E^#$ 中，即如下图所示：</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_7.png" class="" title>
+
+
+<p>最后，对于一个给定的锚点$&lt;s_p,d_1&gt;$，获取路径边$&lt;s_p, d_1&gt; \rightarrow&lt;n, d_2&gt;$ 涉及的结束步骤的开销可以通过$indegree(&lt;n, d_2&gt;)$ 界定。对于分布问题，在一条普通的过程内边或者一条 call-to-return-site 边上的函数的表示关系最多包含 $O(D^2)$ 条边。因此，对于每个锚点，获取它所有的出路径边的总开销被限定在</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_8.png" class="" title>
+
+
+<p>节点$n\in Ret$ 场景的统计是相似的。制表算法可以获得一条路径边 $&lt;s_p, d_1&gt;\rightarrow&lt;n, d_2&gt;$ 的唯一方式是，形式$&lt;s_p, d_1&gt; \rightarrow&lt;m,d&gt;$ 的 PathEdge 有一条边，且 $E^#$ 中有一条边$&lt;m,d&gt;\rightarrow&lt;n,d_2&gt;$ 或者 SummaryEdge 中有一条边$&lt;m,d&gt;\rightarrow&lt;n,d_2&gt;$ 。在我们的开销统计中，我们将会悲观地假设，每个节点$&lt;n,d_2&gt;$，其中$n \in Ret$，可能有最大总结入边数量，称为$D$。因为形式$&lt;n, d_2&gt;$ 的$N^#<em>{p}$ 最多有 $Call</em>{p}D$ 个节点，其中$n \in Ret$，所以，对于每个锚点$&lt;s_p, d_1&gt;$ ，获取形式$&lt;s_p, d_1&gt;\rightarrow&lt;n, d_2&gt;$ 的路径边的总开销是</p>
+ 
+  <img src="/2022/09/04/%E5%BA%94%E7%94%A8%E5%9B%BE%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%9A%84%E7%B2%BE%E7%A1%AE%E7%A8%8B%E5%BA%8F%E9%97%B4%E5%88%86%E6%9E%90/fo_9.png" class="" title>
+
+
+<p>其等于$O(Call_pD^2)$。</p>
+<p>因此，我们可以限定制表算法执行的结束步骤的总开销为如下：<br>$$<br>\begin {align}结束&amp;步骤的开销 \&amp;= \sum\limits_{p}(#锚点)\times O(Call_pD^2 + E_pD^2)\&amp;= O(D^3\sum(Call_p + E_p)) \&amp;= O(D^3(Call + E)) \&amp;= O(ED^3).\end {align}<br>$$<br>从而，制表算法的总运行时间边界是$O(Call B^2D^2 +ED^3)$。</p>
+<p>通过将过程链视为它们就是自己本身的（B-稀疏）过程，然后引入新的链接到带有“位宽” 1 的链接过程，可能可以将边界改善为$O(Call\ BD^2 + ED^2)$。又因为 $Call \leq E$ 且 $B\leq D$，这个边界可以简化成$O(ED^3)$，即表 5.2 给出的边界。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>略。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/program-analysis/" rel="tag"># program analysis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/21/LALR%E9%AB%98%E6%95%88%E8%AE%A1%E7%AE%97-%E5%90%91%E5%89%8D%E7%9C%8B%E9%9B%86/" rel="prev" title="LALR高效计算-向前看集">
+                  <i class="fa fa-chevron-left"></i> LALR高效计算-向前看集
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/09/28/LLVM-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="next" title="LLVM 环境搭建">
+                  LLVM 环境搭建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

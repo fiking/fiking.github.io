@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如果我们可以写出能保证正确运行，且从不需要调试的程序，将是非常美好的。直到太平的那天，正常的编程周期将涉及编写程序，编译它，执行它，然后调试它的（有点）令人害怕的祸害。一直重复直到程序如预期的工作。 通过插入代码打印选定的感兴趣的变量的值是可以调试程序的。确实，在一些场景下，如调试内核驱动，这个可能是首选的方法。这存在一个低级别的调试器允许单步通过执行程序，一条一条指令的，二进制的显示寄存器和内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DWARF 调试格式简介">
+<meta property="og:url" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="如果我们可以写出能保证正确运行，且从不需要调试的程序，将是非常美好的。直到太平的那天，正常的编程周期将涉及编写程序，编译它，执行它，然后调试它的（有点）令人害怕的祸害。一直重复直到程序如预期的工作。 通过插入代码打印选定的感兴趣的变量的值是可以调试程序的。确实，在一些场景下，如调试内核驱动，这个可能是首选的方法。这存在一个低级别的调试器允许单步通过执行程序，一条一条指令的，二进制的显示寄存器和内存">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_1.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_2.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_3.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_45.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_6.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_7.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_8a.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_8b.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_9.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_10.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_11.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_12.png">
+<meta property="og:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_13.png">
+<meta property="article:published_time" content="2022-05-28T13:11:28.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.929Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/","path":"2022/05/28/DWARF-调试格式简介/","title":"DWARF 调试格式简介"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>DWARF 调试格式简介 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">源码到可执行的转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">调试过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">调试格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DWARF-%E7%AE%80%E5%8F%B2"><span class="nav-number">4.</span> <span class="nav-text">DWARF 简史</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DWARF-1-%E2%80%93-Unix-SVR4-sdb-%E5%92%8C-PLSIG"><span class="nav-number">4.1.</span> <span class="nav-text">DWARF 1 – Unix SVR4 sdb 和 PLSIG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DWARF-2-%E2%80%93-PLSIG"><span class="nav-number">4.2.</span> <span class="nav-text">DWARF 2 – PLSIG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DWARF-3-%E2%80%93-%E8%87%AA%E7%94%B1%E6%A0%87%E5%87%86%E5%8C%96%E7%BB%84%E7%BB%87"><span class="nav-number">4.3.</span> <span class="nav-text">DWARF 3 – 自由标准化组织</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DWARF-4-%E2%80%93-DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E5%A7%94%E5%91%98%E4%BC%9A"><span class="nav-number">4.4.</span> <span class="nav-text">DWARF 4 – DWARF 调试格式委员会</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DWARF-%E7%AE%80%E4%BB%8B"><span class="nav-number">5.</span> <span class="nav-text">DWARF 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E4%BF%A1%E6%81%AF%E6%9D%A1%E7%9B%AE%EF%BC%88DIE%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">调试信息条目（DIE）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE%E5%92%8C%E5%B1%9E%E6%80%A7"><span class="nav-number">6.1.</span> <span class="nav-text">标签和属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DIE-%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">6.2.</span> <span class="nav-text">DIE 的类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E6%95%B0%E6%8D%AE%E5%92%8C%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.</span> <span class="nav-text">描述数据和类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.1.</span> <span class="nav-text">基础类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E7%BB%84%E6%88%90"><span class="nav-number">7.2.</span> <span class="nav-text">类型组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">7.3.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%EF%BC%8C%E7%B1%BB%EF%BC%8C%E8%81%94%E5%90%88%E4%BD%93%EF%BC%8C%E6%8E%A5%E5%8F%A3"><span class="nav-number">7.4.</span> <span class="nav-text">结构体，类，联合体，接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%87%8F"><span class="nav-number">7.5.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">7.6.</span> <span class="nav-text">位置表达式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">8.</span> <span class="nav-text">描述可执行代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%92%8C%E5%AD%90%E7%A8%8B%E5%BA%8F"><span class="nav-number">8.1.</span> <span class="nav-text">函数和子程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%8D%95%E5%85%83"><span class="nav-number">8.2.</span> <span class="nav-text">编译单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81"><span class="nav-number">8.3.</span> <span class="nav-text">数据编码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E7%9A%84-DWARF-%E6%95%B0%E6%8D%AE"><span class="nav-number">9.</span> <span class="nav-text">其它的 DWARF 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E5%8F%B7%E8%A1%A8"><span class="nav-number">9.1.</span> <span class="nav-text">行号表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8F%E4%BF%A1%E6%81%AF"><span class="nav-number">9.2.</span> <span class="nav-text">宏信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E5%B8%A7%E4%BF%A1%E6%81%AF"><span class="nav-number">9.3.</span> <span class="nav-text">调用帧信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%95%BF%E6%95%B0%E6%8D%AE"><span class="nav-number">9.4.</span> <span class="nav-text">变长数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9-DWARF-%E6%95%B0%E6%8D%AE"><span class="nav-number">9.5.</span> <span class="nav-text">压缩 DWARF 数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF-%E6%AE%B5"><span class="nav-number">9.6.</span> <span class="nav-text">ELF 段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">11.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="DWARF 调试格式简介 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DWARF 调试格式简介
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-05-28 21:11:28" itemprop="dateCreated datePublished" datetime="2022-05-28T21:11:28+08:00">2022-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/format/" itemprop="url" rel="index"><span itemprop="name">format</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如果我们可以写出能保证正确运行，且从不需要调试的程序，将是非常美好的。直到太平的那天，正常的编程周期将涉及编写程序，编译它，执行它，然后调试它的（有点）令人害怕的祸害。一直重复直到程序如预期的工作。</p>
+<p>通过插入代码打印选定的感兴趣的变量的值是可以调试程序的。确实，在一些场景下，如调试内核驱动，这个可能是首选的方法。这存在一个低级别的调试器允许单步通过执行程序，一条一条指令的，二进制的显示寄存器和内存内容。</p>
+<p>但是更简单的是使用一个源码级的调试器，它允许你单步程序的源码，设置断点，打印变量值，以及也许还有一些其它的功能，如在一个调试器里允许你调用你程序中的函数。问题是如何协调两个完全不同的程序，编译器和调试器，从而可以让程序变成可调试的。</p>
+ <a id="more"></a>
+
+<h2 id="源码到可执行的转换"><a href="#源码到可执行的转换" class="headerlink" title="源码到可执行的转换"></a>源码到可执行的转换</h2><p>编译一个程序从可读的格式到一个处理器可以执行的二进制格式的过程是相当复杂的，但它实际上涉及的是将源代码连续重铸为越来越简单的形式，在每一步都丢弃信息，直到最终，结果是一系列简单的操作符，寄存器，内存地址，二进制值，这些处理器实际能理解的东西。毕竟，处理器完全不关心你是否使用了面向对象编程，模板，或者智能指针；它只能理解一组非常简单的在有限数量的寄存器和包含内存值的内存区域。</p>
+<p>当一个编译器读取和解析一个程序的源码，它收集程序各种各样的信息，如行号，变量或者函数声明或者使用的地方。语义分析扩展了这些信息，填充得更详细的如变量的类型和函数参数。优化将会移动程序的某些部分，合并相似的，展开内联函数，或者移除不在需要的部分。最后，代码生成使用这些内部的程序表示，生成实际的机器指令。通常，有另一个过程遍历机器码执行叫做“窥孔”的优化，可能会进一步的改变或者修改代码，例如，消除冗余指令。</p>
+<p>总而言之，编译器的任务是使用精心制作的可以理解的源码，然后转换它为高效的但是实际是无法理解的机器语言。编译器越好地达成创建紧凑和快速代码的目标，越可能的是结果变得更难以理解。</p>
+<p>在这个转换的过程中，编译器会收集程序的信息，后面在程序调试的时候会有用的。首先在这个过程的后半部分，编译器可能很难将它对的修改与程序员编写的原始代码联系起来。例如，窥孔优化器可能会移除一个指令，因为它可能会切换由 C++ 模板实例中的内联函数生成的代码中测试的顺序。当它在程序中获得它的隐喻的方面时，优化器难以将低级别代码的操作联系到生成它的源代码上。</p>
+<p>第二个挑战是如何足够详细地描述可执行文件和它与原始代码的关系，从而允许一个调试器提供程序员有用的信息。同时，这个描述必须是足够简洁的，如此它不会占用极大的空间，也不会用显著地处理器时间来解析。这就是用到 DWARF 调试格式的地方：它是一个可执行程序和源码之间关系的紧凑表示，用了对调试器相当高效的方式来处理。</p>
+<h2 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h2><p>当一个程序员在调试器下执行一个程序时，他们可能会想用到一些通用的操作。其中最通用的操作是设置一个断点使得调试器停止在源码中特定的位置上，或者通过指定行号或函数名。当这个断点命中，程序员通常喜欢打印局部或者全局变量的值，给函数的参数。显示调用栈让程序员知道程序如何到达这个断点的，如果这里有多个执行路径。在审查这些信息之后，程序员可以要求调试器在测试下继续执行程序。</p>
+<p>有一些额外的操作对于调试是有用的。例如，可以一行一行的执行程序可能是有帮助的，以及进入或者跨过调用函数。在每个模板的实例或者内联函数设置断点对于调试 C++ 程序是重要的。就在函数结束之前停止也是有帮助的，这是返回值显示或者改变。有时候程序员可能想要跳过一个函数的执行，返回一个已知的值替代这个函数会计算的（可能是不对的）。</p>
+<p>有一些数据相关的操作也是有用的。例如，显示一个变量的类型，可以避免不得不在源码中查找这个类型。以不同的格式显示变量的值，或者以特殊的格式显示内存或者寄存器的值是有帮助的。</p>
+<p>有些操作可能会被调用来提高调试功能：例如，可以调试多线程程序或者存储在只读内存的程序。有些人可能想要一个调试器（或者一些程序分析工具）来追踪代码的某个片段是否执行了。一些调试器允许程序员调用正在测试的程序中的函数。在不久之前，已经优化过的调试程序将被视为高级功能。</p>
+<p>调试器的功能是给程序员提供一个可执行程序的视图，以尽可能自然和易于理解的方式，同时允许对整个执行广泛的控制。这些意味着调试器本质上不得不反转许多编译器精细的转换，转换程序数据和状态回程序员在程序源码中原始使用的样子。</p>
+<p>调试数据格式的挑战，如 DWARF，是要使之称为可能甚至更简单。</p>
+<h2 id="调试格式"><a href="#调试格式" class="headerlink" title="调试格式"></a>调试格式</h2><p>存在着几个调试格式：stabs，COFF，PE-COFF，OMF，IEEE-695，和两个 DWARF 的变种等，列举了这些常见的。不在这里进一步详细描述这些了。这边只是想简单提及这些，引出 DWARF 调试格式。</p>
+<p>stabs 的名字来自<em>symbol table strings</em>，因为调试数据最开始是以字符串的形式存在 Unix 的 a.out 对象文件的符号表里的。Stabs 编码关于程序的信息到文本字符串中。起初相当简单的，stabs 随着时间演变成一个相当复杂，偶尔神秘且不一致的调试格式。Stabs 没有标准化和文档化。Sun Microsystems 对 stabs 做了一系列的扩展。在尝试对 Sun 的扩展做逆向工程时，GCC 做了其它的扩展。尽管如此，Stabs 仍然广泛地在使用。</p>
+<p>COFF 表示 Common Object File Format，源自 Unix System V  Release 3。初级的调试信息是用 COFF 格式定义的，但自从 COFF 包含名字段的支持，各种不同调试格式，如 stabs，已经被用到了 COFF 中了。尽管它名字里有通用性，但COFF 中最显著的问题是在每个架构使用的格式不同。这边有许多 COFF 的变化，包括 XCOFF（用在 IBM RS/6000），ECOFF（用在 MIPS 和 Alpha），和 Windows 的 PE-COFF。这些变体的文档在不同程度上都可以获得，但对象模块格式和调试信息都没有标准化。</p>
+<p>微软 Windows 从 Windows 95 开始就使用 PE-COFF 作为对象模块格式。它基于 COFF 格式，包含了 COFF 调试数据和微软自己的所有权的代码视图，或者 CV 4 调试信息。调试信息格式的文档粗略且难以获得的。</p>
+<p>OMF 表示 Object Module Format，是用于 CP/M ，DOS，和 OS/2 系统，以及少数嵌入式系统的对象文件格式。OMF 为调试器定义了公共名字和行号信息，也可以包含 微软的 CV，IBM PM，或者 AIX 格式调试数据。OMF 只为调试器提供最初级的支持。</p>
+<p>IEEE-695 是标准的对象格式，调试格式由 Microtec Research 和 HP 在 1980 年代后期共同开发用于嵌入式环境。为了用于各种不同的机器架构，它的标准非常的灵活。调试格式是块结构的，比起其它格式，它更利于对应到源码的组织形式。虽然它 IEEE 的标准，但从许多方面来说，IEEE-695 更像是专有形式。虽然原始标准可以从 IEEE 轻松获得，Microtec Research 为支持 C++ 和优化代码作了扩展，这部分缺乏文档。IEEE 标准从未进行修改来包含 Microtec的修改或者其它修改。尽管是 IEEE 标准，它的使用仅限于一些小型的处理器。</p>
+<h2 id="DWARF-简史"><a href="#DWARF-简史" class="headerlink" title="DWARF 简史"></a>DWARF 简史</h2><h3 id="DWARF-1-–-Unix-SVR4-sdb-和-PLSIG"><a href="#DWARF-1-–-Unix-SVR4-sdb-和-PLSIG" class="headerlink" title="DWARF 1 – Unix SVR4 sdb 和 PLSIG"></a>DWARF 1 – Unix SVR4 sdb 和 PLSIG</h3><p>DWARF 是 Brian Russell 博士 1988 年在贝尔实验室开发的，用于Unix System V Release 4 的 C 编译器和 sdb 调试器。编程语言特别兴趣组（PLSIG），Unix 国际的一部分，在 1992 年将 SVR4 生成的 DWARF 文档作为 DWARF 第一个版本。虽然最初的 DWARF 有几个明显的缺点，最显著地是它不够紧凑，PLSIG 决定用最小的修改标准化 SVR4 格式。它在嵌入式领域被广泛采用，这部分直到今天还在使用，特别是小的处理器。</p>
+<h3 id="DWARF-2-–-PLSIG"><a href="#DWARF-2-–-PLSIG" class="headerlink" title="DWARF 2 – PLSIG"></a>DWARF 2 – PLSIG</h3><p>PLSIG 连续开发和编撰了 DWARF 的扩展来解决几个问题，这些最重要的是降低生成的调试数据的大小。同时也添加了新语言的支持，如崭露头角的 C++ 语言。DWARF 版本 2 作为标准草案在 1993 年发布。</p>
+<p>作为多米诺骨牌理论的一个实际例子，在 PLSIG 发布标准草案后不久，在 Motorola 的 88000 微处理器上发现了致命的缺陷。Motorola 拔下了处理器上的插头，这反过来又导致了 Open 88 的消亡，Open 88 是一个使用 88000 开发计算机的公司财团。Open 88 反过来是 Unix 国际的一个支持者，PLSIG 的赞助，因而导致了 UI 被解散。当 UI 关闭之后，PLSIG 只剩下了一个邮件列表，和各种 ftp 站点，上面有各种 DWARF 2 标准草案的版本。最后一个标准在没有发布过。</p>
+<p>因为 Unix 国际 已经消失和 PLSIG 解散，有几个组织独自决定扩展 DWARF 1 和 2。这些扩展中有些是特定于单个架构的，但是其它的可以用于任意的架构。不幸地是，不同的组织不能在这些扩展中一起工作。关于这些扩展的文档是参差不齐的或者难以获得的。或者正如 GCC 开发者可能会建议的那样，自力更生，扩展已经很好的记录了：你需要做的就是阅读编译器源码。DWARF 正在努力追随 COFF，变成一个发散实现的集成者，而不是一个工业标准。</p>
+<h3 id="DWARF-3-–-自由标准化组织"><a href="#DWARF-3-–-自由标准化组织" class="headerlink" title="DWARF 3 – 自由标准化组织"></a>DWARF 3 – 自由标准化组织</h3><p>尽管在 PLSIG 邮件列表中有几个关于 DWARF 的线上讨论（UI 消亡之后在 X/Open【后续的开放组】赞助下存活），但是直到 1999 年底都没有动力去修订（或者敲定）标准。当时，有兴趣来扩展 DWARF 以更好地支持 HP/Intel 架构，以及有更好的 C++ 程序使用的 ABI 文档。这两个工作是分开进行的，同时作者接任了复兴的 DWARF 委员会的主席。</p>
+<p>随着超过 18 个月的开发工作，创建了 DWARF 3 标准草案，标准化工作遇到了所谓的软补丁。委员会（特别是作者）想要保证 DWARF 标准是一应俱全的，避免标准的多个来源可能造成分歧。2003 年，DWARF 委员会变成了自由标准化组织的 DWARF 工作组。DWARF 3  的积极发展和澄清在 2005 年之前就恢复了，目标是解决标准中任何未解决的问题。一个公开的审查草案在 9 月发布以征求公开的评论，DWARF 3 标准最后的版本在 2005 年 12 月发布。</p>
+<h3 id="DWARF-4-–-DWARF-调试格式委员会"><a href="#DWARF-4-–-DWARF-调试格式委员会" class="headerlink" title="DWARF 4 – DWARF 调试格式委员会"></a>DWARF 4 – DWARF 调试格式委员会</h3><p>在自由标准组织和开源开发实验室（OSDL）在 2007 年合并成立 Linux 基金会之后，DWARF 委员会变成独立的状态，创建了自己的网站 dwarfstd.org 。DWARF 第 4 版的工作开始于 2007 年。这个版本澄清了 DWARF 的表达式，添加了 VLIW 架构支持，打包数据的通用支持，添加新的技术通过消除冗余的类型描述来压缩调试数据，添加对基于 profile 编译器优化的支持，以及对文档的扩展编辑。DWARF 版本 4 标准在 2010 年 6 月发布，经过了公开审查。</p>
+<p>DWARF 版本 5 的工作开始于 2012 年 2 月。该版本预计将于 2014 年完成。</p>
+<h2 id="DWARF-简介"><a href="#DWARF-简介" class="headerlink" title="DWARF 简介"></a>DWARF 简介</h2><p>大部分现代编程语言是块状结构的：每个实体（例如，一个类定义或者一个函数）都包含在另一个实体里。C 程序里的每个文件可能都包含着多个数据定义，多个变量定义，和多个函数。在每个 C 函数里，几个数据定义之后都会跟着执行语句。一个语句可能是一个复合语句，可以反过来包含数据定义和执行语句。这个创建了词法范围，其中的名字只在它们定义的范围里已知。为了找到一个程序里特定符号的定义，你首先要查找当前范围，然后再连续封闭的范围里查找直到你找到符号。在不同的范围里可能会有多个相同名字的定义。编译器非常自然地在内部将程序表示为一棵树。</p>
+<p>DWARF 沿袭这个模型，它也是块结构的。DWARF 中每个描述性实体（除了最顶层的条目，其是描述源文件的）都是包含在一个父条目里，且可能会包含子条目。如果一个节点包含多个条目，它们是兄弟，之间相互关联。一个程序的 DWARF 描述是一个树结构，类似于编译器内部的树，每个节点可以有子节点或者兄弟节点。节点可能会表示类型，变量，或者函数。这是一个紧凑的格式，只提供那些描述程序某个方面所需要的信息。这个格式是以统一格式进行扩展的，所以调试器可以识别或者忽略扩展，即使它不理解那些扩展的含义。（这个比其它大多数调试格式的情况好，那些格式可能会在尝试读取未识别数据时陷入致命的困惑。）DWARF 也被设计为可以扩展成能描述几乎任意机器架构上的任意的过程式编程语言，而不是被束缚成只能描述一个语言或者在一个限制范围里的架构上的一个版本的语言。</p>
+<p>尽管 DWARF 是最常于 ELF 对象文件格式相关联，但是它是独立于对象文件格式的。它可以同时也用到在了其它的对象文件格式。所有这些所必需的是构成 DWARF 数据的不同数据段在目标文件或者可执行文件中是可以识别的。DWARF 不复制包含在目标文件中的信息，如识别处理器架构，或者文件是按大端或者小端格式写的。</p>
+<h2 id="调试信息条目（DIE）"><a href="#调试信息条目（DIE）" class="headerlink" title="调试信息条目（DIE）"></a>调试信息条目（DIE）</h2><h3 id="标签和属性"><a href="#标签和属性" class="headerlink" title="标签和属性"></a>标签和属性</h3><p>DWARF 中基本的描述实体是调试信息条目（DIE）。一个 DIE 有个<em>标签</em>，它指定了这个 DIE 描述的东西和一系列的<em>属性</em>， 它们会详细地填上信息和进一步描述这个条目。一个 DIE（除了最顶层）是包含在或者被一个父 DIE 拥有，且可能会有兄弟 DIE 或者子 DIE。属性可能会包含各种值：常量（如函数名），变量（如函数的开始地址），或者另一个 DIE 的引用（如函数返回值的类型）。</p>
+<p>图 1 给出了 C 的经典 hello.c 程序，带有它的 DWARF 描述的最简单的图表示。最顶层的 DIE 表示编译单元。它有两个“孩子”，第一个是描述 main 的 DIE，第二个是描述基础类型 int，它是 main 的返回值的类型。子程序 DIE 是编译单元的一个子节点，同时基础类型 DIE 被子程序 DIE 中的类型属性引用。我们也会说一个 DIE “拥有” 或者 “包含” 子DIE。</p>
+<h3 id="DIE-的类型"><a href="#DIE-的类型" class="headerlink" title="DIE 的类型"></a>DIE 的类型</h3><p>DIE 可以拆分成两个通用类型。描述数据和数据类型的。还有描述函数和其它可执行代码的。</p>
+<h2 id="描述数据和类型"><a href="#描述数据和类型" class="headerlink" title="描述数据和类型"></a>描述数据和类型</h2><p>大部分编程语言有复杂的数据描述。这里有一组内联的数据类型，指针，各种各样的数据结构，和通常的创建新的数据类型的方式。因为 DWARF 的意图是用于各种语言，它提出了基础架构，提供了一个中间表示可以用于所有支持的语言。初级的类型，直接建立在硬件上的，是基础类型。其它的数据类型构造成这些基础类型的集成者或者组成者。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_1.png" class="" title>
+
+
+<h3 id="基础类型"><a href="#基础类型" class="headerlink" title="基础类型"></a>基础类型</h3><p>每个编程语言都定义了几个基础的标量数据类型。例如，C 和 Java 都定义了 int 和 double。虽然 Java 提供了这些类型的完整定义，但 C 只指定了一些通用的属性， 允许编译器选择实际的配置，能更好的适配目标处理器。一些语言，如 Pascal，允许定义新的类型，例如，一个整型类型，其保存 0 到 100 的值。Pascal 没有指出这个是如何实现的。一个编译器可能会将其实现为一个单字节，另一个可能会使用 16位整型，还有的编译器可能会将所有的整型类型都实现为 32 位的值，不管它们如何定义的。</p>
+<p>在 DWARF 第一个版本和其它的调试格式里，编译器和调试器希望共享一个共同的理解，int 是 16，32， 还是 64 位。当相同的硬件可以支持不同大小的整型或者不同编译器对先相同目标处理器做了不同的精度的实现，就会变得比较尴尬。这些假设，通常都是没有文档的，让它难以在不同的编译器和调试器间适配，甚至在相同工具的不同版本间都难以适配。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_2.png" class="" title>
+
+
+<p>DWARF 基础类型提供了简单数据类型和它们在机器硬件上如何实现的之间的最低级别的映射。这使得 int 的定义对于 Java 和 C都是显式的，允许使用不同的定义，即使这是在同一个程序里。图 2a 的 DIE 描述了 int 在一个典型 32位的处理器的情况。属性给出了名字（int），编码（有符号二进制整型），和字节数（4）。图 2b 给出了 int 在 16位处理器上的相似定义。（在图 2 中，我们使用 DWARF 标准中定义的标签和属性名，而不是图 1 中使用的很不正式的名字。标签的名字都有前缀 <em>DW_TAG</em>，属性的名字都有 DW_AT 的前缀。 ）</p>
+<p>基础类型允许编译器描述几乎任意的编程语言标量类型和它实际如何在处理器上实现之间的映射。图 3 描述了一个 16 位整型值存储在一个四字节字的高 16 位上。在这个基础类型里，有一个位数大小的属性指出了这个值是 16 位宽度，有一个高位零的偏移量。</p>
+<p>DWARF 允许描述许多不同类型的编码，包括地址，字符，定点，浮点，和压缩十进制，除了二进制整型。仍然存在小的歧义：例如，浮点数的实际编码没有指定；这取决于硬件实际支持的编码格式。在一个同时支持 32位和 64位 IEEE-754 标准的浮点值的处理器上，“float” 表示的编码是不同的，取决于值的长度。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_3.png" class="" title>
+
+
+<h3 id="类型组成"><a href="#类型组成" class="headerlink" title="类型组成"></a>类型组成</h3><p>一个命名的变量由有各种属性的 DIE 描述，其中一个会引用到类型定义。图 4 描述了一个整型变量名位 x。（我们展示忽略了其它包含在 DIE 中用来描述一个变量的信息。）</p>
+<p>int 的基础类型描述它作为一个有符号二进制整型，占据四个字节。x 的 DW_TAG_variable DIE 给出了它的名字和一个类型属性，其关联到基础类型 DIE。为了清晰，这里的 DIE 是按顺序标记的，如下例子，在实际的 DWARF 数据中，一个到DIE 的引用是从可以找到这个 DIE 的编译单元的起始位置开始的偏移。可以引用之前定义的 DIE，如图 4 所示，或者引用之后定义的 DIE。当我们为 int 创建了一个基础类型 DIE，在相同编译中的任意变量可以引用同一个 DIE。</p>
+<p>通过组合，DWARF 可以使用基础类型构造其它数据类型定义。创建一个新类型作为另一个类型的修改。例如，图 5 所示一个指针指向我们典型 32 位机器上的一个整型。这个 DIE 定义了一个指针类型，指出它的大小是四个字节，反过来引用了整型基础类型。其它的 DIE 描述了常量或者易失的属性，C++ 引用类型，或者 C 的严格类型。这些类型的 DIE 可以链接在一起，从而描述更复杂的数据类型，如“const char **argv”，见图 6。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_45.png" class="" title>
+
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>一个定义了数据是以列优先顺序存储（Fortan）还是以行优先顺序存储（C 或 C++）的 DIE 可以描述一个数组类型。数据下标通过一个子范围类型表示，其给出了每个维度的最低和最高边界。它允许 DWARF 描述两个 C 风格的数组，其中一个总是以 0 位最低下标；另一个如同 Pascal 或 Ada 中的数组，可以有任意的上下边界。</p>
+<h3 id="结构体，类，联合体，接口"><a href="#结构体，类，联合体，接口" class="headerlink" title="结构体，类，联合体，接口"></a>结构体，类，联合体，接口</h3><p>大部分语言允许程序员将数据组合起来成为结构（C 和 C++ 中的 struct，C++ 中的 class，Pascal 中的 record）。结构中的每个组成部分通常有独立的名字，且可能会有不同的类型，每个都自己的空间。C 和 C++ 的 <em>union</em>，和Pascal 的 <em>variant record</em> 类似于一个结构，但组成占据相同的内存位置。Java 的 <em>interface</em> 有 C++ class 的属性子集，因为它可能只有抽象方法和常量数据成员。</p>
+<p>虽然每个语言有自己的术语（C++ 称类的组成为<em>成员</em>，而 Pascal 称它们为<em>域</em>），但底层组织都可以在 DWARF 中描述。忠于这些传统，DWARF 使用 C/C++/Java 的术语，有描述 struct，union，class，和 interface 的 DIE。我们将只在这里描述 class 的DIE，但其它的有着本质相同的组织。</p>
+<p>一个类的 DIE 是描述它的每个类型成员的 DIE 的父 DIE。每个类有个名字以及可能有些其它的属性。如果实例的大小在编译时间是已知的，则它将会有一个字节大小的属性。这些描述中的每个看起来都与简单变量的描述相同，虽然这可能会有其它的属性。例如，C++ 允许程序员指出成员是否是 <em>public</em>，<em>private</em>，或者<em>protected</em>。这些在可访问性的属性里描述。</p>
+<p>C 和 C++ 允许位域作为类成员，其不是一个简单的变量。他们用开始于类实体到位域最左侧位的位偏移的 bit offset 来描述，同时用 bit size 说明成员占据了多少位。</p>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>变量通常是很简单的。它们有一个名字表示一块内存（或寄存器），可以包含某些值。变量可以保存的值种类，以及限制了它如何进行修改，是由变量的类型描述的。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_6.png" class="" title>
+
+
+<p>通过变量存储值的位置和它的范围区分一个变量。变量的范围定义了程序中这个变量已知的区间，某种程度上，由声明变量的位置决定。在 C 中，函数或者块中的变量声明有函数或者块的范围。那些超出函数外的声明要么是全局或者文件范围的。这允许在不同文件中用相同的名字定义不同的变量，而不会有冲突。它也允许不同的函数或者汇编引用相同的变量。DWARF 文档源文件中声明的变量有一个三元组（file，line，column）。</p>
+<p>DWARF 将变量分为三类：常量，形参，和变量。常量与具有真正命名常量作为语言一部分的语言一起使用，如 Ada 参数。（C 没有将常量作为语言一部分。定义一个变量为<em>const</em>，只是说明你不能在没有使用显式转换的情况下修改变量的值。）一个形式参数表示传递给函数的值。我们稍后再谈这个。</p>
+<p>一些语言，如 C 或者 C++（但不是 Pascal），允许一个变量声明但没有定义它。这暗示着在某个地方存在着变量的真正定义，希望这些地方编译器或者调试器可以找到。一个 DIE 描述一个变量声明，提供的变量描述里没有告诉调试器它实际的位置。</p>
+<p>大部分变量有位置属性描述变量存储的地方。在一个最简单的场景里，变量存储在内存里，有一个固定的地址。但许多的变量，如那些 C 函数里的声明，是动态分配的，定位它们需要一些计算（通常是简单的）。例如，一个局部变量可能被分配到栈上，则定位它可能如同在一个帧指针上加上一个固定偏移量那样简单。在其它场景中，变量可能会存储到寄存器里。其它变量可能需要稍微复杂一些的计算来定位数据。一个是 C++ 类中的成员的变量可能需要更复杂的计算来确定在派生类里基础类的地址。</p>
+<h3 id="位置表达式"><a href="#位置表达式" class="headerlink" title="位置表达式"></a>位置表达式</h3><p>DWARF 提供了一个非常通用的方案来描述如何通过一个变量定位数据表达。一个 DWARF 位置表达式包含了一系列的操作，告诉编译器如何定位数据的。图 7 给出了三个名为 a，b，c 的变量的 DIE。变量 a 有一个固定内存区域，变量 b 在寄存器 0 里，变量 c 在当前函数栈帧偏移 -12 的地方。虽然 a 是第一个声明的，但描述它的 DIE 在最后生成，在所有函数之后。a 的实际位置将会由链接器填充。</p>
+<p>DWARF 位置表达式可以包含一系列的操作符和由简单堆栈机器计算的值。这可以是一个任意复杂的计算，可以是比较宽泛的算法操作，或者表达式里测试和跳转，或者调用评估其它位置表达式，以及访问一个处理器的内存或者寄存器。甚至由操作是描述拆分和存储在不同位置的数据的，如一个结构体，其有些数据是存储在内存里的，然后有些数据是存在寄存器里的。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_7.png" class="" title>
+
+
+<p>虽然这么大自由度在实际使用中是比较罕见的，但是位置表达式应该允许变量数据的位置都能被描述，不管语言定义得多复杂或者编译器优化得多干净。</p>
+<h2 id="描述可执行代码"><a href="#描述可执行代码" class="headerlink" title="描述可执行代码"></a>描述可执行代码</h2><h3 id="函数和子程序"><a href="#函数和子程序" class="headerlink" title="函数和子程序"></a>函数和子程序</h3><p>DWARF 认为有返回值的函数和不返回的子程序作为相同事物的不同变体。稍微有些偏离 C 术语的根源。DWARF 在一个子程序 DIE 中描述两者。这个 DIE 有一个名字，一个源程序位置三元组，和一个说明子程序是否是 external 的属性，external 指的是，在当前编译之外可见。</p>
+<p>一个子程序 DIE 有个属性，当子程序是连续的，则给出了子程序占据的低位和高位内存地址；当子程序没有占据一组连续的内存地址时，给出一系列内存范围。除非明确指出是高位，否则程序的入口是假定在低的 PC 地址上的。</p>
+<p>函数的返回值通过一个类型属性给定。如果子程序没有返回值（像 C 的 void 函数）就不会有这个属性。DWARF 不描述一个函数的调用约定；这些是在特定架构的应用二进制接口（ABI）中定义的。可能会有一个属性帮助调试器定位子程序的数据，或者找到当前子进程的调用者。<em>return address</em>属性是一个位置表达式，指出了存储调用者地址的地方。<em>frame base</em> 是一个位置表达式，其为函数计算了栈帧的地址。这些都是有用的，因为一些编译器做的最通用的优化是消除可以显式存储返回值或者栈帧的指令。</p>
+<p>子程序 DIE 拥有描述子程序的 DIE。可能会传递给函数的参数用变量 DIE 来表示，其有 <em>variable parameter</em> 的属性。参数DIE 的顺序与函数参数列表的顺序是一致的，但可能会穿插一些额外的 DIE，例如，用于定义参数使用的类型。</p>
+<p>函数可能会定义局部或者全局的变量。这些变量的 DIE 紧随参数 DIE 之后。许多语言允许内嵌的词法块。这些由词法块 DIE 表示，反过来，这些 DIE 也会有自己的变量 DIE或者内嵌的词法块 DIE。</p>
+<p>这里有一个有些长的用例。图 8a 给出了 strndup.c 的源码，gcc 中的一个函数，用于复制字符串。图 8b 列出了这个文件生成的 DWARF。和前面的用例一样，源码行信息和位置属性没有显示出来。</p>
+<p>在图 8b，DIE &lt;2&gt; 给出了 size_t 的定义，它是 unsigned int 的 typedef。这允许调试器以 size_t 来显示形参 n 的类型，同时以无符号整型显示它的值。DIE &lt;5&gt; 描述了 strndup 函数。这里有一个到它兄弟的指针，DIE&lt;10&gt;；后面所有的 DIE 是子程序 DIE 的孩子。函数返回一个 char 指针，在 DIE&lt;10&gt; 中描述。DIE&lt;5&gt; 也描述了子程序是 <em>external</em> 和 <em>prototyped</em> ，给出了程序的高低地址值。程序的形式参数和局部变量在 DIE &lt;6&gt; 到 DIE &lt;9&gt; 中描述。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_8a.png" class="" title>
+
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_8b.png" class="" title>
+
+
+
+<h3 id="编译单元"><a href="#编译单元" class="headerlink" title="编译单元"></a>编译单元</h3><p>更感兴趣的程序由超过单一的文件组成。组成程序的每个源文件都是单独编译的，然后再与系统库链接在一起组成程序。DWARF 称每个分离的已编译源程序为一个编译单元。</p>
+<p>每个编译单元的 DWARF 数据以一个编译单元 DIE 开始。这个 DIE包含了编译的通用信息，包括目录和源文件的名字，使用的编程语言，一个字符串标明 DWARF 数据的版本，和一个到 DWARF 数据段的偏移量，能帮助定位行号和宏信息。</p>
+<p>如果编译单元是连续的（即，它被一块一块地加载到内存里），则这个单元里有低地址和高地址的信息。这些让调试器更容易识别在特定内存地址的代码是哪个编译单元创建的。如果编译单元不是连续的，则代码占据的一系列内存地址由编译器和调试器提供。</p>
+<p>编译单元 DIE 是所有描述编译单元的 DIE 的父 DIE。通常，第一部分的 DIE 会描述数据类型，紧跟着的是全局数据，然后是组成源文件的函数。变量和函数的 DIE 按它们出现在源文件中的顺序出现。</p>
+<h3 id="数据编码"><a href="#数据编码" class="headerlink" title="数据编码"></a>数据编码</h3><p>概念上，描述程序的 DWARF 数据是一棵树。每个 DIE 有兄弟节点，可能会有几个孩子 DIE。每个 DIE 有一个类型（称为它的标识）和一系列属性。每个属性由属性类型和值表示。不幸地是，这不是非常密集编码的。没有压缩，DWARF 是非常笨重的。</p>
+<p>DWARF 提供了几个方法降低需要保存到目标文件的数据的大小。首先是以前序的存储形式“摊开”这个树。每个 DIE 的类型可以定义成有子 DIE 的或者没有子 DIE 的。如果 DIE 不能有子 DIE，下一个 DIE 是它的兄弟。如果 DIE 有孩子，则下一个 DIE 是它的第一个孩子。剩余的 DIE 保存成第一个孩子的兄弟。这种方式下，到兄弟或者孩子 DIE 的链接可以消除。如果编译器编写者认为能从一个 DIE 跳到它的兄弟而不用遍历每个子 DIE的功能是有用的，则可以往 DIE 中添加一个 <em>sibling</em> 属性。</p>
+<p>第二个方案是使用缩写压缩数据。虽然 DWARF 允许 DIE 和它可能生成的属性上有极大的自由度，但大部分的编译器只生成一组有限的 DIE，所有的这些都有一组相同的属性。比起存储 TAG 的值和属性值对，只需存储一个进入缩写表的下标，跟随在属性代码之后。每个缩写给出了 TAG 的值，以及一个标志声明了 DIE 是否有孩子，还有一系列的属性表示它们期望的值的类型。图 9 给出了 图 8b 使用的形式参数 DIE 的缩写。图 8 中的 DIE &lt;6&gt; 如图所示。显著地降低了需要保存的数据的数量，以增加复杂性为代价。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_9.png" class="" title>
+
+
+<p>DWARF 第 3 版和第 4 版不常用的功能是允许一个编译单元引用另一个编译单元或者共享库中存储的 DWARF 数据。许多编译器会为每个编译生成相同的缩写表和基础类型，编译是否实际使用所有的缩写或类型是独立的。这些可以保存在共享库中，然后能被每个编译单元可以引用，而不需要在每个里都拷贝一份。</p>
+<h2 id="其它的-DWARF-数据"><a href="#其它的-DWARF-数据" class="headerlink" title="其它的 DWARF 数据"></a>其它的 DWARF 数据</h2><h3 id="行号表"><a href="#行号表" class="headerlink" title="行号表"></a>行号表</h3><p>DWARF 行号表包含了一个映射表，是包含程序可执行代码的内存地址到这些地址相关的源码行的映射。在最简单的形式下，这些可以被看成是一个矩阵，一行包含了内存地址，另一行是这个地址对应的源码三元组（文件，行，列）。如果你想要在特定行设定断点，这个表给了你内存地址来存储断点指令。反过来，如果你的程序在一些内存位置有错误（即，使用了坏的指针），你可以寻找最靠近这个内存地址的源码行号。</p>
+<p>DWARF 添加了一行进行扩展，从而可以携带额外的程序信息。当一个编译器优化程序，它可能会移动指令或者删除它们。给定的源码语句的代码可能不会被存成一段机器码，但是可能会分散开与其它附近相邻的源码语句的指令交错。它可能在识别表示一个函数导言的代码结尾或者结语开头是有用的，所以调试器可以在所有参数传递给一个已经加载的函数后或者函数返回前停止。一些处理器可以执行超过一个指令集，所以还需要一行来识别特定机器位置存储的是哪个指令集。</p>
+<p>就如你想的那样，如果这个表每个机器指令存储一行，则它会是非常巨大的。DWARF 通过将数据编码成称为<em>line number program</em> 的指令序列来压缩数据。这些指令通过简单有限状态机解析，重建成完整的行号表。</p>
+<p>这个有限状态机由一组默认值初始化。行号表中的每一排是通过执行行号程序的一个或多个操作码生成的。操作码通常是很简单的：例如，加一个值到机器地址中或者行号中；设置行编号；设置一个标志，表明一个内存地址是代表一个源码语句的开头，或者函数导语的结尾，或者函数结语的开始。一组特定的操作码合并最通用的操作（增加内存地址或者增加或减少源码行号）为单个操作码。</p>
+<p>最后，如果行号表的一行和前一行有相同的源码三元组，则在行号程序中不会为这排生成指令。图 10 列出了 strndup.c 的行号程序。注意到只有表示语句的开头的指令的机器地址被存储。编译器不识别这个代码中的基本块，也不识别函数导言的结尾或者结语的开头。这个表编码在行号程序中只需要 31 个字节。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_10.png" class="" title>
+
+
+<h3 id="宏信息"><a href="#宏信息" class="headerlink" title="宏信息"></a>宏信息</h3><p>大部分调试器在打印和调试带有宏的代码时很困难。使用者看着带有宏的原始源文件，但不管宏生成了的对应代码。</p>
+<p>DWARF 包含了程序中定义的宏的信息。这些是相当初级的信息，但可以给调试器使用来打印一个宏的值，或者可能可以将一个宏转为相关的源码。</p>
+<h3 id="调用帧信息"><a href="#调用帧信息" class="headerlink" title="调用帧信息"></a>调用帧信息</h3><p>每个处理器都有某种方式来调用函数和传递参数，通常在 ABI 中定义。在最简单的场景中，这个在每个函数中都是相同的，调试器明确地知道如何找到函数的参数值和返回值。</p>
+<p>对于一些处理器，可能会有不同的调用序列，取决于函数如何写的，例如，是否有超过一定数量的参数。操作系统也可能导致不同数量的参数。编译器会尝试优化调用序列保证代码又小又快。一个通用的优化是，当一个简单的函数没有调用其它的函数时（叶子函数），可以直接使用它的调用者的栈而不需要自己在创建一个。另一个优化可能会消除指向当前调用帧的寄存器。有些寄存器可以跨函数保护的，有些则不是。虽然一个调试器有可能能猜出调用序列或者优化的所有可能的排列，但这是相当乏味和容易出错的。当优化中有一个小的改变，调试器可能不在能走到调用函数的栈上。</p>
+<p>DWARF 调用帧信息（CFI）给调试器提供了足够的关于函数如何被调用的信息，所以它可以定位到传递给函数的每个参数，定位到当前的栈帧，以及定位到要调用中的函数的调用帧。这些信息被调试器用来“回栈”，定位到前一个函数，函数被调用的位置，以及传递的参数。</p>
+<p>如同行号表，CFI 被编号成一系列的指令，可以被解析生成一张表。这个表里每个包含代码的地址只有一排。第一行包含机器地址，然后随后的一行包含机器寄存器在这个地址的指令执行时残生的值。就像行号表，如果这个表实际创建了，将会非常大。非常幸运地是两个机器指令间的改变非常的小，所以 CFI 编码相当紧凑。</p>
+<h3 id="变长数据"><a href="#变长数据" class="headerlink" title="变长数据"></a>变长数据</h3><p>整型的使用贯穿 DWARF，用于表示从数据段的偏移量到数组或结构的大小等任意的东西。在大部分场景中，不能去限制这些值的大小。在经典的数据结构中，这些值中的每一个都会使用默认的整型大小来表示。因为大部分的值可以用非常少的位来表示吗，这意味着数据由大部分的零组成。</p>
+<p>DWARF 定义了一个变长整型，叫做 Little Endian Base 128（LEB128；以及更通用的 ULEB ，用于无符号数；和 SLEB，用于有符号数），可以压缩这些整型值。因为低位表示数据，而高位由全 0 或者全 1 组成， LEB 砍掉值得低七位。如果剩余的位是全 0 或者全 1（符号扩展位），这是一个编码过的值。否则，设置高位为 1 ，输出这个字节，继续下一个低七位。</p>
+<h3 id="压缩-DWARF-数据"><a href="#压缩-DWARF-数据" class="headerlink" title="压缩 DWARF 数据"></a>压缩 DWARF 数据</h3><p>比起一个未编码的格式，如第一版 DWARF，DWARF使用的编码方案降低了调试信息的大小。不幸地是，对于大部分的程序编译器生成的调试信息变得相当的大，经常超过了可执行代码和数据。</p>
+<p>DWARF 提供了进一步降低调试数据的方式。DWARF 调试数据里的大部分字符串会实际引用到一个分离的 .debug_str 段中。当生成这个段时冗余的字符串可以被消除。进一步的，链接器可以合并来自多个编译的 .debug_str 为一个单一的，更小的字符串段。</p>
+<p>许多程序包含了会在多个编译单元中重复的声明。例如，调试数据描述的许多（可能时数千计） C++ 模板函数的声明会在每个编译中重复。这些重复的描述可以保存在分离的编译单元的独一名字的段里。链接器可以使用 COMDAT（通用数据）技术来消除冗余的段。</p>
+<p>许多程序引用了大量的头文件，会包含许多的类型定义，导致了 DWARF 数据包含了数以千计描述这些类型的 DIE。编译器通过只为那些在编译中实际使用到的类型生成 DWARF，可以降低数据的大小。在第四版 DWARF中，类型定义可以保存到一个分离的.debug_type 段中。编译单元包含一个引用这个分离类型单元的 DIE，以及这些类型一个唯一的 64位签名。链接器可以识别定义了相同类型单元的编译，然后消除这些编译。</p>
+<h3 id="ELF-段"><a href="#ELF-段" class="headerlink" title="ELF 段"></a>ELF 段</h3><p>虽然 DWARF 定义成可以用在任意的目标文件格式里，但它最常用在 ELF 里。每个不同的 DWARF 数据都存储在它们自己的段里。这些段的名字都以“.debug_“开头。为了提高效率，大部分引用 DWARF 数据是使用来自当前编译的数据开头的偏移量。这样避免了重定位调试数据，可以加速函数的加载和调试。</p>
+<p>ELF 段和它们的内容：</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_11.png" class="" title>
+
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到此为止，已经有了 DWARF 的基本框架，也许还了解了更多的内容。DWARF 调试信息的基本原则是平直的。程序被描述成一棵树，有节点表示源程序各种函数的节点，数据和类型，用了紧凑的语言独立和机器独立的方案。行表提供了可执行指令和生成它们的源文件之间的映射。CFI 描述了如何回栈。</p>
+<p>DWARF 中也有些微妙的存在，鉴于它需要表达许多不同的细微差别，为了大部分的编程语言和不同的机器架构。DWARF 未来的方向是提高已优化代码的描述，从而调试器可以更好地在高级编译器优化产生的代码里调试。</p>
+<p>在 DWARF 网站上（dwarfstd.org）有完整的第四版 DWARF 标准，可以不改变的下载。同时也有邮件列表，可以进行DWARF相关的讨论和提问题。注册邮件列表的命令也在网站上。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>我想要去感谢Sun Microsystems 的 Quenelle 主席和前 HP 的 Ron Brender，因为他们提供了这个文章之前版本的评论和建议。也感谢 Susan Heimlich，她提供了许多的编辑评论。</p>
+ 
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_12.png" class="" title>
+
+  <img src="/2022/05/28/DWARF-%E8%B0%83%E8%AF%95%E6%A0%BC%E5%BC%8F%E7%AE%80%E4%BB%8B/figure_13.png" class="" title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/04/%E5%85%A8%E5%B1%80%E5%80%BC%E6%A0%87%E5%8F%B7%E5%92%8C%E5%86%97%E4%BD%99%E8%AE%A1%E7%AE%97/" rel="prev" title="全局值标号和冗余计算">
+                  <i class="fa fa-chevron-left"></i> 全局值标号和冗余计算
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/06/11/%E6%9C%BA%E5%99%A8%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/" rel="next" title="机器独立的编译器中的代码生成">
+                  机器独立的编译器中的代码生成 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

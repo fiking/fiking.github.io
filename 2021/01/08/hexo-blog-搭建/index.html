@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="个人博客搭建笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo blog 搭建">
+<meta property="og:url" content="http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="个人博客搭建笔记。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-07T16:40:47.000Z">
+<meta property="article:modified_time" content="2024-01-28T01:21:08.364Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/","path":"2021/01/08/hexo-blog-搭建/","title":"Hexo blog 搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hexo blog 搭建 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Github-blog-%E5%88%9B%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">Github blog 创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">hexo 搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E5%85%B3%E8%81%94-github"><span class="nav-number">3.</span> <span class="nav-text">hexo 关联 github</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">备份原始数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">更换主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0"><span class="nav-number">6.</span> <span class="nav-text">新建文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%90%9C%E7%B4%A2%E7%B4%A2%E5%BC%95"><span class="nav-number">7.</span> <span class="nav-text">添加搜索索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/hexo-blog-%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hexo blog 搭建 | fiking">
+      <meta itemprop="description" content="个人博客搭建笔记。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo blog 搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-08 00:40:47" itemprop="dateCreated datePublished" datetime="2021-01-08T00:40:47+08:00">2021-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-28 09:21:08" itemprop="dateModified" datetime="2024-01-28T09:21:08+08:00">2024-01-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/web-%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">web 应用</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>329</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">个人博客搭建笔记。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="Github-blog-创建"><a href="#Github-blog-创建" class="headerlink" title="Github blog 创建"></a>Github blog 创建</h3><p>  免费的个人blog网站。</p>
+<h3 id="hexo-搭建"><a href="#hexo-搭建" class="headerlink" title="hexo 搭建"></a>hexo 搭建</h3><p>  用于生成静态网页。</p>
+<h3 id="hexo-关联-github"><a href="#hexo-关联-github" class="headerlink" title="hexo 关联 github"></a>hexo 关联 github</h3><p>  通过hexo命令自动将网页数据发布到GitHub的个人blog上。</p>
+<h3 id="备份原始数据"><a href="#备份原始数据" class="headerlink" title="备份原始数据"></a>备份原始数据</h3><p>  hexo 生成的配置文件和自己编写的数据文件需要通过原始git仓库保存。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b hexo</span><br><span class="line">git push origin hexo</span><br></pre></td></tr></table></figure>
+<h3 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h3><h3 id="新建文章"><a href="#新建文章" class="headerlink" title="新建文章"></a>新建文章</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h3 id="添加搜索索引"><a href="#添加搜索索引" class="headerlink" title="添加搜索索引"></a>添加搜索索引</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="regexp">//</span>www.dazhuanlan.com<span class="regexp">/colaandice/</span>topics/<span class="number">1009423</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://yafine-blog.cn/posts/7de0.html">yml文件的一些修改</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35668237">主要搭建参考</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/nightmare_dimple/article/details/86661502">主题配置</a></p>
+<p><a target="_blank" rel="noopener" href="https://jiazhibo.top/2020/10/12/%E5%9C%A8%E8%BF%99%E9%87%8C/">hexo 文章编写</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/xiazeyu/live2d-widget-models">live2d models</a></p>
+<p><a href="%5Bhttps://blog.csdn.net/wang_123_zy/article/details/87181892">2d模型预览</a></p>
+<p><a target="_blank" rel="noopener" href="https://yueyue200830.github.io/2020/02/23/%E8%AE%BE%E7%BD%AEhexo%E9%A6%96%E9%A1%B5%E5%8F%AA%E6%98%BE%E7%A4%BA%E9%83%A8%E5%88%86%E6%91%98%E8%A6%81%EF%BC%88%E4%B8%8D%E6%98%BE%E7%A4%BA%E5%85%A8%E6%96%87%EF%BC%89/">摘要生成</a></p>
+<p><a target="_blank" rel="noopener" href="https://asdfv1929.github.io/">评论功能</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lichenliang666/article/details/88218551">图片引用</a></p>
+<p><a target="_blank" rel="noopener" href="https://fontawesome.dashgame.com/">图标说明</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/hexo/" rel="tag"># hexo</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/07/hello-world/" rel="prev" title="初现世间">
+                  <i class="fa fa-chevron-left"></i> 初现世间
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/08/%E9%80%9A%E8%BF%87platform-data-%E7%AE%A1%E7%90%86gpio%E8%B5%84%E6%BA%90/" rel="next" title="通过platform data 管理gpio资源">
+                  通过platform data 管理gpio资源 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

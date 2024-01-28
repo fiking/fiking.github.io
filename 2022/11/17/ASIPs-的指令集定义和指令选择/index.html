@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要应用特定指令集处理器（ASIPs）是架构和指令集都针对特定应用领域优化过的现场或掩码可编程处理器。ASIPs 具有较高的自由度，因此越来越多地用于电信等竞争激烈的市场。但是，迄今为止，缺少适合于 ASIPs 设计和编程的 CAD 技术。在这篇文章中，提出了一种定义 ASIPs 优化微指令集的交互式方法。第二个问题是一个为预定义的ASIP 生成代码的指令选择方法。生成了一个指令集和数据路径模型的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ASIPs 的指令集定义和指令选择">
+<meta property="og:url" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="摘要应用特定指令集处理器（ASIPs）是架构和指令集都针对特定应用领域优化过的现场或掩码可编程处理器。ASIPs 具有较高的自由度，因此越来越多地用于电信等竞争激烈的市场。但是，迄今为止，缺少适合于 ASIPs 设计和编程的 CAD 技术。在这篇文章中，提出了一种定义 ASIPs 优化微指令集的交互式方法。第二个问题是一个为预定义的ASIP 生成代码的指令选择方法。生成了一个指令集和数据路径模型的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_1.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_2.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_3.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_2.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_4.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_3.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_4.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_5.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_6.png">
+<meta property="og:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_7.png">
+<meta property="article:published_time" content="2022-11-17T15:31:03.000Z">
+<meta property="article:modified_time" content="2023-01-08T01:35:49.879Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/","path":"2022/11/17/ASIPs-的指令集定义和指令选择/","title":"ASIPs 的指令集定义和指令选择"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ASIPs 的指令集定义和指令选择 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">传统的指令选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%89%93%E5%8C%85%E7%9A%84%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="nav-number">4.</span> <span class="nav-text">通过打包的指令选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%93%E5%90%88"><span class="nav-number">4.1.</span> <span class="nav-text">指令集和数据路径模型的结合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%8C%85%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">打包技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%96%B9%E6%B3%95%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">4.3.</span> <span class="nav-text">我们方法的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">相似的方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89"><span class="nav-number">5.</span> <span class="nav-text">指令集定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E9%83%A8%E4%BB%B6"><span class="nav-number">5.1.</span> <span class="nav-text">初始的数据路径部件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E9%83%A8%E5%88%86%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">5.2.</span> <span class="nav-text">数据路径部分的改进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E9%83%A8%E5%88%86%E5%90%88%E5%B9%B6%E6%88%90%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-number">5.3.</span> <span class="nav-text">将数据路径部分合并成指令集</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA%E5%92%8C%E6%9C%AA%E6%9D%A5%E5%B7%A5%E4%BD%9C"><span class="nav-number">6.</span> <span class="nav-text">结论和未来工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">7.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ASIPs 的指令集定义和指令选择 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ASIPs 的指令集定义和指令选择
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-17 23:31:03" itemprop="dateCreated datePublished" datetime="2022-11-17T23:31:03+08:00">2022-11-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-08 09:35:49" itemprop="dateModified" datetime="2023-01-08T09:35:49+08:00">2023-01-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/" itemprop="url" rel="index"><span itemprop="name">dissertation translation</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/dissertation-translation/compiler/" itemprop="url" rel="index"><span itemprop="name">compiler</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>应用特定指令集处理器（ASIPs）是架构和指令集都针对特定应用领域优化过的现场或掩码可编程处理器。ASIPs 具有较高的自由度，因此越来越多地用于电信等竞争激烈的市场。但是，迄今为止，缺少适合于 ASIPs 设计和编程的 CAD 技术。在这篇文章中，提出了一种定义 ASIPs 优化微指令集的交互式方法。第二个问题是一个为预定义的ASIP 生成代码的指令选择方法。生成了一个指令集和数据路径模型的组合，在这上面映射了应用。</p>
+ <a id="more"></a>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>应用特定指令集处理器（ASIP）是处在客制化架构和商用可编程 DSP 处理器之间的。他们允许现场和掩模可编程性，但是只针对某类特定的应用，从而能限制所需的硬件数量（面积和功率）。最后，ASIPs 通常是嵌入式应用的最佳选择。为了增强这类 ASIP 的性能，会添加客制化的硬件加速器数据路径，这使得 ASIP 是一个异构的 IC 架构。</p>
+<p>为了映射少量的算法到 ASIP 这个理由，是无法证明为每个目标体系结构编写编译器的工作量是合理的。因此，实际上汇编代码经常是手写的，这样子的开销太高了。所以解决方法是需要一个可重定向的编译器，它带有另一个优点，即能支持指令集的后期修改。</p>
+<p>这篇论文集中于可重定向编译器的指令选择任务。论文的第二部分展示了我们的指令选择方法如何与应用程序分析工具一起用于微指令集定义的。这个技术是作为合成和代码生成系统 “CHESS” 的一部分实现的。</p>
+<h2 id="传统的指令选择"><a href="#传统的指令选择" class="headerlink" title="传统的指令选择"></a>传统的指令选择</h2><p>一个 ASIP 通常由其指令集和数据路径的抽象描述来指定。通常所有连接的数据路径的详细描述是没有的，控制器和微序列逻辑的描述也是不可用的。传统的指令选择技术使用模式匹配[1，第9章]。模板模式集是（手动）提取自指令集的，然后表示应用的中间代码的图会由这些模式覆盖。对于有一组可互换的通用寄存器的机器，基于动态规划方法的树模式匹配保证了最优代码。给定一个模板模式的枚举，会有几个可以用于执行这个树模式匹配的工具（如[5]）。</p>
+<p>与早期的每条指令产生一个模板模式的处理器相比，水平的微码处理器和最近的处理器（RISC）都有更多的指令间并行的正交指令集。在这个场景中，使用每个模板模式覆盖一条完整指令的方式会有几个缺点。产生的模式会相当的大，这降低了匹配的可能性；可能的模式的数量也会变得更多，这会降低模式匹配的速度。因此，微代码处理器的传统方法是去为每个处理器行为创建一个模板模式。然后树模式匹配会产生垂直的微代码（没有并行度），然后代码中的并行度通过压实（调度）算法引入，从而产生所谓的水平微代码。</p>
+<p>但是直接应用这些技术到 ASIPs 会有几个问题：</p>
+<ul>
+<li>大部分的 ASIPs是指令中有并行度的微代码处理器。但是，如何决定一个处理器活动的正确粒度，从而可以允许有高效的模式匹配和高效的压实（不是太小的模式）？为一个目标架构手工推导一个好的模式太费力了，只能用于映射少数的算法。</li>
+<li>动态规划方法（和其它传统的代码生成方法）只能为有通用寄存器的架构生成通用的最优代码。而且，用于模式匹配的模式必须是树。对于 ASIP 来说，特别是应用领域是实时 DSP ，通常都不是这样子的。ASIP 通常只有很少的寄存器，分布在整个架构中。重新收敛路径（甚至包含流水线寄存器的循环，如乘加）在 ASIP 中也不例外。这意味着事实上是需要的是图模式匹配而不是树模式匹配。对于高效的代码生成，必须考虑寄存器和功能单元之间的连接。</li>
+</ul>
+<p>最近，BNR [11] 扩展模式匹配技术以适用于 ASIP 等工作已经完成了。但是，我们提出了另一个技术。</p>
+<h2 id="通过打包的指令选择"><a href="#通过打包的指令选择" class="headerlink" title="通过打包的指令选择"></a>通过打包的指令选择</h2><p>我们将会使用如下的术语（在[7]中有更广泛的定义）：<em>直接耦合</em>的微操作是原始处理器活动，其通过临时数据存储资源相互传递数据，如，通过线和锁存器。一个<em>包</em> 是一串微操作的最大序列，其中每个微操作直接与它的邻居耦合。因此（见 3.1 节），一个包必须匹配一组完整的功能单元（FUs），其直接与可寻址的寄存器相连（通过直线，总线，三态门，多路复用器）。3.2 节会给出包概念的例子演示。要注意的是，一个包可以包含一个流水线寄存器，其是不可寻址的，因此是个临时数据存储资源。</p>
+<p>我们认为包具有合适的粒度来拆分指令选择问题。</p>
+<ul>
+<li>第一个子任务，称为打包，主要是将一个完整应用程序的所有数据流操作分组到最小数量的包中。每个生成的包之后都必须是处理器指令的一部分，因此符合指令格式。然后数据路由（寄存器分配），通过多路复用器设置，总线驱动器设置和寄存器地址来标注，将包转为寄存器转换[10]。</li>
+<li>指令选择的第二个子任务，主要是把控制流操作和包放在一起形成微指令。这会在调度期间完成，意味着调度器必须知道指令格式和一些流水线方面的信息，其会限制指令的顺序。</li>
+</ul>
+<h3 id="指令集和数据路径模型的结合"><a href="#指令集和数据路径模型的结合" class="headerlink" title="指令集和数据路径模型的结合"></a>指令集和数据路径模型的结合</h3><p>本文采用的指令选择方法是使用 ASIP 的数据路径模型和指令集的结合，而不是使用模板模式集。这个模型不需要对应于真实的 ASIP 数据路径。</p>
+<p>图 1 给出了一个 ASIP 数据路径的示例规格，它的算术指令操作的指令集由表 1 给出。一个更完整的指令集也会包含（条件）跳转操作和加载/存储操作，分别用于实现控制流和内存中数据存储。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_1.png" class="" title>
+
+
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_1.png" class="" title>
+
+
+<p>数据路径允许 ALU，移位器，乘法器和加减法器上的所有操作组合，但是使用三种指令格式只能编码他们中少数的部分。因为<em>编码限制</em>剩余的组合是不被允许的。引入编码约束来限制指令字的位数，当前包含寄存器地址是 7 位。允许 ALU 和乘加结构的并行会花费掉许多的位数，并且因为需要互联（总线冲突）的原因，所以基本都不支持两者的并行。一个或者两个加载/存储操作通常可以和算术操作发生并行。</p>
+<p>用户使用 nML 语言[4，2]设定指令集。在 nML 中，一个指令集是用属性语法分层描述的。属性属于指令描述的一部分，如它关联动作（在我们的场景中还会是使用的硬件资源），它的二进制编码，它的汇编助记符，…</p>
+<p>根据 nML 描述，生成组合的指令集和数据路径模型。如图 2 中描绘的例子。它根据如下方式生成：</p>
+<ul>
+<li>为数据路径中的每个 FU 生成一个节点。每个寄存器生成两个节点；一个是读动作一个是写动作。在图 2 中这些节点是实心矩形的。</li>
+<li>添加 FU 之间的直接互联。</li>
+<li>每个 FU 节点标注着他们可以执行的操作和相关的指令设置。这些信息可以在指令集描述中找到。</li>
+<li>抽象 FUs 和 寄存器之间的连接的物理实现。这些连接由简单的点对点连接建模，这些连接会通过“寄存器选择块”（虚线矩阵）。这样的块包含能够使能连接的指令设置。这个例子中缺失了许多的寄存器连接，因为省略了加载/存储指令。</li>
+</ul>
+<p>一个包只是寄存器选择块之间的一条路径。一个寄存器转换是模型顶部的寄存器到底部的寄存器之间的一条路径，因此包含寄存器选择块。但是，当搜索模型中的路径时，必须检查路径上指令设置的适配性（见 3.2 节的例子）。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_2.png" class="" title>
+
+
+<h3 id="打包技术"><a href="#打包技术" class="headerlink" title="打包技术"></a>打包技术</h3><p>我们的打包技术是 [8，9] 中描述的映射技术的扩展。在打包之前，应用程序被转换为控制数据流图（CDFG）– 见第 4 节。在 CDFG 中每个操作节点都标注了所有它可以在上面执行的 FUs，这些 FUs 来自指令集和数据路径组合模型。如果这个模型允许两个节点直接耦合（它们之间由一条路径且没有指令设置的冲突），连接这些节点的边被标注为合并。图 3 显示了一个小的数据流图。图 3 给出了一个小的数据流图。第一个加法操作可以在 ALU 或者加减法器执行， 每个都有两种可能的指令设置。$&gt;&gt; 1$-操作可以映射到移位器上，也有两个可能的指令设置。在指令集和数据路径组合模型里，可以看到 add - $&gt;&gt;1$ 包可以被映射到 ALU 和 移位 FUs 中。确实，两个 FUs 之间存在着连接，包的两个操作需要的指令设置的交集不为空。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_3.png" class="" title>
+
+
+<p>在一个较大的例子中，有些边可能会用几个可能的耦合方案进行标注。在选择一个耦合方案时，可以删除相邻边上的其它备选方案。因此，必须应用巧妙的启发式来选择正确的替代方案。这些启发式是 [8，9] 中描述的启发式的扩展版。在这种方式下，算法增量地组合操作节点成耦合微操作组，直到获得最终的包。</p>
+<p>对于我们的例子，形成的包是：[+, &gt;&gt;1 : alu-shift(0100xxx)]，[- : alu(0001xxx, 011xxx)] 和 [&gt;&gt;2 : shift(11xx010)]。然后这些包通过数据路由工具扩展成完整的寄存器传输。在我们的例子中，寄存器传输是：[AR = (AX + AY) &gt;&gt; 1 : (0100000)]，[AR = AR - AY : (0001010)] 和 [AR = AR &gt;&gt; 2 : (1101010)]。</p>
+<h3 id="我们方法的优势"><a href="#我们方法的优势" class="headerlink" title="我们方法的优势"></a>我们方法的优势</h3><p>使用带有指令集和数据路径组合模型的打包技术，替代使用更传统的模式匹配技术，有如下优势：</p>
+<ul>
+<li>不是提前枚举模式，而是在打包的时候生成的。</li>
+<li>匹配的模式不需要是树，所有的图模式都是可能的。见 [8，9]。</li>
+<li>打包算法允许匹配模式跨过基本块边界（循环和条件边界），然后执行必要的操作复制 [8, 9]。</li>
+<li>该模型反映了指令编码和 FUs 与寄存器之间的连接。因此，它可以被可重定目标代码生成器中的所有工具采用，不只是打包工具，也包括数据路由[10] 和调度工具。</li>
+</ul>
+<h3 id="相似的方法"><a href="#相似的方法" class="headerlink" title="相似的方法"></a>相似的方法</h3><p>创建包含所有指令限制的数据路径模型的想法，是结合了 CBC 编译器[4] 小组和 MSSQ 编译器小组的一些想法而提出的[12，13]。</p>
+<p>在 CBC 的方法中，nML 被编译成指令集和数据路径的组合模型，其类似于上面解释的。因为他们没有使用数据路径描述作为输入，编译过程更复杂[2]。但是，他们的方法与我们的是不同的，实际上他们随后会从模型中获得所有可能的模式，然后是用 [5] 中描述的树模式匹配工具。实现了一些启发式来处理图 [3]。</p>
+<p>在 MSSQ 编译器中组合的指令集和数据路径模型是从详细的数据描述推导出来的，这个描述会包含 ASIP 的控制器和解码器的描述。指令在模型中的标注被称为 I-nodes。I-nodes 上的操作（与，或）通过 I-trees 表达[12]。应用程序逐句地被映射到该模型上，每次都直接生成完整的传输。</p>
+<h2 id="指令集定义"><a href="#指令集定义" class="headerlink" title="指令集定义"></a>指令集定义</h2><p>因为我们的可重定向编译器中的工具是在组合的指令集和数据路径模型上运行的，所以我们可以在数据路径级别上为一个新的 ASIP 执行指令集定义。这是基于从分析工具和打包工具获得的统计数据，以交互的方式完成的。</p>
+<p>为了定义一个旨在用于某个特定领域的 ASIP 的指令集，首先选择有代表性的应用部分。然后初始的数据路径部分从一个库中选出，基于从分析工具中获得的统计数据。在然后迭代地更新这些部分 – 以最重要的标准面积和性能进行权衡 – 最后定义出指令编码。</p>
+<p>这将通过一个案例研究加以解释。假设我们要为语音识别应用领域里的 ASIP 定义一套指令集。然后要执行的算法是 [14]  中描述的音调提取算法。我们选择算法中的 “滤波识别” 功能作为例子。</p>
+<h3 id="初始的数据路径部件"><a href="#初始的数据路径部件" class="headerlink" title="初始的数据路径部件"></a>初始的数据路径部件</h3><p>我们开发了一个称为 <em>analyse</em>，其从 CDFG 描述中提取了统计设计信息。<em>Analyse</em> 会在设计过程中的多个阶段中被调用。初始阶段，<em>analyse</em> 给我们展示了应用中所有操作的概况，同时还有一些经常出现的操作序列，它们是直接耦合的好的候选。这些输出总结在了表 2 中。基于这些表，我们定义了图 4 中的数据路径部分：乘法（和一个常量）与除法将会被展开成预定义的数据路径部分上的 add/sub/shift 操作。“<em>add-eq</em>” 序列，循环计数器和地址计算的一部分，有很高的发生率，所以我们决定为它定义一个数据路径部分。现在，输入算法中的所有操作都可以通过我们的展开工具进行展开，以适应数据路径部分。在展开后，再次调用 <em>analyse</em> 细化统计数据。为了简洁，我们只在表 3 中列出操作序列的统计信息。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_2.png" class="" title>
+
+
+<p>在这个时候可以调用打包工具（见第 3 节）。图 4 中的数据路径部分在没有中间（可寻址的）寄存器的情况下是无法互联的，因此，任何包都不会占用多个数据路径部分。还没有定义编码限制。打包工具给出了如下的统计数据。每对直接耦合的相邻操作，都打印在带有出现次数的列表中了。另一个列表里包含了，由于数据路径部分而没有（直接）耦合的相邻操作。直接耦合边的数量，非耦合边的数量，和它们与打包期间考虑的边的总数的比率也被打印出来了。部分统计数据总结在了表 4 中。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_4.png" class="" title>
+
+
+<p>对于这些数据路径部分，有 6040 条边（占 50.2%）是直接耦合的，6000 条边（占 49.8%）没有耦合。如果在数据路径结构之间采用具有无限大小的寄存器文件的全交叉互联方案，则可以在 6241 个周期内调度完 CDFG。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_3.png" class="" title>
+
+
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/table_4.png" class="" title>
+
+
+<h3 id="数据路径部分的改进"><a href="#数据路径部分的改进" class="headerlink" title="数据路径部分的改进"></a>数据路径部分的改进</h3><p>表 4 显示了乘法运算的扩展所产生的运算是不耦合的。如果我们想要实现它，需要将移位器放置到加法器的前面。做了这个，则耦合边的比率会上升到 66%，调度周期长度会减少到 4961 个周期。</p>
+<p>表 3 也包含了一些 3 操作序列。在这些序列中，最后的减法来自于关系运算 $&gt;$  和 $\geq$ （和表 2 相比）。如果我们在图 4 左侧的数据路径部分加入一个比较器，我们会获得图 5 的数据路径部分。现在我们不得不在新的数据路径部分上执行一个原来的应用算法的新的展开。然后，耦合边的比率变成 91%，且调度长度变为 3961 个周期。</p>
+<h3 id="将数据路径部分合并成指令集"><a href="#将数据路径部分合并成指令集" class="headerlink" title="将数据路径部分合并成指令集"></a>将数据路径部分合并成指令集</h3><p>当给 <em>analyse</em> 提供一个调度图作为输入，它将提供占用比率和每个 FU 占用模式的一张表。图 6 给出了每个数据路径部分中的加减法器的占用模式。当检查所有 FUs 的占用模式，我们会看到除法数据路径部分的占用模式和其它的只有很小的重叠。实际上，为了节省空间，除法器和加法器的数据路径部分可以合并成一个，如图 7 中描述的（在左边）。但是来自于乘法器和除法器展开的操作会被编码成不同的微指令。在图 7 上的部件执行打包，会给出和之前相同的结果。剩余的两个数据路径部件就不会在进一步合并了，因为它们并行着重度使用。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_5.png" class="" title>
+
+
+<p>在这些观察中，对于这个CDFG，我们可以推导出需要两条指令格式来控制图 7 中的数据路径部件。第一个格式包含两个正交的部件，分别是控制简单的移位/加法/减法操作（如，展开的乘法）和控制地址/计数操作。此时，我们就制定出了如图 1和表 1所示的规范。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_6.png" class="" title>
+
+
+<p>最后的加法编码限制不会影响总的调度长度，其仍然是 3961 个周期。也可以在没有比较器（更少的面积）的情况下，执行本节的改变（调度长度是：4921个周期）。</p>
+ 
+  <img src="/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/figure_7.png" class="" title>
+
+
+<h2 id="结论和未来工作"><a href="#结论和未来工作" class="headerlink" title="结论和未来工作"></a>结论和未来工作</h2><p>我们已经展示了，通过从指令集和抽象数据路径生成一个组合指令集和数据路径模型，然后在模型上执行操作打包，就可以完成 ASIPs 的指令选择。</p>
+<p>我们还演示了一种迭代定义 ASIP 的数据路径和指令集的方法。分析和打包工具的每次执行都会为特定目的提供统计信息。</p>
+<p>当前第一版分析，打包，数据路由和调度工具是有效的。一些未来的工作包括进一步实现这些想法，以及模型一些预处理的实验。这个预处理将会允许在模型中进行更快地路径搜索。打包算法中的启发式也需要进一步的改善和测试。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>略。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compiler/" rel="tag"># compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/10/03/%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9%E7%9A%84%E8%B0%83%E6%9F%A5/" rel="prev" title="指令选择的调查">
+                  <i class="fa fa-chevron-left"></i> 指令选择的调查
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/27/%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%9E%B6%E6%9E%84%E5%92%8CELI-512/" rel="next" title="超长指令字架构和ELI-512">
+                  超长指令字架构和ELI-512 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">372k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:38</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
