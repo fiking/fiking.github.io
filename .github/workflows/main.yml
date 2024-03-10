@@ -27,7 +27,7 @@ jobs:
     - name: Install hexo
       run: |
         npm install hexo-cli -g
-        npm install
+        npm ci
 
     # 设置SSH密钥，读取HEXO_DEPLOY_KEY
     - name: Setup private key
