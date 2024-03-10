@@ -19,7 +19,7 @@ jobs:
 
     # 安装Node.js
     - name: Install node.js
-      uses: actions/setup-node@hexo
+      uses: actions/setup-node@master
       with:
         node-version: "21.x"
 
