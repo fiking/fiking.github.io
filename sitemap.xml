@@ -135,6 +135,13 @@
   </url>
   
   <url>
+    <loc>http://example.com/categories/index.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://example.com/about/index.html</loc>
     
     <lastmod>2023-01-08</lastmod>
@@ -143,13 +150,6 @@
   
   <url>
     <loc>http://example.com/schedule/index.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/index.html</loc>
     
     <lastmod>2023-01-08</lastmod>
     
@@ -303,14 +303,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/08/13/V8-%E4%BB%A3%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%8F%8A%E7%BC%96%E8%AF%91/</loc>
+    <loc>http://example.com/2021/12/16/bat-script/</loc>
     
     <lastmod>2023-01-08</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/2021/12/16/bat-script/</loc>
+    <loc>http://example.com/2021/08/13/V8-%E4%BB%A3%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%8F%8A%E7%BC%96%E8%AF%91/</loc>
     
     <lastmod>2023-01-08</lastmod>
     
@@ -408,14 +408,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
+    <loc>http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/</loc>
     
     <lastmod>2023-01-08</lastmod>
     
   </url>
   
   <url>
-    <loc>http://example.com/2022/11/17/ASIPs-%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E5%AE%9A%E4%B9%89%E5%92%8C%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9/</loc>
+    <loc>http://example.com/2021/08/28/Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91/</loc>
     
     <lastmod>2023-01-08</lastmod>
     
@@ -445,14 +445,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/virtual-machine/</loc>
+    <loc>http://example.com/tags/compiler/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/compiler/</loc>
+    <loc>http://example.com/tags/virtual-machine/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -706,13 +706,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/dissertation-translation/virtual-machine/</loc>
-    <lastmod>2024-03-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/dissertation-translation/compiler/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
@@ -721,6 +714,13 @@
   
   <url>
     <loc>http://example.com/categories/dissertation-translation/format/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/dissertation-translation/virtual-machine/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -776,6 +776,34 @@
   </url>
   
   <url>
+    <loc>http://example.com/categories/%E5%AE%9E%E8%B7%B5/compiler/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/js-engine/v8/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/%E5%AE%9E%E8%B7%B5/compiler/llvm/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/categories/GIT/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
@@ -790,14 +818,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/ubuntu/</loc>
+    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/leetcode/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E5%AE%9E%E8%B7%B5/compiler/</loc>
+    <loc>http://example.com/categories/ubuntu/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -811,35 +839,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/POJ/</loc>
-    <lastmod>2024-03-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/dissertation-translation/program-analysis/</loc>
-    <lastmod>2024-03-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/js-engine/v8/</loc>
-    <lastmod>2024-03-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/%E7%AE%97%E6%B3%95/leetcode/</loc>
-    <lastmod>2024-03-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/%E5%AE%9E%E8%B7%B5/compiler/llvm/</loc>
     <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
