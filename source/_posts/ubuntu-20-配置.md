@@ -277,7 +277,9 @@ https://developer.huawei.com/consumer/cn/forum/topic/0202827366574480034?fid=010
 
 https://alessandrococco.com/2021/01/wsl-how-to-resolve-operation-not-permitted-error-on-cloning-a-git-repository
 
-https://zhuanlan.zhihu.com/p/466001838
+[WSL的安装和位置迁移 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/406917270)
+
+[安装WSL2时遇到的问题(0x80370102报错)解决_error code: wsl/service/createinstance/createvm/0x-CSDN博客](https://blog.csdn.net/q20010619/article/details/120660346)
 
 ### 挂载磁盘
 
