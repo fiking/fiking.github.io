@@ -293,6 +293,14 @@ https://www.jianshu.com/p/13f59261e343
 
 https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out
 
+### wsl2 clash 代理设置
+
+https://wph.im/199.html
+
+https://weilining.github.io/294.html
+
+
+
 
 
 
