@@ -143,22 +143,27 @@ ninja -C out/android_debug_unopt_arm64
 
 - Emscripten SDK 安装失败
 
-  ![image-20240427004519712](flutter概述/image-20240427004519712.png)
+  ![image-20240427004519712](./flutter概述/image-20240427004519712.png)
 
   需要安装 pkg-config、curl 和 unzip。
 
 - 本地IP不走代理设置
 
-  ![image-20240427062920628](flutter-engine-building-environment-setup/image-20240427062920628.png)
+  ![image-20240427062920628](./flutter-engine-building-environment-setup/image-20240427062920628.png)
 
   需要设置no_proxy环境变量。
 
 - 缺少JAVA环境
 
-  ![image-20240427065908172](flutter-engine-building-environment-setup/image-20240427065908172.png)
+  ![image-20240427065908172](./flutter-engine-building-environment-setup/image-20240427065908172.png)
 
   需要安装java运行环境。
 
+- gradle下载报错
+
+  ![image-20240427104825273](./flutter-engine-building-environment-setup/image-20240427104825273.png)
+
+  代理太慢导致下载超时，重试即可。也可以替换更快的代理。
 ## 总结
 
 只要网路环境没有问题，参考官方Wiki即可完成编译。

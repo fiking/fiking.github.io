@@ -15,7 +15,6 @@ flutter 是 Google 开源的跨平台应用开发框架。
  <!-- more -->
 
 
-
 ## 软件框架
 
 在软件工程和编程中，框架是可重复使用的软件组件的集合，能提高新应用程序的开发效率。框架还可以定义和强制执行某些软件架构规则或业务流程，以便能够以标准化方式开发新的应用程序。
@@ -61,7 +60,6 @@ flutter 是 Google 开源的跨平台应用开发框架。
 
 ## 参考
 
-[Flutter实战·第二版](https://book.flutterchina.club/#第二版变化)
-
 [应用框架 - 维基百科，自由的百科全书 (wikipedia.org)](https://zh.wikipedia.org/wiki/应用框架)
+[Flutter实战·第二版](https://book.flutterchina.club/#第二版变化)
 
