@@ -38,9 +38,7 @@ flutter 是 Google 开源的跨平台应用开发框架。
 
 控制反转
 
-
-
-### 应用框架
+## 应用框架
 
 **应用框架**（Application Framework）是一种[软件框架](https://zh.wikipedia.org/wiki/软件框架)，用于帮助[开发者](https://zh.wikipedia.org/wiki/開發者)构建和实现特定类型的应用程序。通常，它提供了一组工具、库和最佳实践，用于帮助开发者编写更稳定、可维护和可扩展的代码。
 
@@ -57,6 +55,61 @@ flutter 是 Google 开源的跨平台应用开发框架。
 - [桌面应用框架](https://zh.wikipedia.org/w/index.php?title=桌面应用框架&action=edit&redlink=1)：如[Electron](https://zh.wikipedia.org/wiki/Electron)（JavaScript）、[Qt](https://zh.wikipedia.org/wiki/Qt)（[C++](https://zh.wikipedia.org/wiki/C%2B%2B)）等，帮助在桌面平台上开发应用。
 
 
+
+## 跨平台应用框架
+
+## Flutter
+
+Flutter 是一个跨平台的 UI 工具包。
+
+在开发阶段，Flutter apps运行在一个虚拟机中，可以实时进行热更新。在发布阶段，Flutter apps被直接编译成机器码。
+
+### Flutter架构
+
+![image-20240509233549926](./flutter概述/image-20240509233549926.png)
+
+- 
+
+### Flutter app 架构
+
+![image-20240509234807532](./flutter概述/image-20240509234807532.png)
+
+### Flutter 代码分析
+
+Flutter is a new mobile app SDK to help developers and designers build modern mobile apps for iOS and Android.
+
+```
+Flutter is a new mobile app SDK to help developers and designers build modern mobile apps for iOS and Android.
+```
+
+#### 0.0.10 版本
+
+代码仓根目录下有四个子目录，以及一些项目说明文件，如版本、作者、许可和开发介绍等。
+
+| bin      | flutter 的启动脚本（Linux和windows各一个）；有个internal 子目录记录所需Dart SDK和flutter Engine的版本号；初始化阶段Dart SDK也会缓存到这个目录里 |
+| -------- | ------------------------------------------------------------ |
+| dev      | 测试工具和测试集                                             |
+| examples | flutter应用的示例程序                                        |
+| packages | flutter的实际功能代码                                        |
+
+其中packages有四个子目录，都是由Dart语言编写的，分别是
+
+| flutter        | flutter framework代码                               |
+| -------------- | --------------------------------------------------- |
+| flutter_driver | flutter app运行时调测工具，如timeline、health等功能 |
+| flutter_tools  | flutter app构建工具，如create、build、version等功能 |
+| flutter_test   | widgets等组件测试代码                               |
+
+
+
+### Flutter Engine 代码分析
+
+#### 代码路径
+
+```
+engine/src/flutter/runtime
+engine/src/flutter/third_party/dart
+```
 
 
 
@@ -103,5 +156,9 @@ flutter 是 Google 开源的跨平台应用开发框架。
 4. [Flutter Framework 源码解析（ 1 ）—— 开篇和绘图引擎的用法](https://xieguanglei.github.io/blog/post/flutter-code-chapter-01.html)
 
 5. [应用框架 - 维基百科，自由的百科全书 (wikipedia.org)](https://zh.wikipedia.org/wiki/应用框架)
+
+6. [Flutter architectural overview](https://docs.flutter.dev/resources/architectural-overview)
+
+7. 
 
 
