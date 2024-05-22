@@ -104,11 +104,72 @@ Flutter is a new mobile app SDK to help developers and designers build modern mo
 
 ### Flutter Engine 代码分析
 
-#### 代码路径
+#### 早期代码
+
+##### 第一笔 commit
+
+提交了Minikin，一个文字布局和绘制的库。
+
+##### 第二次改变
+
+代码仓变成了Sky，Minikin被删除了。
+
+Sky 是为 Mojo 构建 UI 框架的一个实验。 我们正在探索的方法是基于标记语言的语义元素创建一个分层框架，主要分为三层。
+
+- 方案层（theme layer），为每个小部件提供具体的视觉和交互设计。
+- 组件层（widget layer），定义了组件（如input fields, buttons, and menus）之间的交互行为。
+- 渲染层（engine layer），解析标记，执行脚本和应用样式信息。
+
+###### 语义元素
+
+Sky的标记语言定义了少量的原始语义元素，同时也允许框架和应用使用它们构建客制化的语义元素（如定义``input``, ``button``, ``menu``, ``toolbar``, ``video``, and``dialog``）。
+
+原始语义元素有（Element）：
+
+ - ``script``: Executes script
+ - ``style``: Defines style rules
+ - ``import``: Loads a module
+ - ``iframe``: Embeds another Mojo application
+ - ``template``: Captures descendants for use as a template
+ - ``content``: Visually projects descendents of the shadow host
+ - ``shadow``: Visually projects older shadow roots of the shadow host
+ - ``image``: Displays an image
+ - ``a``: Links to another Mojo application
+ - ``title``: Briefly describes the current application state to the user
+
+
+
+
+
+#### 重要提交
+
+```
+20cc569f5961d4e896cb2f4651fd2049066bd47c
+60cc2ccf68058f3d3ff1c0a863ef796ad388eed5
+
+```
+
+
+
+#### Dart代码路径
 
 ```
 engine/src/flutter/runtime
 engine/src/flutter/third_party/dart
+```
+
+##### Shell
+
+
+
+```shell
+class Shell final : public PlatformView::Delegate,
+                    public Animator::Delegate,
+                    public Engine::Delegate,
+                    public Rasterizer::Delegate,
+                    public ServiceProtocol::Handler,
+                    public ResourceCacheLimitItem {
+}                    
 ```
 
 
@@ -159,6 +220,10 @@ engine/src/flutter/third_party/dart
 
 6. [Flutter architectural overview](https://docs.flutter.dev/resources/architectural-overview)
 
-7. 
+7. [Chromium Mojo & IPC | 柯幽 (keyou.github.io)](https://keyou.github.io/blog/2020/01/03/Chromium-Mojo&IPC/)
+
+   Sky uses Mojo IPC to make it possible to write UI code in Dart and yet depend on networking code, etc. written in another language.  Services are replicable, meaning that Dart code written to use the `network_service` remains portable to any platform (iOS, Android, etc.) by simply providing a 'natively' written `network_service`
+
+8. 
 
 
