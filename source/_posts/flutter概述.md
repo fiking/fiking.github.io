@@ -224,6 +224,24 @@ class Shell final : public PlatformView::Delegate,
 
    Sky uses Mojo IPC to make it possible to write UI code in Dart and yet depend on networking code, etc. written in another language.  Services are replicable, meaning that Dart code written to use the `network_service` remains portable to any platform (iOS, Android, etc.) by simply providing a 'natively' written `network_service`
 
-8. 
+8. [Flutter Platform Channel 和 FFI 通道性能测试](https://www.xdea.xyz/2020/11/flutter-platform-channel-%e6%80%a7%e8%83%bd%e6%b5%8b%e8%af%95/)
+
+   Flutter 跨语言交互的开销测试的示例代码和测试结果。
+
+   也许可以使用多语言共用GC的方式进行内存管理，即把GC从VM中剥离出来放到APP生命周期管理的线程中。
+
+9. https://github.com/flutter/samples/tree/main/experimental/pedometer
+
+   https://github.com/HosseinYousefi/jnigen_example
+
+   https://blog.logrocket.com/dart-ffi-native-libraries-flutter/
+
+   Dart调用Kotlin的示例程序。
+
+10. https://github.com/dart-lang/native
+
+    Dart的FFI工具包。
+
+11. 
 
 
