@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="简介Flutter 是 Google 开源的跨平台应用开发框架，使用这个框架开发的应用有两种执行方式。  JIT：用于开发阶段，可以热更新Dart源文件，改变UI布局，便于应用开发。 AOT：用于发布阶段，Dart源文件被直接编译成目标机器码，无法进行热更新。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter动态化更新">
+<meta property="og:url" content="http://example.com/2024/05/12/dynamic-framework-of-Flutter/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="简介Flutter 是 Google 开源的跨平台应用开发框架，使用这个框架开发的应用有两种执行方式。  JIT：用于开发阶段，可以热更新Dart源文件，改变UI布局，便于应用开发。 AOT：用于发布阶段，Dart源文件被直接编译成目标机器码，无法进行热更新。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-12T12:31:58.000Z">
+<meta property="article:modified_time" content="2024-05-13T00:00:34.620Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="Flutter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/05/12/dynamic-framework-of-Flutter/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/05/12/dynamic-framework-of-Flutter/","path":"2024/05/12/dynamic-framework-of-Flutter/","title":"Flutter动态化更新"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Flutter动态化更新 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">30</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%8C%96%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">动态化方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MXFlutter"><span class="nav-number">2.1.</span> <span class="nav-text">MXFlutter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fiking" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fiking" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1129277432@qq.com" title="E-Mail → mailto:1129277432@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/12/dynamic-framework-of-Flutter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Flutter动态化更新 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flutter动态化更新
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-05-12 20:31:58" itemprop="dateCreated datePublished" datetime="2024-05-12T20:31:58+08:00">2024-05-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-05-13 08:00:34" itemprop="dateModified" datetime="2024-05-13T08:00:34+08:00">2024-05-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/cross-platform/" itemprop="url" rel="index"><span itemprop="name">cross platform</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Flutter 是 Google 开源的跨平台应用开发框架，使用这个框架开发的应用有两种执行方式。</p>
+<ul>
+<li>JIT：用于开发阶段，可以热更新Dart源文件，改变UI布局，便于应用开发。</li>
+<li>AOT：用于发布阶段，Dart源文件被直接编译成目标机器码，无法进行热更新。</li>
+</ul>
+<a id="more"></a>
+
+<p>因为发布阶段的Flutter应用无法进行热更新，所以Flutter应用每次更新都必须重新发布版本， 提交新的安装包到应用市场进行审核。审核通过后，用户在应用市场进行App的下载更新。对于应用开发者和用户，这种版本更新方式存在以下问题[1]。</p>
+<ol>
+<li><p>审核周期长， 且可能审核不通过。 周期长导致发版本不够灵活， 紧急的业务需求不能及时上线。</p>
+</li>
+<li><p>线上出现急需修复的bug时，需要较长修复周期，影响用户体验。</p>
+</li>
+<li><p>安装包过大， 动辄几十兆几百兆的应用升级可能会让用户比较抗拒。</p>
+</li>
+<li><p>即使上线了，也无法达到全部用户升级， 服务端存在兼容多版本App的问题。</p>
+</li>
+</ol>
+<p>为了解决这些问题，需要增加Flutter应用动态化更新的能力，实现以下功能。</p>
+<ol>
+<li>随时实现功能升级，不存在应用市场长时间审核和拒绝上线问题，达到业务需求快速上线的目的。</li>
+<li>线上bug可以实时修复，提高用户体验。</li>
+<li>可以减小发版功能包体积，只需要替换新增功能即可。</li>
+<li>功能保持一致，类似网页一样，发版后用户同步更新，不存在旧版本兼容问题。</li>
+</ol>
+<p>由于Flutter官方还不支持应用动态化更新，因此，应用开发厂商自行基于Flutter框架扩展了Flutter应用动态化更新的功能。</p>
+<h2 id="动态化方案"><a href="#动态化方案" class="headerlink" title="动态化方案"></a>动态化方案</h2><p>基于Flutter应用框架的现状，业界探索了一些动态化方案。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>产物替换</td>
+<td>官方曾经推出了 Code Push 方案，但对动态化后的性能没有自信，并且对安全性有所顾虑。</td>
+</tr>
+<tr>
+<td>AOT 搭载 JIT</td>
+<td>在Release模式下引入支持JIT的DartVM，存在应用包过大的问题，且不支持IOS设备。</td>
+</tr>
+<tr>
+<td>动态生产 DSL</td>
+<td>通过JS动态产生Flutter渲染所需的UI信息，存在JS和Dart交互的问题，性能开销大。</td>
+</tr>
+<tr>
+<td>静态产生DSL</td>
+<td>离线产生Flutter渲染所需的UI信息。</td>
+</tr>
+</tbody></table>
+<p>目前有三个主要的Flutter应用动态更新项目：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>开发者</th>
+<th>核心思想</th>
+<th>开发语言</th>
+<th>优势</th>
+<th>劣势</th>
+<th>现状</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MXFlutter</td>
+<td>腾讯</td>
+<td>用js编写Dart，动态拉取js脚本</td>
+<td>JS</td>
+<td>目前相对最完整的Flutter使用JS开发方案</td>
+<td>采用js方式编写Dart，维护困难</td>
+<td>代码仓3年前停更了</td>
+</tr>
+<tr>
+<td>MTFlutter</td>
+<td>美团</td>
+<td>布局，逻辑都使用Dart,增加语法解析和运行时</td>
+<td>Dart</td>
+<td>支持布局动态化和逻辑动态化</td>
+<td>未开源</td>
+<td>未知（官方blog是2020年的）</td>
+</tr>
+<tr>
+<td>Fair</td>
+<td>58</td>
+<td>通过bundle和js实现热更新</td>
+<td>Dart</td>
+<td>支持布局动态化和逻辑动态化开源社区活跃, 开发工具丰富</td>
+<td>部分语法不支持</td>
+<td>代码仓微弱更新中</td>
+</tr>
+</tbody></table>
+<h3 id="MXFlutter"><a href="#MXFlutter" class="headerlink" title="MXFlutter"></a>MXFlutter</h3><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7174978087879671865">Flutter动态化调研实践 - 掘金 (juejin.cn)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/wuba/fair">wuba/Fair: A Flutter package used to update widget tree dynamically. Fair提供一整套Flutter动态化解决方案 (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/06/23/meituan-flutter-flap.html">美团外卖Flutter动态化实践 - 美团技术团队 (meituan.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1472361">基于JS的高性能Flutter动态化框架MXFlutter-腾讯云开发者社区-腾讯云 (tencent.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/chenzhengxu/MXFlutter/blob/master/Documentation/%E5%9F%BA%E4%BA%8EJS%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BD%E5%8A%A8%E6%80%81%E5%8C%96%E6%A1%86%E6%9E%B6%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D.md">MXFlutter/Documentation/基于JS的高性能动态化框架详细介绍.md at master · chenzhengxu/MXFlutter (github.com)</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Flutter/" rel="tag"># Flutter</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/27/flutter-engine-building-environment-setup/" rel="prev" title="flutter_engine_building_environment_setup">
+                  <i class="fa fa-chevron-left"></i> flutter_engine_building_environment_setup
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/05/22/notes-fundamentals-of-CG/" rel="next" title="计算机图形基础学习笔记">
+                  计算机图形基础学习笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">428k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:29</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"fiking","repo":"fiking.github.io","client_id":"60f488fd312191b5c7be","client_secret":"2fbf9cc422c05097a012dbcbe744e8ef4eeec696","admin_user":"fiking","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"4cf8d205165f7e5a8ae5861ff7852e5b"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

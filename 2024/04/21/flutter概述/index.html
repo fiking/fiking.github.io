@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="简介flutter 是 Google 开源的跨平台应用开发框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flutter概述">
+<meta property="og:url" content="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="fiking">
+<meta property="og:description" content="简介flutter 是 Google 开源的跨平台应用开发框架。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/flutter%E6%A6%82%E8%BF%B0/image-20240509233549926.png">
+<meta property="og:image" content="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/flutter%E6%A6%82%E8%BF%B0/image-20240509234807532.png">
+<meta property="article:published_time" content="2024-04-21T06:27:46.000Z">
+<meta property="article:modified_time" content="2024-06-04T00:05:55.301Z">
+<meta property="article:author" content="fiking">
+<meta property="article:tag" content="flutter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/flutter%E6%A6%82%E8%BF%B0/image-20240509233549926.png">
+
+
+<link rel="canonical" href="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/","path":"2024/04/21/flutter概述/","title":"flutter概述"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>flutter概述 | fiking</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">fiking</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">long long ago</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">30</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E6%A1%86%E6%9E%B6"><span class="nav-number">2.</span> <span class="nav-text">软件框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6"><span class="nav-number">3.</span> <span class="nav-text">应用框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-number">3.2.</span> <span class="nav-text">分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E5%B9%B3%E5%8F%B0%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6"><span class="nav-number">4.</span> <span class="nav-text">跨平台应用框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flutter"><span class="nav-number">5.</span> <span class="nav-text">Flutter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flutter%E6%9E%B6%E6%9E%84"><span class="nav-number">5.1.</span> <span class="nav-text">Flutter架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flutter-app-%E6%9E%B6%E6%9E%84"><span class="nav-number">5.2.</span> <span class="nav-text">Flutter app 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flutter-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">5.3.</span> <span class="nav-text">Flutter 代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#0-0-10-%E7%89%88%E6%9C%AC"><span class="nav-number">5.3.1.</span> <span class="nav-text">0.0.10 版本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flutter-Engine-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">5.4.</span> <span class="nav-text">Flutter Engine 代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A9%E6%9C%9F%E4%BB%A3%E7%A0%81"><span class="nav-number">5.4.1.</span> <span class="nav-text">早期代码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AC%94-commit"><span class="nav-number">5.4.1.1.</span> <span class="nav-text">第一笔 commit</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E6%94%B9%E5%8F%98"><span class="nav-number">5.4.1.2.</span> <span class="nav-text">第二次改变</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AF%AD%E4%B9%89%E5%85%83%E7%B4%A0"><span class="nav-number">5.4.1.2.1.</span> <span class="nav-text">语义元素</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E6%8F%90%E4%BA%A4"><span class="nav-number">5.4.2.</span> <span class="nav-text">重要提交</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dart%E4%BB%A3%E7%A0%81%E8%B7%AF%E5%BE%84"><span class="nav-number">5.4.3.</span> <span class="nav-text">Dart代码路径</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Shell"><span class="nav-number">5.4.3.1.</span> <span class="nav-text">Shell</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fiking</p>
+  <div class="site-description" itemprop="description">风雨兼程 红花绿柳</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fiking" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fiking" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1129277432@qq.com" title="E-Mail → mailto:1129277432@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/21/flutter%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fiking">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fiking">
+      <meta itemprop="description" content="风雨兼程 红花绿柳">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="flutter概述 | fiking">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flutter概述
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-04-21 14:27:46" itemprop="dateCreated datePublished" datetime="2024-04-21T14:27:46+08:00">2024-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-06-04 08:05:55" itemprop="dateModified" datetime="2024-06-04T08:05:55+08:00">2024-06-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/cross-platform/" itemprop="url" rel="index"><span itemprop="name">cross platform</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>flutter 是 Google 开源的跨平台应用开发框架。</p>
+ <a id="more"></a>
+
+
+<h2 id="软件框架"><a href="#软件框架" class="headerlink" title="软件框架"></a>软件框架</h2><p>在软件工程和编程中，框架是可重复使用的软件组件的集合，能提高新应用程序的开发效率。框架还可以定义和强制执行某些软件架构规则或业务流程，以便能够以标准化方式开发新的应用程序。</p>
+<p>框架是架构的实例。</p>
+<p>使用软件框架的优势：</p>
+<ul>
+<li>提高代码质量</li>
+<li>缩短开发时间</li>
+<li>更出色的软件安全性</li>
+<li>高效的代码审查</li>
+<li>开发灵活性</li>
+</ul>
+<p>框架组件：</p>
+<ul>
+<li>API 是可让不同的软件以相互理解的格式进行通信的协议</li>
+<li>代码库是可重用的软件函数集合，开发人员可以将这些函数插入其代码中</li>
+<li>编译器是开发人员用来将源代码转换为可部署应用程序文件的软件工具</li>
+<li>调试器是帮助程序员发现和更正代码中错误的工具</li>
+</ul>
+<p>控制反转</p>
+<h2 id="应用框架"><a href="#应用框架" class="headerlink" title="应用框架"></a>应用框架</h2><p><strong>应用框架</strong>（Application Framework）是一种<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%A1%86%E6%9E%B6">软件框架</a>，用于帮助<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%96%8B%E7%99%BC%E8%80%85">开发者</a>构建和实现特定类型的应用程序。通常，它提供了一组工具、库和最佳实践，用于帮助开发者编写更稳定、可维护和可扩展的代码。</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>预定义的类和函数：大多数应用框架包括用于处理常见任务（例如<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93">图形渲染</a>、数据库访问等）的预定义类和函数。</li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%A8%A1%E5%9D%97%E5%8C%96">模块化</a>和可重用：框架通常强调模块化和代码可重用性，以便开发者能够轻松集成或切换不同的组件。</li>
+<li>最佳实践[<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6#cite_note-1">1]</a>：它们通常实施了特定领域或类型的应用开发的最佳实践，并在架构设计中考虑了性能、安全性和其他关键问题。</li>
+</ul>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Web%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6">Web应用框架</a>：如<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Django">Django</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Python">Python</a>）[<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6#cite_note-2">2]</a>、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Spring_Framework">Spring</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Java">Java</a>）[<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6#cite_note-3">3]</a>和<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Ruby_on_Rails">Ruby on Rails</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Ruby">Ruby</a>）等，专注于Web应用程序的开发。</li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6&action=edit&redlink=1">移动应用框架</a>：如<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/React_Native">React Native</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/JavaScript">JavaScript</a>）、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Flutter">Flutter</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Dart">Dart</a>）[<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6#cite_note-4">4]</a>等，用于构建跨平台移动应用。</li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6&action=edit&redlink=1">桌面应用框架</a>：如<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Electron">Electron</a>（JavaScript）、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Qt">Qt</a>（<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/C%2B%2B">C++</a>）等，帮助在桌面平台上开发应用。</li>
+</ul>
+<h2 id="跨平台应用框架"><a href="#跨平台应用框架" class="headerlink" title="跨平台应用框架"></a>跨平台应用框架</h2><h2 id="Flutter"><a href="#Flutter" class="headerlink" title="Flutter"></a>Flutter</h2><p>Flutter 是一个跨平台的 UI 工具包。</p>
+<p>在开发阶段，Flutter apps运行在一个虚拟机中，可以实时进行热更新。在发布阶段，Flutter apps被直接编译成机器码。</p>
+<h3 id="Flutter架构"><a href="#Flutter架构" class="headerlink" title="Flutter架构"></a>Flutter架构</h3><p><img src="./flutter%E6%A6%82%E8%BF%B0/image-20240509233549926.png" alt="image-20240509233549926"></p>
+<ul>
+<li><h3 id="Flutter-app-架构"><a href="#Flutter-app-架构" class="headerlink" title="Flutter app 架构"></a>Flutter app 架构</h3></li>
+</ul>
+<p><img src="./flutter%E6%A6%82%E8%BF%B0/image-20240509234807532.png" alt="image-20240509234807532"></p>
+<h3 id="Flutter-代码分析"><a href="#Flutter-代码分析" class="headerlink" title="Flutter 代码分析"></a>Flutter 代码分析</h3><p>Flutter is a new mobile app SDK to help developers and designers build modern mobile apps for iOS and Android.</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flutter <span class="keyword">is</span> <span class="keyword">a</span> <span class="keyword">new</span> mobile app SDK <span class="keyword">to</span> <span class="keyword">help</span> developers <span class="built_in">and</span> designers build modern mobile apps <span class="keyword">for</span> iOS <span class="built_in">and</span> Android.</span><br></pre></td></tr></table></figure>
+<h4 id="0-0-10-版本"><a href="#0-0-10-版本" class="headerlink" title="0.0.10 版本"></a>0.0.10 版本</h4><p>代码仓根目录下有四个子目录，以及一些项目说明文件，如版本、作者、许可和开发介绍等。</p>
+<table>
+<thead>
+<tr>
+<th>bin</th>
+<th>flutter 的启动脚本（Linux和windows各一个）；有个internal 子目录记录所需Dart SDK和flutter Engine的版本号；初始化阶段Dart SDK也会缓存到这个目录里</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dev</td>
+<td>测试工具和测试集</td>
+</tr>
+<tr>
+<td>examples</td>
+<td>flutter应用的示例程序</td>
+</tr>
+<tr>
+<td>packages</td>
+<td>flutter的实际功能代码</td>
+</tr>
+</tbody></table>
+<p>其中packages有四个子目录，都是由Dart语言编写的，分别是</p>
+<table>
+<thead>
+<tr>
+<th>flutter</th>
+<th>flutter framework代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>flutter_driver</td>
+<td>flutter app运行时调测工具，如timeline、health等功能</td>
+</tr>
+<tr>
+<td>flutter_tools</td>
+<td>flutter app构建工具，如create、build、version等功能</td>
+</tr>
+<tr>
+<td>flutter_test</td>
+<td>widgets等组件测试代码</td>
+</tr>
+</tbody></table>
+<h3 id="Flutter-Engine-代码分析"><a href="#Flutter-Engine-代码分析" class="headerlink" title="Flutter Engine 代码分析"></a>Flutter Engine 代码分析</h3><h4 id="早期代码"><a href="#早期代码" class="headerlink" title="早期代码"></a>早期代码</h4><h5 id="第一笔-commit"><a href="#第一笔-commit" class="headerlink" title="第一笔 commit"></a>第一笔 commit</h5><p>提交了Minikin，一个文字布局和绘制的库。</p>
+<h5 id="第二次改变"><a href="#第二次改变" class="headerlink" title="第二次改变"></a>第二次改变</h5><p>代码仓变成了Sky，Minikin被删除了。</p>
+<p>Sky 是为 Mojo 构建 UI 框架的一个实验。 我们正在探索的方法是基于标记语言的语义元素创建一个分层框架，主要分为三层。</p>
+<ul>
+<li>方案层（theme layer），为每个小部件提供具体的视觉和交互设计。</li>
+<li>组件层（widget layer），定义了组件（如input fields, buttons, and menus）之间的交互行为。</li>
+<li>渲染层（engine layer），解析标记，执行脚本和应用样式信息。</li>
+</ul>
+<h6 id="语义元素"><a href="#语义元素" class="headerlink" title="语义元素"></a>语义元素</h6><p>Sky的标记语言定义了少量的原始语义元素，同时也允许框架和应用使用它们构建客制化的语义元素（如定义<code>input</code>, <code>button</code>, <code>menu</code>, <code>toolbar</code>, <code>video</code>, and<code>dialog</code>）。</p>
+<p>原始语义元素有（Element）：</p>
+<ul>
+<li><code>script</code>: Executes script</li>
+<li><code>style</code>: Defines style rules</li>
+<li><code>import</code>: Loads a module</li>
+<li><code>iframe</code>: Embeds another Mojo application</li>
+<li><code>template</code>: Captures descendants for use as a template</li>
+<li><code>content</code>: Visually projects descendents of the shadow host</li>
+<li><code>shadow</code>: Visually projects older shadow roots of the shadow host</li>
+<li><code>image</code>: Displays an image</li>
+<li><code>a</code>: Links to another Mojo application</li>
+<li><code>title</code>: Briefly describes the current application state to the user</li>
+</ul>
+<h4 id="重要提交"><a href="#重要提交" class="headerlink" title="重要提交"></a>重要提交</h4><figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">20</span><span class="keyword">cc</span><span class="number">569</span>f<span class="number">5961</span>d<span class="number">4e896</span>cb<span class="number">2</span>f<span class="number">4651</span>fd<span class="number">2049066</span>bd<span class="number">47</span><span class="keyword">c</span></span><br><span class="line"><span class="number">60</span><span class="keyword">cc</span><span class="number">2</span>ccf<span class="number">68058</span>f<span class="number">3</span>d<span class="number">3</span>ff<span class="number">1</span><span class="keyword">c</span><span class="number">0</span>a<span class="number">863</span>ef<span class="number">796</span>ad<span class="number">388</span>eed<span class="number">5</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Dart代码路径"><a href="#Dart代码路径" class="headerlink" title="Dart代码路径"></a>Dart代码路径</h4><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">engine<span class="regexp">/src/</span>flutter/<span class="keyword">runtime</span></span><br><span class="line">engine<span class="regexp">/src/</span>flutter<span class="regexp">/third_party/</span>dart</span><br></pre></td></tr></table></figure>
+<h5 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Shell final : public PlatformView::Delegate,</span><br><span class="line">                    public Animator::Delegate,</span><br><span class="line">                    public Engine::Delegate,</span><br><span class="line">                    public Rasterizer::Delegate,</span><br><span class="line">                    public ServiceProtocol::Handler,</span><br><span class="line">                    public ResourceCacheLimitItem &#123;</span><br><span class="line">&#125;                    </span><br></pre></td></tr></table></figure>
+
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://book.flutterchina.club/#%E7%AC%AC%E4%BA%8C%E7%89%88%E5%8F%98%E5%8C%96">Flutter实战·第二版</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://wiki.kimleo.net/articles/A%20taste%20of%20Flutter/">说说 Flutter：Skia、Dart 及其历</a></p>
+<p>Flutter 是一个跨平台 UI 框架。与之前基于 WebView/Native 的框架不同，Flutter 的 UI 呈现与平台完全无关，所有的图形渲染工作都是通过 Skia 这个引擎来实现。这样做的一个非常重要的优点就是一致性的 UI 体验。</p>
+<p>在 2011 年，Google 公布了 Dart。</p>
+<p>并且，本身 Dart 生态不够丰富的情况下，直接做一个 source to source 的替换和翻译，即Dart-to-JavaScript。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/baiqiantao/p/16804595.html">跨平台方案的历史发展逻辑</a></p>
+<p>在移动互联网的浪潮下，我们开发的应用要想取胜，开发效率和使用体验可以说是同等重要。</p>
+<p>从本质上讲，跨平台开发是为了增加业务代码的复用率，减少因为要适配多个平台带来的工作量，从而<strong>降低开发成本</strong>。</p>
+<p>跨平台开发方案的三个时代</p>
+<ul>
+<li><strong>Web 容器时代</strong>：基于 Web 相关技术通过浏览器组件来实现界面及功能</li>
+<li><strong>泛 Web 容器时代</strong>：采用类 Web 标准进行开发，但在<code>运行时把绘制和渲染交由原生系统接管</code>的技术，代表框架有</li>
+<li><strong>自绘引擎时代</strong>：自带渲染引擎，客户端仅提供一块画布即可获得从业务逻辑到功能呈现的多端高度一致的渲染体验</li>
+</ul>
+<p><strong>Web 容器时代</strong></p>
+<p>定义 HTML5 与原生代码交互协议，将部分原生系统能力暴露给 HTML5，从而扩展 HTML5 的边界。这类交互协议，就是我们通常说的 <strong>JS Bridge</strong>（桥）。</p>
+<p><strong>泛 Web 容器时代</strong></p>
+<p>泛 Web 容器时代的解决方案优化了 Web 容器时代的加载、解析和渲染这三大过程，把影响它们独立运行的 Web 标准进行了裁剪，以相对简单的方式支持了构建移动端页面必要的 Web 标准（如 Flexbox 等），也保证了便捷的前端开发体验；同时，这个时代的解决方案基本上完全放弃了浏览器控件渲染，而是<strong>采用原生自带的 UI 组件实现代替了核心的渲染引擎</strong>，仅保持必要的基本控件渲染能力，从而使得渲染过程更加简化，也保证了良好的渲染性能。</p>
+<p>泛 Web 容器时代<strong>使用原生控件承载界面渲染</strong>，固然解决了不少性能问题，但同时也带来了新的问题。其始终需要 Follow Native 的思维方式，就使得泛 Web 容器框架的跨平台特性被大打折扣。</p>
+<p><strong>自绘引擎时代</strong></p>
+<p>这一时期的代表 Flutter 则开辟了一种全新的思路，即从头到尾重写一套跨平台的 UI 框架，包括渲染逻辑，甚至是开发语言。</p>
+<p>渲染引擎依靠跨平台的 <strong>Skia</strong> 图形库来实现，Skia 引擎会将使用 Dart 构建的抽象的视图结构数据加工成 <strong>GPU</strong> 数据，交由 <strong>OpenGL</strong> 最终提供给 GPU 渲染，至此完成渲染闭环，因此可以在最大程度上保证一款应用在不同平台、不同设备上的体验一致性。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://xieguanglei.github.io/blog/post/flutter-code-chapter-01.html">Flutter Framework 源码解析（ 1 ）—— 开篇和绘图引擎的用法</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6">应用框架 - 维基百科，自由的百科全书 (wikipedia.org)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://docs.flutter.dev/resources/architectural-overview">Flutter architectural overview</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://keyou.github.io/blog/2020/01/03/Chromium-Mojo&IPC/">Chromium Mojo &amp; IPC | 柯幽 (keyou.github.io)</a></p>
+<p>Sky uses Mojo IPC to make it possible to write UI code in Dart and yet depend on networking code, etc. written in another language.  Services are replicable, meaning that Dart code written to use the <code>network_service</code> remains portable to any platform (iOS, Android, etc.) by simply providing a ‘natively’ written <code>network_service</code></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.xdea.xyz/2020/11/flutter-platform-channel-%e6%80%a7%e8%83%bd%e6%b5%8b%e8%af%95/">Flutter Platform Channel 和 FFI 通道性能测试</a></p>
+<p>Flutter 跨语言交互的开销测试的示例代码和测试结果。</p>
+<p>也许可以使用多语言共用GC的方式进行内存管理，即把GC从VM中剥离出来放到APP生命周期管理的线程中。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/flutter/samples/tree/main/experimental/pedometer">https://github.com/flutter/samples/tree/main/experimental/pedometer</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/HosseinYousefi/jnigen_example">https://github.com/HosseinYousefi/jnigen_example</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.logrocket.com/dart-ffi-native-libraries-flutter/">https://blog.logrocket.com/dart-ffi-native-libraries-flutter/</a></p>
+<p>Dart调用Kotlin的示例程序。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/dart-lang/native">https://github.com/dart-lang/native</a></p>
+<p>Dart的FFI工具包。</p>
+</li>
+<li></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flutter/" rel="tag"># flutter</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/03/06/%E5%88%86%E5%89%B2%E7%BA%BF%E4%B9%8B2024/" rel="prev" title="回望2023">
+                  <i class="fa fa-chevron-left"></i> 回望2023
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/04/27/flutter-engine-building-environment-setup/" rel="next" title="flutter_engine_building_environment_setup">
+                  flutter_engine_building_environment_setup <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fiking</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">428k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:29</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"fiking","repo":"fiking.github.io","client_id":"60f488fd312191b5c7be","client_secret":"2fbf9cc422c05097a012dbcbe744e8ef4eeec696","admin_user":"fiking","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"cf75c72f2d3f3d0d94bdc63566baa564"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
