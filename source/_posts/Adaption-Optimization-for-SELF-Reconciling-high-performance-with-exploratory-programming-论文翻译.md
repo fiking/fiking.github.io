@@ -272,19 +272,9 @@ TS 编译器的后端使用 RTL-base 中间形式进行粗放的优化。因此�
 
 这种类型使用的局部性可以通过在调用点缓存要查找函数的地址来加以利用。因为查找结果被缓存“在线”在每个调用点（例如，在命中场景下不会访问单独的查找缓存），这个技术叫***inline cahcing***[44，132]。图 3-1 显示了空的内联缓存；调用函数简单的包含一个系统查找例程。第一次这个调用被执行，查找例程会找到目标方法。但是在跳到目标前，查找例程改变调用指令去执行刚找到的目标方法（图 3-2 ）。随后发送执行直接跳到目标方法，完全避开任何查找。当然，接收者的类型可以被改变，所以被调用方法的导语必须验证接收者类型是正确的，如果类型测试失败调用查找代码。
 
-{% if 1 == 1 %} 
-  {% asset_img figure_3_1.png title %}
-{% else %}
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_3_1.png)
+![](./Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_3_1.png)
 
-{% endif %}
-
-{% if 1 == 1 %} 
-  {% asset_img figure_3_2.png title %}
-{% else %}
-![](H:\Blogs\fiking\source\_posts\Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译\figure_3_2.png)
-
-{% endif %}
+![](./Adaption-Optimization-for-SELF-Reconciling-high-performance-with-exploratory-programming-论文翻译/figure_3_2.png)
 
 因为以下一些原因内联缓存比离线查找缓存快得多。首先，因为每个调用点都有分离的缓存，不需要测试消息名来验证缓存是否命中--只有在未命中的时候测试才必须做（通过系统查找例程）。第二，内联缓存不需要执行任何的加载指令来获取缓存条目；这个功能通过调用指令隐式地执行了。最后，因为没有显示地索引到任何表，我们可以忽略哈希函数的异或和移位指令。唯一的开销是接收者类型的检查通常用非常少的指令完成（在一个典型的 Smalltalk 系统是两个加载和一个比较跳转，在SELF系统是一个加载和一个常量比较）。
 
